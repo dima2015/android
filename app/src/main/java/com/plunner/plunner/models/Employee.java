@@ -1,21 +1,28 @@
 
 package com.plunner.plunner.models;
 
+import android.util.Log;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Generated;
 
-import retrofit.Call;
 import retrofit.GsonConverterFactory;
+import retrofit.HttpException;
 import retrofit.Retrofit;
+import retrofit.RxJavaCallAdapterFactory;
 import retrofit.http.GET;
 import retrofit.http.Header;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @Generated("org.jsonschema2pojo")
 public class Employee {
@@ -32,13 +39,11 @@ public class Employee {
 
     /**
      * No args constructor for use in serialization
-     *
      */
     public Employee() {
     }
 
     /**
-     *
      * @param updatedAt
      * @param id
      * @param email
@@ -56,108 +61,84 @@ public class Employee {
     }
 
     /**
-     *
-     * @return
-     *     The id
+     * @return The id
      */
     public String getId() {
         return id;
     }
 
     /**
-     *
-     * @param id
-     *     The id
+     * @param id The id
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     *
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     *
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     *
-     * @return
-     *     The email
+     * @return The email
      */
     public String getEmail() {
         return email;
     }
 
     /**
-     *
-     * @param email
-     *     The email
+     * @param email The email
      */
     public void setEmail(String email) {
         this.email = email;
     }
 
     /**
-     *
-     * @return
-     *     The companyId
+     * @return The companyId
      */
     public String getCompanyId() {
         return companyId;
     }
 
     /**
-     *
-     * @param companyId
-     *     The company_id
+     * @param companyId The company_id
      */
     public void setCompanyId(String companyId) {
         this.companyId = companyId;
     }
 
     /**
-     *
-     * @return
-     *     The createdAt
+     * @return The createdAt
      */
     public String getCreatedAt() {
         return createdAt;
     }
 
     /**
-     *
-     * @param createdAt
-     *     The created_at
+     * @param createdAt The created_at
      */
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
     /**
-     *
-     * @return
-     *     The updatedAt
+     * @return The updatedAt
      */
     public String getUpdatedAt() {
         return updatedAt;
     }
 
     /**
-     *
-     * @param updatedAt
-     *     The updated_at
+     * @param updatedAt The updated_at
      */
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
@@ -194,39 +175,52 @@ public class Employee {
     }
 
     /**
-     *
      * @return
      */
-    static public Employee getEmployee() {
+    static public void getEmployee() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://api.plunner.com")
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
 
         // Create an instance of our GitHub API interface.
         RestInterface rest = retrofit.create(RestInterface.class);
 
         // Create a call instance for looking up Retrofit contributors.
-        Call<Employee> call = rest.get("Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9jYWxlbmRhcnNcLzEwMFwvdGltZXNsb3RzIiwiaWF0IjoiMTQ1MDQ3NjMxNiIsImV4cCI6IjE0NTA0Nzk5NTgiLCJuYmYiOiIxNDUwNDc2MzU4IiwianRpIjoiNjVkMjgxYzI4ZjlmOTNkYWQ4NjdlYWEzZDY2OTI2NGYifQ.6cwWcclXdt2jqeRpc6EEyb9sv2irEAb-o0mT4fbAEbw");
+        Observable<Employee> call = rest.get("Bearer aeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9tZWV0aW5ncyIsImlhdCI6IjE0NTA0ODA2MDYiLCJleHAiOiIxNDUwNDg0MjA2IiwibmJmIjoiMTQ1MDQ4MDYwNiIsImp0aSI6ImRiMjE3MTdjMWE0YmIwNWZlZTBlZWZmZWIzNDc1YWRhIn0.R-WWewXBJ3NI0PbRc0p90jPCrGfl0ALnR2INx3wzKzg");
 
-        // Fetch and print a list of the contributors to the library.
-        Employee employee = null;
-        try {
-            employee = call.execute().body();
-            //TODO check if it is null
-            System.out.println(employee);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return employee;
+        //TODO check if the the odl execution is still in waiting status
+        //TODO timeout
+        Subscription subscription = call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<Employee>() {
+            @Override
+
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                // cast to retrofit.HttpException to get the response code
+                if (e instanceof HttpException) {
+                    HttpException response = (HttpException) e;
+                    int code = response.code();
+                    Log.d("net error", Integer.toString(code));
+                }
+                //TODO else
+            }
+
+            @Override
+            public void onNext(Employee employee) {
+                Log.d("employee", employee.toString());
+            }
+
+        });
     }
 
     //TODO syncronized??
 
-    static private interface RestInterface
-    {
+    static private interface RestInterface {
         @GET("/employees/employee/")
-        Call<Employee> get(@Header("Authorization") String authorization);
+        Observable<Employee> get(@Header("Authorization") String authorization);
     }
-
 }
