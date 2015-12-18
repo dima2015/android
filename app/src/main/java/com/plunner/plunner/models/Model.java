@@ -13,7 +13,7 @@ abstract class Model {
 
     static protected<T> T createRetrofit(Class<T> interfaceClass) {
         return new Retrofit.Builder()
-                .baseUrl("http://api.plunner.com")
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
