@@ -1,12 +1,21 @@
 
 package com.plunner.plunner.models;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.Generated;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Generated;
+
+import retrofit.Call;
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
+import retrofit.http.GET;
+import retrofit.http.Header;
 
 @Generated("org.jsonschema2pojo")
 public class Employee {
@@ -182,6 +191,41 @@ public class Employee {
         }
         Employee rhs = ((Employee) other);
         return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).append(email, rhs.email).append(companyId, rhs.companyId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).append(additionalProperties, rhs.additionalProperties).isEquals();
+    }
+
+    /**
+     *
+     * @return
+     */
+    static public Employee getEmployee() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://api.plunner.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Create an instance of our GitHub API interface.
+        RestInterface rest = retrofit.create(RestInterface.class);
+
+        // Create a call instance for looking up Retrofit contributors.
+        Call<Employee> call = rest.get("Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9jYWxlbmRhcnNcLzEwMFwvdGltZXNsb3RzIiwiaWF0IjoiMTQ1MDQ3NjMxNiIsImV4cCI6IjE0NTA0Nzk5NTgiLCJuYmYiOiIxNDUwNDc2MzU4IiwianRpIjoiNjVkMjgxYzI4ZjlmOTNkYWQ4NjdlYWEzZDY2OTI2NGYifQ.6cwWcclXdt2jqeRpc6EEyb9sv2irEAb-o0mT4fbAEbw");
+
+        // Fetch and print a list of the contributors to the library.
+        Employee employee = null;
+        try {
+            employee = call.execute().body();
+            //TODO check if it is null
+            System.out.println(employee);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return employee;
+    }
+
+    //TODO private?
+    static interface RestInterface
+    {
+        @GET("/employees/employee/")
+        Call<Employee> get(@Header("Authorization") String authorization);
     }
 
 }

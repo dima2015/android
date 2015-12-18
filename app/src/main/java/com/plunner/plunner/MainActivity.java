@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.plunner.plunner.models.Employee;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); //TODo rmeove after tests
         StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -34,28 +36,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("https://api.github.com")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                // Create an instance of our GitHub API interface.
-                GitHubInterface github = retrofit.create(GitHubInterface.class);
-
-                // Create a call instance for looking up Retrofit contributors.
-                Call<List<Repo>> call = github.contributors("square", "retrofit");
-
-                // Fetch and print a list of the contributors to the library.
-                List<Repo> contributors = null;
-                try {
-                    contributors = call.execute().body();
-                    for (Repo contributor : contributors) {
-                    System.out.println(contributor.login + " (" + contributor.contributions + ")");
-                }
-                } catch (IOException e) {
-                    Log.d("Test","Exception");
-                    e.printStackTrace();
-                }
+                Employee.getEmployee();
 
 
                 Log.d("Test", "Test2");
