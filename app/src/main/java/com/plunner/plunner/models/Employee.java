@@ -174,9 +174,6 @@ public class Employee extends Model {
         return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).append(email, rhs.email).append(companyId, rhs.companyId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
-    /**
-     * @return
-     */
     static public void getEmployee() {
         RestInterface rest = createRetrofit(RestInterface.class);
 
