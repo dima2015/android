@@ -19,4 +19,7 @@ abstract class Model {
                 .build()
                 .create(interfaceClass);
     }
+
+    abstract public void fresh();
+    abstract public void save();
 }

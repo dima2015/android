@@ -211,9 +211,21 @@ public class Employee extends Model {
     }
 
     //TODO syncronized??
+    //TODO clone
 
+    //TODO is it possible extends a generic interface with standard rest calls?
     static private interface RestInterface {
         @GET("/employees/employee/")
         Observable<Employee> get(@Header("Authorization") String authorization);
+    }
+
+    @Override
+    public void fresh() {
+
+    }
+
+    @Override
+    public void save() {
+
     }
 }
