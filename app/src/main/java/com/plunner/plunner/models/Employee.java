@@ -221,8 +221,9 @@ public class Employee {
         return employee;
     }
 
-    //TODO private?
-    static interface RestInterface
+    //TODO syncronized??
+
+    static private interface RestInterface
     {
         @GET("/employees/employee/")
         Call<Employee> get(@Header("Authorization") String authorization);
