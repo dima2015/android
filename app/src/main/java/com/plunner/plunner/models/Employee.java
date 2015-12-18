@@ -25,7 +25,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @Generated("org.jsonschema2pojo")
-public class Employee {
+public class Employee extends Model {
 
     private String id;
     private String name;
@@ -178,14 +178,7 @@ public class Employee {
      * @return
      */
     static public void getEmployee() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://api.plunner.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
-
-        // Create an instance of our GitHub API interface.
-        RestInterface rest = retrofit.create(RestInterface.class);
+        RestInterface rest = createRetrofit(RestInterface.class);
 
         // Create a call instance for looking up Retrofit contributors.
         Observable<Employee> call = rest.get("Bearer aeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9tZWV0aW5ncyIsImlhdCI6IjE0NTA0ODA2MDYiLCJleHAiOiIxNDUwNDg0MjA2IiwibmJmIjoiMTQ1MDQ4MDYwNiIsImp0aSI6ImRiMjE3MTdjMWE0YmIwNWZlZTBlZWZmZWIzNDc1YWRhIn0.R-WWewXBJ3NI0PbRc0p90jPCrGfl0ALnR2INx3wzKzg");
