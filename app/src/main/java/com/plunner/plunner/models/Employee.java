@@ -26,9 +26,9 @@ public class Employee extends Model {
     private String id;
     private String name;
     private String email;
-    private String companyId;
-    private String createdAt;
-    private String updatedAt;
+    private String company_id;
+    private String created_at;
+    private String updated_at;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     //TODO serialization?
@@ -40,20 +40,20 @@ public class Employee extends Model {
     }
 
     /**
-     * @param updatedAt
+     * @param updated_at
      * @param id
      * @param email
-     * @param createdAt
+     * @param created_at
      * @param name
-     * @param companyId
+     * @param company_id
      */
-    public Employee(String id, String name, String email, String companyId, String createdAt, String updatedAt) {
+    public Employee(String id, String name, String email, String company_id, String created_at, String updated_at) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.companyId = companyId;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.company_id = company_id;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
     }
 
     static public void getEmployee() {
@@ -132,45 +132,45 @@ public class Employee extends Model {
     }
 
     /**
-     * @return The companyId
+     * @return The company_id
      */
-    public String getCompanyId() {
-        return companyId;
+    public String getCompany_id() {
+        return company_id;
     }
 
     /**
-     * @param companyId The company_id
+     * @param company_id The company_id
      */
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
+    public void setCompany_id(String company_id) {
+        this.company_id = company_id;
     }
 
     /**
-     * @return The createdAt
+     * @return The created_at
      */
-    public String getCreatedAt() {
-        return createdAt;
+    public String getCreated_at() {
+        return created_at;
     }
 
     /**
-     * @param createdAt The created_at
+     * @param created_at The created_at
      */
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 
     /**
-     * @return The updatedAt
+     * @return The updated_at
      */
-    public String getUpdatedAt() {
-        return updatedAt;
+    public String getUpdated_at() {
+        return updated_at;
     }
 
     /**
-     * @param updatedAt The updated_at
+     * @param updated_at The updated_at
      */
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
     }
 
     @Override
@@ -188,7 +188,7 @@ public class Employee extends Model {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(name).append(email).append(companyId).append(createdAt).append(updatedAt).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(id).append(name).append(email).append(company_id).append(created_at).append(updated_at).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -200,7 +200,7 @@ public class Employee extends Model {
             return false;
         }
         Employee rhs = ((Employee) other);
-        return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).append(email, rhs.email).append(companyId, rhs.companyId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).append(email, rhs.email).append(company_id, rhs.company_id).append(created_at, rhs.created_at).append(updated_at, rhs.updated_at).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
     //TODO syncronized??
