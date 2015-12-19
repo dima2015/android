@@ -12,10 +12,7 @@ import java.util.Map;
 
 import javax.annotation.Generated;
 
-import retrofit.GsonConverterFactory;
 import retrofit.HttpException;
-import retrofit.Retrofit;
-import retrofit.RxJavaCallAdapterFactory;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import rx.Observable;
@@ -58,6 +55,39 @@ public class Employee extends Model {
         this.companyId = companyId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    static public void getEmployee() {
+        RestInterface rest = createRetrofit(RestInterface.class);
+
+        // Create a call instance for looking up Retrofit contributors.
+        Observable<Employee> call = rest.get("Bearer aeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9tZWV0aW5ncyIsImlhdCI6IjE0NTA0ODA2MDYiLCJleHAiOiIxNDUwNDg0MjA2IiwibmJmIjoiMTQ1MDQ4MDYwNiIsImp0aSI6ImRiMjE3MTdjMWE0YmIwNWZlZTBlZWZmZWIzNDc1YWRhIn0.R-WWewXBJ3NI0PbRc0p90jPCrGfl0ALnR2INx3wzKzg");
+
+        //TODO check if the the odl execution is still in waiting status
+        //TODO timeout
+        Subscription subscription = call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<Employee>() {
+            @Override
+
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                // cast to retrofit.HttpException to get the response code
+                if (e instanceof HttpException) {
+                    HttpException response = (HttpException) e;
+                    int code = response.code();
+                    Log.d("net error", Integer.toString(code));
+                }
+                //TODO else
+            }
+
+            @Override
+            public void onNext(Employee employee) {
+                Log.d("employee", employee.toString());
+            }
+
+        });
     }
 
     /**
@@ -174,47 +204,8 @@ public class Employee extends Model {
         return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).append(email, rhs.email).append(companyId, rhs.companyId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
-    static public void getEmployee() {
-        RestInterface rest = createRetrofit(RestInterface.class);
-
-        // Create a call instance for looking up Retrofit contributors.
-        Observable<Employee> call = rest.get("Bearer aeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9tZWV0aW5ncyIsImlhdCI6IjE0NTA0ODA2MDYiLCJleHAiOiIxNDUwNDg0MjA2IiwibmJmIjoiMTQ1MDQ4MDYwNiIsImp0aSI6ImRiMjE3MTdjMWE0YmIwNWZlZTBlZWZmZWIzNDc1YWRhIn0.R-WWewXBJ3NI0PbRc0p90jPCrGfl0ALnR2INx3wzKzg");
-
-        //TODO check if the the odl execution is still in waiting status
-        //TODO timeout
-        Subscription subscription = call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<Employee>() {
-            @Override
-
-            public void onCompleted() {
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                // cast to retrofit.HttpException to get the response code
-                if (e instanceof HttpException) {
-                    HttpException response = (HttpException) e;
-                    int code = response.code();
-                    Log.d("net error", Integer.toString(code));
-                }
-                //TODO else
-            }
-
-            @Override
-            public void onNext(Employee employee) {
-                Log.d("employee", employee.toString());
-            }
-
-        });
-    }
-
     //TODO syncronized??
     //TODO clone
-
-    //TODO is it possible extends a generic interface with standard rest calls?
-    static private interface RestInterface {
-        @GET("/employees/employee/")
-        Observable<Employee> get(@Header("Authorization") String authorization);
-    }
 
     @Override
     public void fresh() {
@@ -224,5 +215,11 @@ public class Employee extends Model {
     @Override
     public void save() {
 
+    }
+
+    //TODO is it possible extends a generic interface with standard rest calls?
+    static private interface RestInterface {
+        @GET("/employees/employee/")
+        Observable<Employee> get(@Header("Authorization") String authorization);
     }
 }
