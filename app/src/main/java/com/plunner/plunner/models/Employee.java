@@ -1,8 +1,6 @@
 
 package com.plunner.plunner.models;
 
-import android.util.Log;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -12,13 +10,8 @@ import java.util.Map;
 
 import javax.annotation.Generated;
 
-import retrofit.HttpException;
 import retrofit.http.GET;
 import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @Generated("org.jsonschema2pojo")
 public class Employee extends Model {
@@ -56,37 +49,21 @@ public class Employee extends Model {
         this.updated_at = updated_at;
     }
 
-    static public void getEmployee() {
+    //TODO chose a different name
+    static public rx.Subscription getEmployee(Subscriber subscriber) {
         RestInterface rest = createRetrofit(RestInterface.class);
 
-        // Create a call instance for looking up Retrofit contributors.
         Observable<Employee> call = rest.get();
 
-        //TODO check if the the odl execution is still in waiting status
+        //TODO check if the the old execution is still in waiting status
         //TODO timeout
-        Subscription subscription = call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<Employee>() {
-            @Override
+        //TODO create an adapter for rest with creation and subscribe
+        //TODO insert extends where it is possible
+        return subscribe(call, subscriber);
+    }
 
-            public void onCompleted() {
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                // cast to retrofit.HttpException to get the response code
-                if (e instanceof HttpException) {
-                    HttpException response = (HttpException) e;
-                    int code = response.code();
-                    Log.d("net error", Integer.toString(code));
-                }
-                //TODO else
-            }
-
-            @Override
-            public void onNext(Employee employee) {
-                Log.d("employee", employee.toString());
-            }
-
-        });
+    static public rx.Subscription getEmployee() {
+        return getEmployee(new <Employee>Subscriber());
     }
 
     /**
