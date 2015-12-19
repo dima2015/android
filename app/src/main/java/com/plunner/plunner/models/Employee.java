@@ -59,6 +59,8 @@ public class Employee extends Model {
         //TODO timeout
         //TODO create an adapter for rest with creation and subscribe
         //TODO insert extends where it is possible
+        //TODO interface toi set model into activuty or null on error (with errors?)
+        //TODO delete, create and so on
         return subscribe(call, subscriber);
     }
 
