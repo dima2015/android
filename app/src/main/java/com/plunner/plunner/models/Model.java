@@ -19,7 +19,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by claudio on 19/12/15.
  */
-abstract class Model {
+abstract public class Model {
 
     static final protected String BASE_URL = "http://api.plunner.com";
 
