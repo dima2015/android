@@ -64,6 +64,7 @@ abstract public class Model {
     static private class InterceptorClass implements Interceptor {
         @Override
         public Response intercept(Chain chain) throws IOException {
+            //TODO token refresh
             Request newRequest = chain.request().newBuilder().addHeader("Authorization", AUTH_TOKEN).build();
             return chain.proceed(newRequest);
         }
