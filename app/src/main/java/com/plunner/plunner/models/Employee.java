@@ -14,7 +14,6 @@ import javax.annotation.Generated;
 
 import retrofit.HttpException;
 import retrofit.http.GET;
-import retrofit.http.Header;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -61,7 +60,7 @@ public class Employee extends Model {
         RestInterface rest = createRetrofit(RestInterface.class);
 
         // Create a call instance for looking up Retrofit contributors.
-        Observable<Employee> call = rest.get("Bearer aeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9tZWV0aW5ncyIsImlhdCI6IjE0NTA0ODA2MDYiLCJleHAiOiIxNDUwNDg0MjA2IiwibmJmIjoiMTQ1MDQ4MDYwNiIsImp0aSI6ImRiMjE3MTdjMWE0YmIwNWZlZTBlZWZmZWIzNDc1YWRhIn0.R-WWewXBJ3NI0PbRc0p90jPCrGfl0ALnR2INx3wzKzg");
+        Observable<Employee> call = rest.get();
 
         //TODO check if the the odl execution is still in waiting status
         //TODO timeout
@@ -220,6 +219,6 @@ public class Employee extends Model {
     //TODO is it possible extends a generic interface with standard rest calls?
     static private interface RestInterface {
         @GET("/employees/employee/")
-        Observable<Employee> get(@Header("Authorization") String authorization);
+        Observable<Employee> get();
     }
 }
