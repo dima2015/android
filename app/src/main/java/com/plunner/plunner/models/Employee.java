@@ -185,12 +185,12 @@ public class Employee extends Model {
 
     @Override
     public void fresh() {
-
+//TODO implement
     }
 
     @Override
     public void save() {
-
+//TODO implement
     }
 
     //TODO is it possible extends a generic interface with standard rest calls?
