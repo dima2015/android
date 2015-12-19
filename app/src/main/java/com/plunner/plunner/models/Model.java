@@ -53,7 +53,7 @@ abstract public class Model {
      * @param <T>
      * @return
      */
-    static protected <T extends Model> rx.Subscription subscribe(Observable<T> call, rx.Subscriber<T> subscriber) {
+    static protected <T extends Model> rx.Subscription subscribe(Observable<T> call, Subscriber<T> subscriber) {
         return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
     }
 
