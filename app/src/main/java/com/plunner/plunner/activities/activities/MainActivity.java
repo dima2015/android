@@ -14,6 +14,7 @@ import com.plunner.plunner.R;
 import com.plunner.plunner.activities.interfaces.CallOnHttpError;
 import com.plunner.plunner.activities.interfaces.CallOnNext;
 import com.plunner.plunner.activities.interfaces.SetModel;
+import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Employee;
 import com.plunner.plunner.models.models.Model;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
             @Override
             public void onClick(final View view) {
 
-                Model.AUTH_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9ncm91cHMiLCJpYXQiOiIxNDUwNjIyMDE3IiwiZXhwIjoiMTQ1MDYyNTY4NyIsIm5iZiI6IjE0NTA2MjIwODciLCJqdGkiOiJkZTJiMDkxNGJjMzQ3NzA2NzFmYzhhNGE4ZjQyMjUxNCJ9.0cvnZzcWxwNuXkHK2ST556MxrMeuCkJiIPU-t7PAjxE";
+                Retrofit.AUTH_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9ncm91cHMiLCJpYXQiOiIxNDUwNjIyMDE3IiwiZXhwIjoiMTQ1MDYyNTY4NyIsIm5iZiI6IjE0NTA2MjIwODciLCJqdGkiOiJkZTJiMDkxNGJjMzQ3NzA2NzFmYzhhNGE4ZjQyMjUxNCJ9.0cvnZzcWxwNuXkHK2ST556MxrMeuCkJiIPU-t7PAjxE";
                 if (employee != null) {
                     Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
