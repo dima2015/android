@@ -14,7 +14,9 @@ import com.plunner.plunner.models.Employee;
 import com.plunner.plunner.models.Model;
 import com.plunner.plunner.models.Subscriber;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CanSetModelInterface{
+
+    Employee employee = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +31,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
 
-                Model.AUTH_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9ncm91cHMiLCJpYXQiOiIxNDUwNDg4OTkwIiwiZXhwIjoiMTQ1MDQ5MjU5MCIsIm5iZiI6IjE0NTA0ODg5OTAiLCJqdGkiOiJhODMwMzI0ZGNiMTU4MjA4NWMwYjUyZGQ0MDU0ZjdiOSJ9.P6PecWOQi_JByd9fKiNWBxouaq-leQDbVid2kLQRbjU";
-                Employee.getEmployee(new Subscriber() {
-                    @Override
-                    public void onNext(Model model) {
-                        super.onNext(model);
-                        Employee employee = (Employee) model;
-                        Snackbar.make(view, "Name " + employee.getName(), Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-                    }
-                });
+                Model.AUTH_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9ncm91cHMiLCJpYXQiOiIxNDUwNjIyMDE3IiwiZXhwIjoiMTQ1MDYyNTY4NyIsIm5iZiI6IjE0NTA2MjIwODciLCJqdGkiOiJkZTJiMDkxNGJjMzQ3NzA2NzFmYzhhNGE4ZjQyMjUxNCJ9.0cvnZzcWxwNuXkHK2ST556MxrMeuCkJiIPU-t7PAjxE";
+                if(employee != null) {
+                    Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }else {
+                    Employee.getEmployee(new Subscriber(MainActivity.this) {
+                        @Override
+                        public void onNext(Model model) {
+                            super.onNext(model);
+                            Employee employee = (Employee) model;
+                            Snackbar.make(view, "Name " + employee.getName(), Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                        }
+                    });
+                }
             }
         });
     }
@@ -63,5 +70,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void setModel(Model model) {
+        employee = (Employee) model;
     }
 }

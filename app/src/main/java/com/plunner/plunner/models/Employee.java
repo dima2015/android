@@ -1,6 +1,8 @@
 
 package com.plunner.plunner.models;
 
+import com.plunner.plunner.CanSetModelInterface;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -66,6 +68,10 @@ public class Employee extends Model {
 
     static public rx.Subscription getEmployee() {
         return getEmployee(new <Employee>Subscriber());
+    }
+
+    static public rx.Subscription getEmployee(CanSetModelInterface canSetModel) {
+        return getEmployee(new <Employee>Subscriber(canSetModel));
     }
 
     /**
