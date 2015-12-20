@@ -9,6 +9,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
@@ -23,6 +24,7 @@ import rx.schedulers.Schedulers;
 abstract public class Model {
 
     static final protected String BASE_URL = "http://api.plunner.com";
+    static final private int TIMEOUT = 30;
 
     //TODO fine a better solution
     static public String AUTH_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9ncm91cHMiLCJpYXQiOiIxNDUwNDgwNjA2IiwiZXhwIjoiMTQ1MDQ4NzIxNCIsIm5iZiI6IjE0NTA0ODM2MTQiLCJqdGkiOiIyZjgwMzU3MzU5MjAzMmM4YjIyODIzMWJmM2U0Nzc1ZSJ9.-FHEGifidaZ0EvY-W5DWGImcoWNKjPE_SHcI1I6W0YU";
@@ -36,6 +38,8 @@ abstract public class Model {
     static protected<T> T createRetrofit(Class<T> interfaceClass) {
         // Add the interceptor to OkHttpClient
         OkHttpClient client = new OkHttpClient();
+        client.setReadTimeout(TIMEOUT, TimeUnit.SECONDS);
+        client.setConnectTimeout(TIMEOUT, TimeUnit.SECONDS);
         client.interceptors().add(new InterceptorClass());
         client.networkInterceptors().add(new StethoInterceptor());//TODO remove
 

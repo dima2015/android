@@ -11,13 +11,12 @@ import android.view.View;
 
 import com.facebook.stetho.Stetho;
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.interfaces.CallOnError;
 import com.plunner.plunner.activities.interfaces.CallOnHttpError;
 import com.plunner.plunner.activities.interfaces.CallOnNext;
 import com.plunner.plunner.activities.interfaces.SetModel;
+import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Employee;
 import com.plunner.plunner.models.models.Model;
-import com.plunner.plunner.models.adapters.Subscriber;
 
 import retrofit.HttpException;
 
@@ -87,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
     @Override
     public void onHttpError(HttpException e) {
         ;
+        int code = e.code(); //HTTP code
         //TODO error, eventually ask the login
     }
 
