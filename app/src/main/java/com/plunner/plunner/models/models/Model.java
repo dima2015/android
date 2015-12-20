@@ -58,9 +58,10 @@ abstract public class Model {
         return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
     }
 
-    abstract public void fresh();
-
-    abstract public void save();
+    abstract public rx.Subscription fresh();
+    abstract public rx.Subscription fresh(Subscriber subscriber);
+    abstract public rx.Subscription save();
+    abstract public rx.Subscription save(Subscriber subscriber);
 
     static private class InterceptorClass implements Interceptor {
         @Override

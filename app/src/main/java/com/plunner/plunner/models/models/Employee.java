@@ -85,8 +85,9 @@ public class Employee extends Model {
     /**
      * @param id The id
      */
-    public void setId(String id) {
+    public Employee setId(String id) {
         this.id = id;
+        return this;
     }
 
     /**
@@ -99,8 +100,9 @@ public class Employee extends Model {
     /**
      * @param name The name
      */
-    public void setName(String name) {
+    public Employee setName(String name) {
         this.name = name;
+        return this;
     }
 
     /**
@@ -113,8 +115,9 @@ public class Employee extends Model {
     /**
      * @param email The email
      */
-    public void setEmail(String email) {
+    public Employee setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     /**
@@ -127,8 +130,9 @@ public class Employee extends Model {
     /**
      * @param company_id The company_id
      */
-    public void setCompany_id(String company_id) {
+    public Employee setCompany_id(String company_id) {
         this.company_id = company_id;
+        return this;
     }
 
     /**
@@ -141,8 +145,9 @@ public class Employee extends Model {
     /**
      * @param created_at The created_at
      */
-    public void setCreated_at(String created_at) {
+    public Employee setCreated_at(String created_at) {
         this.created_at = created_at;
+        return this;
     }
 
     /**
@@ -155,8 +160,9 @@ public class Employee extends Model {
     /**
      * @param updated_at The updated_at
      */
-    public void setUpdated_at(String updated_at) {
+    public Employee setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
+        return this;
     }
 
     @Override
@@ -168,8 +174,9 @@ public class Employee extends Model {
         return this.additionalProperties;
     }
 
-    public void setAdditionalProperty(String name, Object value) {
+    public Employee setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
+        return this;
     }
 
     @Override
@@ -193,18 +200,49 @@ public class Employee extends Model {
     //TODO clone
 
     @Override
-    public void fresh() {
-//TODO implement
+    public rx.Subscription fresh(Subscriber subscriber) {
+        return subscribe(createRetrofit(RestInterface.class).get(), subscriber);
     }
 
     @Override
-    public void save() {
+    public rx.Subscription fresh() {
+        return fresh(new <Employee>Subscriber() {
+            @Override
+            public void onNext(Model model) {
+                super.onNext(model);
+                Employee employee = (Employee) model;
+                Employee.this.copy(employee);
+            }
+        });
+    }
+
+    @Override
+    public rx.Subscription save(Subscriber subscriber) {
 //TODO implement
+        return null;
+    }
+
+    @Override
+    public rx.Subscription save() {
+//TODO implement
+        return null;
     }
 
     //TODO is it possible extends a generic interface with standard rest calls?
     static private interface RestInterface {
         @GET("/employees/employee/")
         Observable<Employee> get();
+    }
+
+    private Employee copy(Employee employee2)
+    {
+        id = employee2.id;
+        name = employee2.name;
+        email = employee2.email;
+        company_id = employee2.company_id;
+        created_at = employee2.created_at;
+        updated_at = employee2.updated_at;
+        additionalProperties = employee2.additionalProperties;
+        return this;
     }
 }
