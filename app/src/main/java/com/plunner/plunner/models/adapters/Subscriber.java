@@ -2,11 +2,11 @@ package com.plunner.plunner.models.adapters;
 
 import android.util.Log;
 
-import com.plunner.plunner.activities.interfaces.CallOnError;
-import com.plunner.plunner.activities.interfaces.CallOnHttpError;
-import com.plunner.plunner.activities.interfaces.CallOnNext;
-import com.plunner.plunner.activities.interfaces.Callable;
-import com.plunner.plunner.activities.interfaces.SetModel;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnError;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
+import com.plunner.plunner.models.callbacks.interfaces.Callable;
+import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.models.Model;
 
 import retrofit.HttpException;
@@ -47,9 +47,11 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
             if(callable != null && callable instanceof CallOnHttpError)
                 ((CallOnHttpError) callable).onHttpError(response);
             int code = response.code();
-            Log.v("net error", Integer.toString(code));
+            Log.e("Net error", Integer.toString(code));
+        } else {
+            Log.e("Net error", "Unknown error", e);
         }
-        //TODO else
+
     }
 
     @Override

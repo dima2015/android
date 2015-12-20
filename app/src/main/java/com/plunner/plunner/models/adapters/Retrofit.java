@@ -1,6 +1,8 @@
 package com.plunner.plunner.models.adapters;
 
 import com.facebook.stetho.okhttp.StethoInterceptor;
+import com.plunner.plunner.models.login.LoginManager;
+import com.plunner.plunner.models.models.Model;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -23,9 +25,6 @@ public class Retrofit {
     static final protected String BASE_URL = "http://api.plunner.com";
     static final private int TIMEOUT = 30;
 
-    //TODO find a better solution
-    static public String AUTH_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9ncm91cHMiLCJpYXQiOiIxNDUwNDgwNjA2IiwiZXhwIjoiMTQ1MDQ4NzIxNCIsIm5iZiI6IjE0NTA0ODM2MTQiLCJqdGkiOiIyZjgwMzU3MzU5MjAzMmM4YjIyODIzMWJmM2U0Nzc1ZSJ9.-FHEGifidaZ0EvY-W5DWGImcoWNKjPE_SHcI1I6W0YU";
-
     /**
      * @param interfaceClass
      * @param <T>
@@ -36,7 +35,7 @@ public class Retrofit {
         OkHttpClient client = new OkHttpClient();
         client.setReadTimeout(TIMEOUT, TimeUnit.SECONDS);
         client.setConnectTimeout(TIMEOUT, TimeUnit.SECONDS);
-        client.interceptors().add(new InterceptorClass());
+        client.interceptors().add(new InterceptorClass()); //TODO don't insert if we are makign login
         client.networkInterceptors().add(new StethoInterceptor());//TODO remove
 
         return new retrofit.Retrofit.Builder()
@@ -54,7 +53,7 @@ public class Retrofit {
      * @param <T>
      * @return
      */
-    static public <T> rx.Subscription subscribe(Observable<T> call, rx.Subscriber<T> subscriber) {
+    static public <T extends Model> rx.Subscription subscribe(Observable<T> call, rx.Subscriber<T> subscriber) {
         return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
     }
 
@@ -62,7 +61,10 @@ public class Retrofit {
         @Override
         public Response intercept(Chain chain) throws IOException {
             //TODO token refresh
-            Request newRequest = chain.request().newBuilder().addHeader("Authorization", AUTH_TOKEN).build();
+            LoginManager loginManager = LoginManager.getInstance();
+            Request newRequest = chain.request();
+            if (loginManager.getToken() != null)
+                newRequest = chain.request().newBuilder().addHeader("Authorization", loginManager.getToken()).build();
             return chain.proceed(newRequest);
         }
     }

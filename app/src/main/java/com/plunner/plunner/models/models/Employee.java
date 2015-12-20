@@ -1,8 +1,9 @@
 
 package com.plunner.plunner.models.models;
 
-import com.plunner.plunner.activities.interfaces.SetModel;
+import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -54,7 +55,7 @@ public class Employee extends Model {
 
     //TODO chose a different name
     static public rx.Subscription getEmployee(Subscriber subscriber) {
-        RestInterface rest = createRetrofit(RestInterface.class);
+        RestInterface rest = Retrofit.createRetrofit(RestInterface.class);
 
         Observable<Employee> call = rest.get();
 
@@ -64,7 +65,7 @@ public class Employee extends Model {
         //TODO insert extends where it is possible
         //TODO interface toi set model into activuty or null on error (with errors?)
         //TODO delete, create and so on
-        return subscribe(call, subscriber);
+        return Retrofit.subscribe(call, subscriber);
     }
 
     static public rx.Subscription getEmployee() {
@@ -201,7 +202,7 @@ public class Employee extends Model {
 
     @Override
     public rx.Subscription fresh(Subscriber subscriber) {
-        return subscribe(createRetrofit(RestInterface.class).get(), subscriber);
+        return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).get(), subscriber);
     }
 
     @Override
@@ -228,14 +229,7 @@ public class Employee extends Model {
         return null;
     }
 
-    //TODO is it possible extends a generic interface with standard rest calls?
-    static private interface RestInterface {
-        @GET("/employees/employee/")
-        Observable<Employee> get();
-    }
-
-    private Employee copy(Employee employee2)
-    {
+    private Employee copy(Employee employee2) {
         id = employee2.id;
         name = employee2.name;
         email = employee2.email;
@@ -244,5 +238,11 @@ public class Employee extends Model {
         updated_at = employee2.updated_at;
         additionalProperties = employee2.additionalProperties;
         return this;
+    }
+
+    //TODO is it possible extends a generic interface with standard rest calls?
+    static private interface RestInterface {
+        @GET("/employees/employee/")
+        Observable<Employee> get();
     }
 }

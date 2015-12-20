@@ -11,11 +11,10 @@ import android.view.View;
 
 import com.facebook.stetho.Stetho;
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.interfaces.CallOnHttpError;
-import com.plunner.plunner.activities.interfaces.CallOnNext;
-import com.plunner.plunner.activities.interfaces.SetModel;
-import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
+import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.models.Employee;
 import com.plunner.plunner.models.models.Model;
 
@@ -38,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
             @Override
             public void onClick(final View view) {
 
-                Retrofit.AUTH_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9ncm91cHMiLCJpYXQiOiIxNDUwNjIyMDE3IiwiZXhwIjoiMTQ1MDYyNTY4NyIsIm5iZiI6IjE0NTA2MjIwODciLCJqdGkiOiJkZTJiMDkxNGJjMzQ3NzA2NzFmYzhhNGE4ZjQyMjUxNCJ9.0cvnZzcWxwNuXkHK2ST556MxrMeuCkJiIPU-t7PAjxE";
                 if (employee != null) {
                     Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
@@ -89,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         ;
         int code = e.code(); //HTTP code
         //TODO error, eventually ask the login
+        //TODO automatically try to get token by long token
     }
 
     @Override

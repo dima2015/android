@@ -1,4 +1,4 @@
-package com.plunner.plunner.activities.interfaces;
+package com.plunner.plunner.models.callbacks.interfaces;
 
 import com.plunner.plunner.models.models.Model;
 
