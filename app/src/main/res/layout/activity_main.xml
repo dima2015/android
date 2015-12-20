@@ -126,6 +126,28 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="332dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Did u forget your credentials?"
+                android:id="@+id/textView2"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:layout_marginTop="20dp"
+                android:textStyle="italic" />
+
+            <TextView
+                android:layout_width="332dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Recover your credentials"
+                android:id="@+id/textView3"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:layout_marginTop="7.5dp" />
+
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>
