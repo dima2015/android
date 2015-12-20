@@ -10,9 +10,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.facebook.stetho.Stetho;
-import com.plunner.plunner.models.Employee;
-import com.plunner.plunner.models.Model;
-import com.plunner.plunner.models.Subscriber;
+import com.plunner.plunner.models.models.Employee;
+import com.plunner.plunner.models.models.Model;
+import com.plunner.plunner.models.adapters.Subscriber;
 
 public class MainActivity extends AppCompatActivity implements CanSetModelInterface{
 

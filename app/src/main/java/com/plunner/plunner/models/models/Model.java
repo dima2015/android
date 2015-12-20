@@ -1,7 +1,8 @@
-package com.plunner.plunner.models;
+package com.plunner.plunner.models.models;
 
 
 import com.facebook.stetho.okhttp.StethoInterceptor;
+import com.plunner.plunner.models.adapters.Subscriber;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;

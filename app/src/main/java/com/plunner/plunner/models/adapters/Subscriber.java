@@ -1,8 +1,9 @@
-package com.plunner.plunner.models;
+package com.plunner.plunner.models.adapters;
 
 import android.util.Log;
 
 import com.plunner.plunner.CanSetModelInterface;
+import com.plunner.plunner.models.models.Model;
 
 import retrofit.HttpException;
 

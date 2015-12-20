@@ -1,7 +1,8 @@
 
-package com.plunner.plunner.models;
+package com.plunner.plunner.models.models;
 
 import com.plunner.plunner.CanSetModelInterface;
+import com.plunner.plunner.models.adapters.Subscriber;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
