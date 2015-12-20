@@ -15,6 +15,7 @@ import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.SetModel;
+import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.Employee;
 import com.plunner.plunner.models.models.Model;
 
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        LoginManager.loginByData("testInit", "testEmp@test.com", "123456");
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {

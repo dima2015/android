@@ -64,7 +64,7 @@ public class Retrofit {
             LoginManager loginManager = LoginManager.getInstance();
             Request newRequest = chain.request();
             if (loginManager.getToken() != null)
-                newRequest = newRequest.newBuilder().addHeader("Authorization", loginManager.getToken()).build();
+                newRequest = newRequest.newBuilder().addHeader("Authorization", "Bearer " + loginManager.getToken()).build();
             return chain.proceed(newRequest);
         }
     }

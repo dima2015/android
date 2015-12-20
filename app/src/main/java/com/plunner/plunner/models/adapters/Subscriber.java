@@ -47,11 +47,10 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
             if(callable != null && callable instanceof CallOnHttpError)
                 ((CallOnHttpError) callable).onHttpError(response);
             int code = response.code();
-            Log.e("Net error", Integer.toString(code));
+            Log.w("Net error", Integer.toString(code));
         } else {
             Log.e("Net error", "Unknown error", e);
         }
-
     }
 
     @Override
