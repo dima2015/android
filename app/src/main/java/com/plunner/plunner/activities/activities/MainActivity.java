@@ -11,12 +11,17 @@ import android.view.View;
 
 import com.facebook.stetho.Stetho;
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.interfaces.CanSetModel;
+import com.plunner.plunner.activities.interfaces.CallOnError;
+import com.plunner.plunner.activities.interfaces.CallOnHttpError;
+import com.plunner.plunner.activities.interfaces.CallOnNext;
+import com.plunner.plunner.activities.interfaces.SetModel;
 import com.plunner.plunner.models.models.Employee;
 import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.adapters.Subscriber;
 
-public class MainActivity extends AppCompatActivity implements CanSetModel {
+import retrofit.HttpException;
+
+public class MainActivity extends AppCompatActivity implements SetModel<Employee>, CallOnHttpError, CallOnNext<Employee> {
 
     Employee employee = null;
 
@@ -34,10 +39,10 @@ public class MainActivity extends AppCompatActivity implements CanSetModel {
             public void onClick(final View view) {
 
                 Model.AUTH_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoiZW4iLCJzdWIiOiIzNCIsImlzcyI6Imh0dHA6XC9cL2FwaS5wbHVubmVyLmNvbVwvZW1wbG95ZWVzXC9ncm91cHMiLCJpYXQiOiIxNDUwNjIyMDE3IiwiZXhwIjoiMTQ1MDYyNTY4NyIsIm5iZiI6IjE0NTA2MjIwODciLCJqdGkiOiJkZTJiMDkxNGJjMzQ3NzA2NzFmYzhhNGE4ZjQyMjUxNCJ9.0cvnZzcWxwNuXkHK2ST556MxrMeuCkJiIPU-t7PAjxE";
-                if(employee != null) {
+                if (employee != null) {
                     Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
-                }else {
+                } else {
                     Employee.getEmployee(new Subscriber(MainActivity.this) {
                         @Override
                         public void onNext(Model model) {
@@ -75,7 +80,19 @@ public class MainActivity extends AppCompatActivity implements CanSetModel {
     }
 
     @Override
-    public void setModel(Model model) {
-        employee = (Employee) model;
+    public void setModel(Employee employee) {
+        this.employee = employee;
+    }
+
+    @Override
+    public void onHttpError(HttpException e) {
+        ;
+        //TODO error, eventually ask the login
+    }
+
+    @Override
+    public void onNext(Employee employee) {
+        ;
+        //TODO implement or remove
     }
 }

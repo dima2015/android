@@ -2,7 +2,11 @@ package com.plunner.plunner.models.adapters;
 
 import android.util.Log;
 
-import com.plunner.plunner.activities.interfaces.CanSetModel;
+import com.plunner.plunner.activities.interfaces.CallOnError;
+import com.plunner.plunner.activities.interfaces.CallOnHttpError;
+import com.plunner.plunner.activities.interfaces.CallOnNext;
+import com.plunner.plunner.activities.interfaces.Callable;
+import com.plunner.plunner.activities.interfaces.SetModel;
 import com.plunner.plunner.models.models.Model;
 
 import retrofit.HttpException;
@@ -11,17 +15,17 @@ import retrofit.HttpException;
  * Created by claudio on 19/12/15.
  */
 public class Subscriber<T extends Model> extends rx.Subscriber<T> {
-    CanSetModel canSetModel = null;
+    Callable callable = null;
 
     /**
-     * cosntructor called if we want to set the model get if wwe don't have errors on the the object
+     * constructor called if we want to set the model get if wwe don't have errors on the the object
      * given
-     * @param canSetModel
+     * @param callable
      */
-    public Subscriber(CanSetModel canSetModel)
+    public Subscriber(Callable callable)
     {
         super();
-        this.canSetModel = canSetModel;
+        this.callable = callable;
     }
 
     public Subscriber()
@@ -35,9 +39,13 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
 
     @Override
     public void onError(Throwable e) {
+        if(callable != null && callable instanceof CallOnError)
+            ((CallOnError) callable).onError(e);
         // cast to retrofit.HttpException to get the response code
         if (e instanceof HttpException) {
             HttpException response = (HttpException) e;
+            if(callable != null && callable instanceof CallOnHttpError)
+                ((CallOnHttpError) callable).onHttpError(response);
             int code = response.code();
             Log.v("net error", Integer.toString(code));
         }
@@ -47,7 +55,9 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
     @Override
     public void onNext(T t) {
         Log.v("data", t.toString());
-        //if(canSetModel != null)
-          //  canSetModel.setModel(t);
+        if(callable != null && callable instanceof SetModel)
+            ((SetModel) callable).setModel(t);
+        if(callable != null && callable instanceof CallOnNext)
+            ((CallOnNext) callable).onNext(t);
     }
 }
