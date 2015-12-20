@@ -2,7 +2,7 @@ package com.plunner.plunner.models.adapters;
 
 import android.util.Log;
 
-import com.plunner.plunner.CanSetModelInterface;
+import com.plunner.plunner.activities.interfaces.CanSetModel;
 import com.plunner.plunner.models.models.Model;
 
 import retrofit.HttpException;
@@ -11,14 +11,14 @@ import retrofit.HttpException;
  * Created by claudio on 19/12/15.
  */
 public class Subscriber<T extends Model> extends rx.Subscriber<T> {
-    CanSetModelInterface canSetModel = null;
+    CanSetModel canSetModel = null;
 
     /**
      * cosntructor called if we want to set the model get if wwe don't have errors on the the object
      * given
      * @param canSetModel
      */
-    public Subscriber(CanSetModelInterface canSetModel)
+    public Subscriber(CanSetModel canSetModel)
     {
         super();
         this.canSetModel = canSetModel;

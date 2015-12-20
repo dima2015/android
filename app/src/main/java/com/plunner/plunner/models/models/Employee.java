@@ -1,7 +1,7 @@
 
 package com.plunner.plunner.models.models;
 
-import com.plunner.plunner.CanSetModelInterface;
+import com.plunner.plunner.activities.interfaces.CanSetModel;
 import com.plunner.plunner.models.adapters.Subscriber;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -71,7 +71,7 @@ public class Employee extends Model {
         return getEmployee(new <Employee>Subscriber());
     }
 
-    static public rx.Subscription getEmployee(CanSetModelInterface canSetModel) {
+    static public rx.Subscription getEmployee(CanSetModel canSetModel) {
         return getEmployee(new <Employee>Subscriber(canSetModel));
     }
 
