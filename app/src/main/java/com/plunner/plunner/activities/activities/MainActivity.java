@@ -17,7 +17,6 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.Employee;
-import com.plunner.plunner.models.models.Model;
 
 import retrofit.HttpException;
 
@@ -40,14 +39,14 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
             public void onClick(final View view) {
 
                 if (employee != null) {
+                    employee.fresh();
                     Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 } else {
-                    Employee.getEmployee(new Subscriber(MainActivity.this) {
+                    Employee.getEmployee(new Subscriber<Employee>(MainActivity.this) {
                         @Override
-                        public void onNext(Model model) {
-                            super.onNext(model);
-                            Employee employee = (Employee) model;
+                        public void onNext(Employee employee) {
+                            super.onNext(employee);
                             Snackbar.make(view, "Name " + employee.getName(), Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
                         }

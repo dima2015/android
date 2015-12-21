@@ -16,6 +16,7 @@ import javax.annotation.Generated;
 
 import retrofit.http.GET;
 import rx.Observable;
+import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
 public class Employee extends Model {
@@ -206,26 +207,13 @@ public class Employee extends Model {
     }
 
     @Override
-    public rx.Subscription fresh() {
-        return fresh(new <Employee>Subscriber() {
-            @Override
-            public void onNext(Model model) {
-                super.onNext(model);
-                Employee employee = (Employee) model;
-                Employee.this.copy(employee);
-            }
-        });
-    }
-
-    @Override
     public rx.Subscription save(Subscriber subscriber) {
 //TODO implement
         return null;
     }
 
     @Override
-    public rx.Subscription save() {
-//TODO implement
+    public Subscription get(String... parameters) {
         return null;
     }
 
