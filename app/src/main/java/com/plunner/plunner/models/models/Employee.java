@@ -197,7 +197,7 @@ public class Employee extends Model {
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
         if (parameters.length != 0)
-            subscriber.onError(new ModelException("Get parameters are not correctly"));
+            subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
 
         return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).get(), subscriber);
     }

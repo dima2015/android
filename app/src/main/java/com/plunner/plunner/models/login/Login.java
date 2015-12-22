@@ -3,6 +3,7 @@ package com.plunner.plunner.models.login;
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Model;
+import com.plunner.plunner.models.models.ModelException;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -38,9 +39,8 @@ class Login extends Model {
         this.token = token;
     }
 
-    public static Subscription get(String company, String email, String password, Subscriber subscriber) {
-        return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).
-                login(company, email, password), subscriber);
+    public Subscription get(String company, String email, String password, Subscriber subscriber) {
+        return get(subscriber, company, email, password);
     }
 
     /**
@@ -97,18 +97,9 @@ class Login extends Model {
         return new EqualsBuilder().append(token, rhs.token).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
-    @Override
-    public Subscription fresh() {
-        return null; //TODO implement
-    }
 
     @Override
     public Subscription fresh(Subscriber subscriber) {
-        return null; //TODO implement
-    }
-
-    @Override
-    public Subscription save() {
         return null; //TODO implement
     }
 
@@ -118,13 +109,11 @@ class Login extends Model {
     }
 
     @Override
-    public Subscription get(String... parameters) {
-        return null;
-    }
-
-    @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
-        return null;
+        if (parameters.length != 3)
+            subscriber.onError(new ModelException("Get parameters number is not correct (!= 3)"));
+        return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).
+                login(parameters[0], parameters[1], parameters[2]), subscriber);
     }
 
     private static interface RestInterface {

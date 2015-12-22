@@ -21,7 +21,7 @@ public class LoginManager implements CallOnHttpError {
 
     public static rx.Subscription loginByData(String company, String email, String password) {
         final LoginManager loginManager = getInstance();
-        return Login.get(company, email, password, new Subscriber<Login>() {
+        return (new Login()).get(company, email, password, new Subscriber<Login>() {
             @Override
             public void onNext(Login login) {
                 super.onNext(login);
