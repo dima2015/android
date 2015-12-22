@@ -60,24 +60,14 @@ public class Group extends Model {
     }
 
     /**
-     * @param updatedAt
      * @param id
-     * @param plannerName
      * @param description
-     * @param createdAt
      * @param name
-     * @param companyId
-     * @param plannerId
      */
-    public Group(String id, String createdAt, String updatedAt, String name, String description, String companyId, String plannerId, String plannerName) {
+    public Group(String id, String name, String description) {
         this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.name = name;
         this.description = description;
-        this.companyId = companyId;
-        this.plannerId = plannerId;
-        this.plannerName = plannerName;
     }
 
     /**
@@ -90,9 +80,8 @@ public class Group extends Model {
     /**
      * @param id The id
      */
-    public Group setId(String id) {
+    public void setId(String id) {
         this.id = id;
-        return this;
     }
 
     /**
@@ -103,26 +92,10 @@ public class Group extends Model {
     }
 
     /**
-     * @param createdAt The created_at
-     */
-    public Group setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    /**
      * @return The updatedAt
      */
     public String getUpdatedAt() {
         return updatedAt;
-    }
-
-    /**
-     * @param updatedAt The updated_at
-     */
-    public Group setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
     }
 
     /**
@@ -135,9 +108,8 @@ public class Group extends Model {
     /**
      * @param name The name
      */
-    public Group setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     /**
@@ -150,9 +122,8 @@ public class Group extends Model {
     /**
      * @param description The description
      */
-    public Group setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
-        return this;
     }
 
     /**
@@ -163,27 +134,10 @@ public class Group extends Model {
     }
 
     /**
-     * @param companyId The company_id
-     */
-    public Group setCompanyId(String companyId) {
-        this.companyId = companyId;
-        return this;
-    }
-
-
-    /**
      * @return The plannerId
      */
     public String getPlannerId() {
         return plannerId;
-    }
-
-    /**
-     * @param plannerId The planner_id
-     */
-    public Group setPlannerId(String plannerId) {
-        this.plannerId = plannerId;
-        return this;
     }
 
     /**
@@ -193,11 +147,18 @@ public class Group extends Model {
         return plannerName;
     }
 
-    /**
-     * @param plannerName The planner_name
-     */
-    public Group setPlannerName(String plannerName) {
-        this.plannerName = plannerName;
+    public Group withId(String id) {
+        this.id = id;
+        return this;
+    }
+
+    public Group withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public Group withDescription(String description) {
+        this.description = description;
         return this;
     }
 

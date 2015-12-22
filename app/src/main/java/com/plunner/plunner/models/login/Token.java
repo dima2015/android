@@ -11,9 +11,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Generated;
 
 import retrofit.http.Field;
@@ -28,9 +25,6 @@ class Token extends Model {
     @SerializedName("token")
     @Expose
     private String token;
-    @SerializedName("additionalProperties")
-    @Expose
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * No args constructor for use in serialization
@@ -80,26 +74,13 @@ class Token extends Model {
     @Override
     public String toString() {
         //for security reason show only the start of the token
-        return new ToStringBuilder(this).append("additionalProperties", additionalProperties).
+        return new ToStringBuilder(this).
                 append("token", token.substring(token.length() - 20)).toString();
-    }
-
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
-    public Token withAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-        return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(token).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(token).toHashCode();
     }
 
     @Override
@@ -111,8 +92,7 @@ class Token extends Model {
             return false;
         }
         Token rhs = ((Token) other);
-        return new EqualsBuilder().append(token, rhs.token).append(additionalProperties, rhs.
-                additionalProperties).isEquals();
+        return new EqualsBuilder().append(token, rhs.token).isEquals();
     }
 
 

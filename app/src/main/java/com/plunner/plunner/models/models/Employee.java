@@ -12,9 +12,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Generated;
 
@@ -36,16 +34,16 @@ public class Employee extends Model {
     private String email;
     @SerializedName("company_id")
     @Expose
-    private String company_id;
+    private String companyId;
     @SerializedName("created_at")
     @Expose
-    private String created_at;
+    private String createdAt;
     @SerializedName("updated_at")
     @Expose
-    private String updated_at;
-    @SerializedName("additionalProperties")
+    private String updatedAt;
+    @SerializedName("is_planner")
     @Expose
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Boolean planner;
     private ModelList<Group> groups = new ModelList<Group>();
 
     //TODO serialization?
@@ -57,20 +55,14 @@ public class Employee extends Model {
     }
 
     /**
-     * @param updated_at
      * @param id
      * @param email
-     * @param created_at
      * @param name
-     * @param company_id
      */
-    public Employee(String id, String name, String email, String company_id, String created_at, String updated_at) {
+    public Employee(String id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.company_id = company_id;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
     }
 
     /**
@@ -83,9 +75,8 @@ public class Employee extends Model {
     /**
      * @param id The id
      */
-    public Employee setId(String id) {
+    public void setId(String id) {
         this.id = id;
-        return this;
     }
 
     /**
@@ -98,88 +89,85 @@ public class Employee extends Model {
     /**
      * @param name The name
      */
-    public Employee setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     /**
      * @return The email
      */
-    public String getEmail() {
-        return email;
+    public void getEmail() {
     }
 
     /**
      * @param email The email
      */
-    public Employee setEmail(String email) {
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return The companyId
+     */
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    /**
+     * @return The createdAt
+     */
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+
+    /**
+     * @return The updatedAt
+     */
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Employee withId(String id) {
+        this.id = id;
+        return this;
+    }
+
+    public Employee withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+
+    public Employee withEmail(String email) {
         this.email = email;
         return this;
     }
 
-    /**
-     * @return The company_id
-     */
-    public String getCompany_id() {
-        return company_id;
-    }
 
-    /**
-     * @param company_id The company_id
-     */
-    public Employee setCompany_id(String company_id) {
-        this.company_id = company_id;
+    public Employee withCompanyId(String companyId) {
+        this.companyId = companyId;
         return this;
     }
 
     /**
-     * @return The created_at
+     *
+     * @return
+     * The planner
      */
-    public String getCreated_at() {
-        return created_at;
+    public boolean isPlanner() {
+        return planner;
     }
 
-    /**
-     * @param created_at The created_at
-     */
-    public Employee setCreated_at(String created_at) {
-        this.created_at = created_at;
-        return this;
-    }
-
-    /**
-     * @return The updated_at
-     */
-    public String getUpdated_at() {
-        return updated_at;
-    }
-
-    /**
-     * @param updated_at The updated_at
-     */
-    public Employee setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
-        return this;
-    }
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public Employee setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-        return this;
-    }
-
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(name).append(email).append(company_id).append(created_at).append(updated_at).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(id).append(name).append(email).append(companyId).append(createdAt).append(updatedAt).toHashCode();
     }
 
     @Override
@@ -191,7 +179,7 @@ public class Employee extends Model {
             return false;
         }
         Employee rhs = ((Employee) other);
-        return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).append(email, rhs.email).append(company_id, rhs.company_id).append(created_at, rhs.created_at).append(updated_at, rhs.updated_at).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).append(email, rhs.email).append(companyId, rhs.companyId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
     }
 
     //TODO syncronized??

@@ -48,24 +48,18 @@ public class Meeting extends Model {
     }
 
     /**
-     * @param updatedAt
      * @param startTime
      * @param id
-     * @param groupId
      * @param duration
      * @param title
-     * @param createdAt
      * @param description
      */
-    public Meeting(String id, String title, String description, String groupId, Object startTime, String duration, String createdAt, String updatedAt) {
+    public Meeting(String id, String title, String description, Object startTime, String duration) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.groupId = groupId;
         this.startTime = startTime;
         this.duration = duration;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     /**
@@ -92,9 +86,8 @@ public class Meeting extends Model {
     /**
      * @param title The title
      */
-    public Meeting setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
-        return this;
     }
 
     /**
@@ -107,9 +100,8 @@ public class Meeting extends Model {
     /**
      * @param description The description
      */
-    public Meeting setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
-        return this;
     }
 
     /**
@@ -117,14 +109,6 @@ public class Meeting extends Model {
      */
     public String getGroupId() {
         return groupId;
-    }
-
-    /**
-     * @param groupId The group_id
-     */
-    public Meeting setGroupId(String groupId) {
-        this.groupId = groupId;
-        return this;
     }
 
     /**
@@ -137,9 +121,8 @@ public class Meeting extends Model {
     /**
      * @param startTime The start_time
      */
-    public Meeting setStartTime(Object startTime) {
+    public void setStartTime(Object startTime) {
         this.startTime = startTime;
-        return this;
     }
 
     /**
@@ -152,9 +135,8 @@ public class Meeting extends Model {
     /**
      * @param duration The duration
      */
-    public Meeting setDuration(String duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
-        return this;
     }
 
     /**
@@ -165,27 +147,37 @@ public class Meeting extends Model {
     }
 
     /**
-     * @param createdAt The created_at
-     */
-    public Meeting setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    /**
      * @return The updatedAt
      */
     public String getUpdatedAt() {
         return updatedAt;
     }
 
-    /**
-     * @param updatedAt The updated_at
-     */
-    public Meeting setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
+    public Meeting withId(String id) {
+        this.id = id;
         return this;
     }
+
+    public Meeting withTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public Meeting withDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public Meeting withStartTime(Object startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+
+    public Meeting withDuration(String duration) {
+        this.duration = duration;
+        return this;
+    }
+
 
     @Override
     public String toString() {
