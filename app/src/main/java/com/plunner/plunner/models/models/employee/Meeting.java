@@ -4,6 +4,7 @@ import com.plunner.plunner.models.adapters.ListSubscriber;
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.ModelException;
+import com.plunner.plunner.models.models.ModelList;
 
 import java.util.List;
 
@@ -16,10 +17,12 @@ import rx.Subscription;
  */
 public class Meeting extends com.plunner.plunner.models.models.general.Meeting {
     public Meeting() {
+        timeslots = new ModelList<MeetingTimeslot>();
     }
 
     public Meeting(String id, String title, String description, Object startTime, String duration) {
         super(id, title, description, startTime, duration);
+        timeslots = new ModelList<MeetingTimeslot>();
     }
 
     @Override

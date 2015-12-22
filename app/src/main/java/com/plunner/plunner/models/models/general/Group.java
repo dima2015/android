@@ -4,12 +4,16 @@ package com.plunner.plunner.models.models.general;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.models.Model;
+import com.plunner.plunner.models.models.employee.Meeting;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.List;
+
 import javax.annotation.Generated;
+import javax.validation.Valid;
 
 @Generated("org.jsonschema2pojo")
 abstract public class Group extends Model {
@@ -38,6 +42,10 @@ abstract public class Group extends Model {
     @SerializedName("planner_name")
     @Expose
     protected String plannerName;
+    @SerializedName("meetings")
+    @Expose
+    @Valid
+    protected List<Meeting> meetings;
 
 
     /**

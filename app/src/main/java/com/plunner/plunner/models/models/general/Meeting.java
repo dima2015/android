@@ -39,7 +39,7 @@ abstract public class Meeting extends Model {
     @SerializedName("updated_at")
     @Expose
     protected String updatedAt;
-    protected ModelList<MeetingTimeslot> timeslots = new ModelList<MeetingTimeslot>();
+    protected ModelList<? extends MeetingTimeslot> timeslots;
 
     /**
      * No args constructor for use in serialization
@@ -110,7 +110,7 @@ abstract public class Meeting extends Model {
      * @return
      * @throws CloneNotSupportedException
      */
-    public ModelList<MeetingTimeslot> getTimeslots() throws CloneNotSupportedException {
+    public ModelList<? extends MeetingTimeslot> getTimeslots() throws CloneNotSupportedException {
         return timeslots.clone();
     }
 

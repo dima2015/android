@@ -1,7 +1,5 @@
 package com.plunner.plunner.models.models.employee;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.adapters.ListSubscriber;
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
@@ -9,8 +7,6 @@ import com.plunner.plunner.models.models.ModelException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.validation.Valid;
 
 import retrofit.http.GET;
 import rx.Observable;
@@ -20,16 +16,13 @@ import rx.Subscription;
  * Created by claudio on 22/12/15.
  */
 public class Group extends com.plunner.plunner.models.models.general.Group {
-    @SerializedName("meetings")
-    @Expose
-    @Valid
-    private List<Meeting> meetings = new ArrayList<Meeting>();
-
     public Group() {
+        meetings = new ArrayList<Meeting>();
     }
 
     public Group(String id, String name, String description) {
         super(id, name, description);
+        meetings = new ArrayList<Meeting>();
     }
 
     @Override

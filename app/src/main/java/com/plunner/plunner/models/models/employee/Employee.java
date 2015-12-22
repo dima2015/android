@@ -14,9 +14,9 @@ import rx.Subscription;
  * Created by claudio on 22/12/15.
  */
 public class Employee extends com.plunner.plunner.models.models.general.Employee {
-    private ModelList<Group> groups = new ModelList<com.plunner.plunner.models.models.employee.Group>();
-    private ModelList<Calendar> calendars = new ModelList<Calendar>();
-    private ModelList<com.plunner.plunner.models.models.employee.Meeting> meetings = new ModelList<com.plunner.plunner.models.models.employee.Meeting>();
+    private ModelList<Group> groups = new ModelList<>();
+    private ModelList<Calendar> calendars = new ModelList<>();
+    private ModelList<com.plunner.plunner.models.models.employee.Meeting> meetings = new ModelList<>();
 
     //TODO syncronized??
     //TODO clone

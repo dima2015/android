@@ -48,7 +48,7 @@ public class Calendar extends Model {
     @Expose
     @Valid
     private Caldav caldav;
-    private ModelList<Timeslot> timeslots = new ModelList<Timeslot>();
+    private ModelList<Timeslot> timeslots = new ModelList<>();
 
     /**
      * No args constructor for use in serialization
