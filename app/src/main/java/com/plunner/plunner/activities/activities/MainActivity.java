@@ -16,9 +16,9 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.login.LoginManager;
-import com.plunner.plunner.models.models.Employee;
-import com.plunner.plunner.models.models.Group;
 import com.plunner.plunner.models.models.ModelList;
+import com.plunner.plunner.models.models.employee.Employee;
+import com.plunner.plunner.models.models.employee.Group;
 
 import retrofit.HttpException;
 
@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 if (employee != null) {
                     employee.fresh();
                     employee.loadGroups(new GroupsCallback()); //TEST in the logger
+                    employee.loadCalendars(); //TEST in the logger
+                    employee.loadMeetings(); //TEST in the logger
                     Snackbar.make(view, "Already loaded name " + employee.getName(),
                             Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 } else {

@@ -1,9 +1,10 @@
 
-package com.plunner.plunner.models.models;
+package com.plunner.plunner.models.models.employee;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.models.Model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -14,7 +15,7 @@ import javax.annotation.Generated;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
-public class MeetingTimeslot extends Model {
+public class Timeslot extends Model {
 
     @SerializedName("id")
     @Expose
@@ -25,9 +26,9 @@ public class MeetingTimeslot extends Model {
     @SerializedName("time_end")
     @Expose
     private String timeEnd;
-    @SerializedName("meeting_id")
+    @SerializedName("calendar_id")
     @Expose
-    private String meetingId;
+    private String calendarId;
     @SerializedName("created_at")
     @Expose
     private String createdAt;
@@ -38,7 +39,7 @@ public class MeetingTimeslot extends Model {
     /**
      * No args constructor for use in serialization
      */
-    public MeetingTimeslot() {
+    public Timeslot() {
     }
 
     /**
@@ -46,7 +47,7 @@ public class MeetingTimeslot extends Model {
      * @param timeEnd
      * @param timeStart
      */
-    public MeetingTimeslot(String id, String timeStart, String timeEnd) {
+    public Timeslot(String id, String timeStart, String timeEnd) {
         this.id = id;
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
@@ -66,7 +67,7 @@ public class MeetingTimeslot extends Model {
         this.id = id;
     }
 
-    public MeetingTimeslot withId(String id) {
+    public Timeslot withId(String id) {
         this.id = id;
         return this;
     }
@@ -85,7 +86,7 @@ public class MeetingTimeslot extends Model {
         this.timeStart = timeStart;
     }
 
-    public MeetingTimeslot withTimeStart(String timeStart) {
+    public Timeslot withTimeStart(String timeStart) {
         this.timeStart = timeStart;
         return this;
     }
@@ -104,16 +105,16 @@ public class MeetingTimeslot extends Model {
         this.timeEnd = timeEnd;
     }
 
-    public MeetingTimeslot withTimeEnd(String timeEnd) {
+    public Timeslot withTimeEnd(String timeEnd) {
         this.timeEnd = timeEnd;
         return this;
     }
 
     /**
-     * @return The meetingId
+     * @return The calendarId
      */
-    public String getMeetingId() {
-        return meetingId;
+    public String getCalendarId() {
+        return calendarId;
     }
 
     /**
@@ -122,7 +123,6 @@ public class MeetingTimeslot extends Model {
     public String getCreatedAt() {
         return createdAt;
     }
-
 
     /**
      * @return The updatedAt
@@ -139,7 +139,7 @@ public class MeetingTimeslot extends Model {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(timeStart).append(timeEnd).append(meetingId).append(createdAt).append(updatedAt).toHashCode();
+        return new HashCodeBuilder().append(id).append(timeStart).append(timeEnd).append(calendarId).append(createdAt).append(updatedAt).toHashCode();
     }
 
     @Override
@@ -147,11 +147,11 @@ public class MeetingTimeslot extends Model {
         if (other == this) {
             return true;
         }
-        if ((other instanceof MeetingTimeslot) == false) {
+        if ((other instanceof Timeslot) == false) {
             return false;
         }
-        MeetingTimeslot rhs = ((MeetingTimeslot) other);
-        return new EqualsBuilder().append(id, rhs.id).append(timeStart, rhs.timeStart).append(timeEnd, rhs.timeEnd).append(meetingId, rhs.meetingId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
+        Timeslot rhs = ((Timeslot) other);
+        return new EqualsBuilder().append(id, rhs.id).append(timeStart, rhs.timeStart).append(timeEnd, rhs.timeEnd).append(calendarId, rhs.calendarId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
     }
 
     @Override

@@ -1,9 +1,10 @@
 
-package com.plunner.plunner.models.models;
+package com.plunner.plunner.models.models.general;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.models.Model;
+import com.plunner.plunner.models.models.ModelList;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -11,36 +12,34 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.annotation.Generated;
 
-import rx.Subscription;
-
 @Generated("org.jsonschema2pojo")
-public class Meeting extends Model {
+abstract public class Meeting extends Model {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    protected String id;
     @SerializedName("title")
     @Expose
-    private String title;
+    protected String title;
     @SerializedName("description")
     @Expose
-    private String description;
+    protected String description;
     @SerializedName("group_id")
     @Expose
-    private String groupId;
+    protected String groupId;
     @SerializedName("start_time")
     @Expose
-    private Object startTime;
+    protected Object startTime;
     @SerializedName("duration")
     @Expose
-    private String duration;
+    protected String duration;
     @SerializedName("created_at")
     @Expose
-    private String createdAt;
+    protected String createdAt;
     @SerializedName("updated_at")
     @Expose
-    private String updatedAt;
-    private ModelList<MeetingTimeslot> timeslots = new ModelList<MeetingTimeslot>();
+    protected String updatedAt;
+    protected ModelList<MeetingTimeslot> timeslots = new ModelList<MeetingTimeslot>();
 
     /**
      * No args constructor for use in serialization
@@ -105,6 +104,12 @@ public class Meeting extends Model {
         this.description = description;
     }
 
+    /**
+     * Get timeslots if they are <strong>already loaded</strong> via loadTimeslots
+     *
+     * @return
+     * @throws CloneNotSupportedException
+     */
     public ModelList<MeetingTimeslot> getTimeslots() throws CloneNotSupportedException {
         return timeslots.clone();
     }
@@ -210,18 +215,5 @@ public class Meeting extends Model {
                 append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
     }
 
-    @Override
-    public Subscription fresh(FreshSubscriber subscriber) {
-        return null; //TODO implement
-    }
-
-    @Override
-    public Subscription save(Subscriber subscriber) {
-        return null; //TODO implement
-    }
-
-    @Override
-    public Subscription get(Subscriber subscriber, String... parameters) {
-        return null; //TODO implement
-    }
+    //TODO abstract load timeslots
 }

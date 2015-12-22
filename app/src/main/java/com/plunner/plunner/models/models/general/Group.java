@@ -1,57 +1,44 @@
 
-package com.plunner.plunner.models.models;
+package com.plunner.plunner.models.models.general;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.plunner.plunner.models.adapters.ListSubscriber;
-import com.plunner.plunner.models.adapters.Retrofit;
-import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.models.Model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Generated;
-import javax.validation.Valid;
-
-import retrofit.http.GET;
-import rx.Observable;
-import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
-public class Group extends Model {
+abstract public class Group extends Model {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    protected String id;
     @SerializedName("created_at")
     @Expose
-    private String createdAt;
+    protected String createdAt;
     @SerializedName("updated_at")
     @Expose
-    private String updatedAt;
+    protected String updatedAt;
     @SerializedName("name")
     @Expose
-    private String name;
+    protected String name;
     @SerializedName("description")
     @Expose
-    private String description;
+    protected String description;
     @SerializedName("company_id")
     @Expose
-    private String companyId;
+    protected String companyId;
     @SerializedName("planner_id")
     @Expose
-    private String plannerId;
+    protected String plannerId;
     @SerializedName("planner_name")
     @Expose
-    private String plannerName;
-    @SerializedName("meetings")
-    @Expose
-    @Valid
-    private List<Meeting> meetings = new ArrayList<Meeting>();
+    protected String plannerName;
+
 
     /**
      * No args constructor for use in serialization
@@ -162,13 +149,6 @@ public class Group extends Model {
         return this;
     }
 
-    /**
-     * @return The meetings
-     */
-    public List<Meeting> getMeetings() {
-        return new ArrayList<Meeting>(meetings);  //new object
-    }
-
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
@@ -176,7 +156,9 @@ public class Group extends Model {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(createdAt).append(updatedAt).append(name).append(description).append(companyId).append(plannerId).append(plannerName).append(meetings).toHashCode();
+        return new HashCodeBuilder().append(id).append(createdAt).append(updatedAt).append(name).
+                append(description).append(companyId).append(plannerId).append(plannerName).
+                toHashCode();
     }
 
     @Override
@@ -188,30 +170,9 @@ public class Group extends Model {
             return false;
         }
         Group rhs = ((Group) other);
-        return new EqualsBuilder().append(id, rhs.id).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).append(name, rhs.name).append(description, rhs.description).append(companyId, rhs.companyId).append(plannerId, rhs.plannerId).append(plannerName, rhs.plannerName).append(meetings, rhs.meetings).isEquals();
+        return new EqualsBuilder().append(id, rhs.id).append(createdAt, rhs.createdAt).
+                append(updatedAt, rhs.updatedAt).append(name, rhs.name).
+                append(description, rhs.description).append(companyId, rhs.companyId).
+                append(plannerId, rhs.plannerId).append(plannerName, rhs.plannerName).isEquals();
     }
-
-    @Override
-    public Subscription fresh(FreshSubscriber subscriber) {
-        return null; //TODO implement
-    }
-
-    @Override
-    public Subscription save(Subscriber subscriber) {
-        return null; //TODO implement
-    }
-
-    @Override
-    public Subscription get(Subscriber subscriber, String... parameters) {
-        if (parameters.length != 0)
-            subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
-
-        return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).get(), new ListSubscriber<Group>(subscriber));
-    }
-
-    static private interface RestInterface {
-        @GET("/employees/groups/")
-        Observable<List<Group>> get();
-    }
-
 }

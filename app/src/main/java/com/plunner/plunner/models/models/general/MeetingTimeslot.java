@@ -1,9 +1,9 @@
 
-package com.plunner.plunner.models.models;
+package com.plunner.plunner.models.models.general;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.models.Model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -11,34 +11,32 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.annotation.Generated;
 
-import rx.Subscription;
-
 @Generated("org.jsonschema2pojo")
-public class Timeslot extends Model {
+abstract public class MeetingTimeslot extends Model {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    protected String id;
     @SerializedName("time_start")
     @Expose
-    private String timeStart;
+    protected String timeStart;
     @SerializedName("time_end")
     @Expose
-    private String timeEnd;
-    @SerializedName("calendar_id")
+    protected String timeEnd;
+    @SerializedName("meeting_id")
     @Expose
-    private String calendarId;
+    protected String meetingId;
     @SerializedName("created_at")
     @Expose
-    private String createdAt;
+    protected String createdAt;
     @SerializedName("updated_at")
     @Expose
-    private String updatedAt;
+    protected String updatedAt;
 
     /**
      * No args constructor for use in serialization
      */
-    public Timeslot() {
+    public MeetingTimeslot() {
     }
 
     /**
@@ -46,7 +44,7 @@ public class Timeslot extends Model {
      * @param timeEnd
      * @param timeStart
      */
-    public Timeslot(String id, String timeStart, String timeEnd) {
+    public MeetingTimeslot(String id, String timeStart, String timeEnd) {
         this.id = id;
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
@@ -66,7 +64,7 @@ public class Timeslot extends Model {
         this.id = id;
     }
 
-    public Timeslot withId(String id) {
+    public MeetingTimeslot withId(String id) {
         this.id = id;
         return this;
     }
@@ -85,7 +83,7 @@ public class Timeslot extends Model {
         this.timeStart = timeStart;
     }
 
-    public Timeslot withTimeStart(String timeStart) {
+    public MeetingTimeslot withTimeStart(String timeStart) {
         this.timeStart = timeStart;
         return this;
     }
@@ -104,16 +102,16 @@ public class Timeslot extends Model {
         this.timeEnd = timeEnd;
     }
 
-    public Timeslot withTimeEnd(String timeEnd) {
+    public MeetingTimeslot withTimeEnd(String timeEnd) {
         this.timeEnd = timeEnd;
         return this;
     }
 
     /**
-     * @return The calendarId
+     * @return The meetingId
      */
-    public String getCalendarId() {
-        return calendarId;
+    public String getMeetingId() {
+        return meetingId;
     }
 
     /**
@@ -122,6 +120,7 @@ public class Timeslot extends Model {
     public String getCreatedAt() {
         return createdAt;
     }
+
 
     /**
      * @return The updatedAt
@@ -138,7 +137,7 @@ public class Timeslot extends Model {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(timeStart).append(timeEnd).append(calendarId).append(createdAt).append(updatedAt).toHashCode();
+        return new HashCodeBuilder().append(id).append(timeStart).append(timeEnd).append(meetingId).append(createdAt).append(updatedAt).toHashCode();
     }
 
     @Override
@@ -146,25 +145,10 @@ public class Timeslot extends Model {
         if (other == this) {
             return true;
         }
-        if ((other instanceof Timeslot) == false) {
+        if ((other instanceof MeetingTimeslot) == false) {
             return false;
         }
-        Timeslot rhs = ((Timeslot) other);
-        return new EqualsBuilder().append(id, rhs.id).append(timeStart, rhs.timeStart).append(timeEnd, rhs.timeEnd).append(calendarId, rhs.calendarId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
-    }
-
-    @Override
-    public Subscription fresh(FreshSubscriber subscriber) {
-        return null;
-    }
-
-    @Override
-    public Subscription save(Subscriber subscriber) {
-        return null;
-    }
-
-    @Override
-    public Subscription get(Subscriber subscriber, String... parameters) {
-        return null;
+        MeetingTimeslot rhs = ((MeetingTimeslot) other);
+        return new EqualsBuilder().append(id, rhs.id).append(timeStart, rhs.timeStart).append(timeEnd, rhs.timeEnd).append(meetingId, rhs.meetingId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
     }
 }

@@ -1,9 +1,10 @@
 
-package com.plunner.plunner.models.models;
+package com.plunner.plunner.models.models.employee;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.models.Model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

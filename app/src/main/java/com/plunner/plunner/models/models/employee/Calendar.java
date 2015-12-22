@@ -1,17 +1,26 @@
 
-package com.plunner.plunner.models.models;
+package com.plunner.plunner.models.models.employee;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.plunner.plunner.models.adapters.ListSubscriber;
+import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.models.Model;
+import com.plunner.plunner.models.models.ModelException;
+import com.plunner.plunner.models.models.ModelList;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.List;
+
 import javax.annotation.Generated;
 import javax.validation.Valid;
 
+import retrofit.http.GET;
+import rx.Observable;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
@@ -206,6 +215,15 @@ public class Calendar extends Model {
 
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
-        return null;
+        if (parameters.length != 0)
+            subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
+
+        return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(),
+                new ListSubscriber<Calendar>(subscriber));
+    }
+
+    static private interface RestInterface {
+        @GET("/employees/calendars/")
+        Observable<List<Calendar>> index();
     }
 }

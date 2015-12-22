@@ -66,7 +66,7 @@ public class ModelList<T extends Model> extends Model implements Cloneable {
     }
 
     @Override
-    protected ModelList<T> clone() throws CloneNotSupportedException {
+    public ModelList<T> clone() throws CloneNotSupportedException {
         ModelList<T> ret = (ModelList<T>) super.clone();
         ret.models = new ArrayList<T>(models);
         return ret;
