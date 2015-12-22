@@ -44,6 +44,7 @@ public class Employee extends Model {
     @SerializedName("is_planner")
     @Expose
     private Boolean planner;
+    //TODO automatically get? like Group for employee
     private ModelList<Group> groups = new ModelList<Group>();
 
     //TODO serialization?
