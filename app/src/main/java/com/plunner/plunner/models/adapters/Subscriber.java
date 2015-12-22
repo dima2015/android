@@ -71,7 +71,7 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
     @Override
     public void onNext(T t) {
         Log.v("data", t.toString());
-        if(callable != null && callable instanceof SetModel)
+        if (callable != null && callable instanceof SetModel) //TODO check if the type is correct
             ((SetModel) callable).setModel(t);
         if(callable != null && callable instanceof CallOnNext)
             ((CallOnNext) callable).onNext(t);

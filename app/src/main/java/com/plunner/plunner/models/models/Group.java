@@ -3,6 +3,8 @@ package com.plunner.plunner.models.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.plunner.plunner.models.adapters.ListSubscriber;
+import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -15,6 +17,8 @@ import java.util.List;
 import javax.annotation.Generated;
 import javax.validation.Valid;
 
+import retrofit.http.GET;
+import rx.Observable;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
@@ -63,10 +67,9 @@ public class Group extends Model {
      * @param createdAt
      * @param name
      * @param companyId
-     * @param meetings
      * @param plannerId
      */
-    public Group(String id, String createdAt, String updatedAt, String name, String description, String companyId, String plannerId, String plannerName, List<Meeting> meetings) {
+    public Group(String id, String createdAt, String updatedAt, String name, String description, String companyId, String plannerId, String plannerName) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -75,7 +78,6 @@ public class Group extends Model {
         this.companyId = companyId;
         this.plannerId = plannerId;
         this.plannerName = plannerName;
-        this.meetings = meetings;
     }
 
     /**
@@ -229,7 +231,7 @@ public class Group extends Model {
     }
 
     @Override
-    public Subscription fresh(Subscriber subscriber) {
+    public Subscription fresh(FreshSubscriber subscriber) {
         return null;
     }
 
@@ -240,6 +242,16 @@ public class Group extends Model {
 
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
-        return null;
+        if (parameters.length != 0)
+            subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
+
+        return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).get(), new ListSubscriber<Group>(subscriber));
+
     }
+
+    static private interface RestInterface {
+        @GET("/employees/groups/")
+        Observable<List<Group>> get();
+    }
+
 }

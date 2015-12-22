@@ -210,7 +210,7 @@ public class Meeting extends Model {
     }
 
     @Override
-    public Subscription fresh(Subscriber subscriber) {
+    public Subscription fresh(FreshSubscriber subscriber) {
         return null;
     }
 

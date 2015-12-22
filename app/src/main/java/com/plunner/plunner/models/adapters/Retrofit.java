@@ -11,6 +11,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.GsonConverterFactory;
@@ -56,6 +57,10 @@ public class Retrofit {
      * @return
      */
     static public <T extends Model> rx.Subscription subscribe(Observable<T> call, rx.Subscriber<T> subscriber) {
+        return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
+    }
+
+    static public <T extends Model> rx.Subscription subscribeList(Observable<List<T>> call, rx.Subscriber<List<T>> subscriber) {
         return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
     }
 

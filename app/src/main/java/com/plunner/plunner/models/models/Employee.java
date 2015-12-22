@@ -5,12 +5,15 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.callbacks.interfaces.Callable;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Generated;
@@ -43,6 +46,7 @@ public class Employee extends Model {
     @SerializedName("additionalProperties")
     @Expose
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private ModelList<Group> groups = new ModelList<Group>();
 
     //TODO serialization?
 
@@ -194,7 +198,7 @@ public class Employee extends Model {
     //TODO clone
 
     @Override
-    public rx.Subscription fresh(Subscriber subscriber) {
+    public rx.Subscription fresh(FreshSubscriber subscriber) {
         return get(subscriber);
     }
 
@@ -222,8 +226,51 @@ public class Employee extends Model {
         return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).get(), subscriber);
     }
 
+    /**
+     * Get groups if they are <strong>already loaded</strong> via loadGroups
+     *
+     * @return list of groups
+     */
+    public List<Group> getGroups() {
+        return new ArrayList<Group>(groups.getModels());
+    }
+
+    public rx.Subscription loadGroups(LoadGroupsSubscriber subscriber) {
+        return new Group().get(subscriber);
+    }
+
+    public rx.Subscription loadGroups(Callable callable) {
+        return loadGroups(new LoadGroupsSubscriber(callable));
+    }
+
+    public rx.Subscription loadGroups() {
+        return loadGroups(new LoadGroupsSubscriber());
+    }
+
     static private interface RestInterface {
         @GET("/employees/employee/")
         Observable<Employee> get();
+    }
+
+    //TODO is it correct T exteends Model, do we need a mroe restrictive?
+
+    /**
+     * LoadGroupsSubscriber that insert the groups list in employee model
+     *
+     * @param <T>
+     */
+    public class LoadGroupsSubscriber extends Subscriber<ModelList<Group>> {
+        public LoadGroupsSubscriber(Callable callable) {
+            super(callable);
+        }
+
+        public LoadGroupsSubscriber() {
+        }
+
+        @Override
+        public void onNext(ModelList<Group> model) {
+            Employee.this.groups = model;
+            super.onNext(model);
+        }
     }
 }
