@@ -203,7 +203,7 @@ public class Meeting extends Model {
 
     @Override
     public Subscription fresh(FreshSubscriber subscriber) {
-        return null;
+        return null; //TODO implement
     }
 
     @Override
