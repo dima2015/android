@@ -68,14 +68,14 @@ public class Retrofit {
             if (loginManager.getToken() != null) {
                 token = loginManager.getToken();
                 //for security reason show only the start of the token
-                Log.v("Token set in connection", token.substring(0, 20));
+                Log.v("Token set in connection", token.substring(token.length() - 20));
                 newRequest = newRequest.newBuilder().addHeader("Authorization", token).build();
             }
             Response response = chain.proceed(newRequest);
             token = response.header("Authorization");
             if (token != null) {
                 //for security reason show only the start of the token
-                Log.v("Fresh token stored", token.substring(0, 20));
+                Log.v("Fresh token stored", token.substring(token.length() - 20));
                 loginManager.setToken(token);
             }
             return response;

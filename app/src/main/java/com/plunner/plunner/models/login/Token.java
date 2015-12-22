@@ -66,7 +66,7 @@ class Token extends Model {
     public String toString() {
         //for security reason show only the start of the token
         return new ToStringBuilder(this).append("additionalProperties", additionalProperties).
-                append("token", token.substring(0, 20)).toString();
+                append("token", token.substring(token.length() - 20)).toString();
     }
 
     public Map<String, Object> getAdditionalProperties() {

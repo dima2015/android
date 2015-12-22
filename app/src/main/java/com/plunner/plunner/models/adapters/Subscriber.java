@@ -5,6 +5,7 @@ import android.util.Log;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.Callable;
 import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.models.Model;
@@ -39,17 +40,31 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
 
     @Override
     public void onError(Throwable e) {
-        if(callable != null && callable instanceof CallOnError)
+        boolean onError = false;
+        //generic error
+        if (callable != null && callable instanceof CallOnError) {
             ((CallOnError) callable).onError(e);
-        // cast to retrofit.HttpException to get the response code
+            onError = true;
+        }
+        // HTTP error
         if (e instanceof HttpException) {
             HttpException response = (HttpException) e;
             if(callable != null && callable instanceof CallOnHttpError)
                 ((CallOnHttpError) callable).onHttpError(response);
             int code = response.code();
             Log.w("Net error", Integer.toString(code));
-        } else {
+            //TODO automatically fresh token if 401???
+        }
+        //NO HTTP error
+        else {
             Log.e("Net error", "Unknown error", e);
+            if (callable != null && callable instanceof CallOnNoHttpError) {
+                ((CallOnNoHttpError) callable).onNoHttpError(e);
+                onError = true;
+            }
+            //if the no HTTP error is not tracked I print the stack trace
+            if (!onError)
+                e.printStackTrace();
         }
     }
 
