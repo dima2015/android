@@ -3,6 +3,7 @@ package com.plunner.plunner.models.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.plunner.plunner.models.adapters.Subscriber;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -10,8 +11,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.annotation.Generated;
 
+import rx.Subscription;
+
 @Generated("org.jsonschema2pojo")
-public class MeetingTimeslot {
+public class MeetingTimeslot extends Model {
 
     @SerializedName("id")
     @Expose
@@ -151,4 +154,18 @@ public class MeetingTimeslot {
         return new EqualsBuilder().append(id, rhs.id).append(timeStart, rhs.timeStart).append(timeEnd, rhs.timeEnd).append(meetingId, rhs.meetingId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
     }
 
+    @Override
+    public Subscription fresh(FreshSubscriber subscriber) {
+        return null;
+    }
+
+    @Override
+    public Subscription save(Subscriber subscriber) {
+        return null;
+    }
+
+    @Override
+    public Subscription get(Subscriber subscriber, String... parameters) {
+        return null;
+    }
 }

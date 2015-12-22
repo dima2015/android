@@ -9,9 +9,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Generated;
 import javax.validation.Valid;
 
@@ -42,10 +39,7 @@ public class Calendar extends Model {
     @Expose
     @Valid
     private Caldav caldav;
-    @SerializedName("timeslots")
-    @Expose
-    @Valid
-    private List<Timeslot> timeslots = new ArrayList<Timeslot>();
+    private ModelList<Timeslot> timeslots = new ModelList<Timeslot>();
 
     /**
      * No args constructor for use in serialization
@@ -170,8 +164,8 @@ public class Calendar extends Model {
     /**
      * @return The timeslots
      */
-    public List<Timeslot> getTimeslots() {
-        return new ArrayList<Timeslot>(timeslots);
+    public ModelList<Timeslot> getTimeslots() throws CloneNotSupportedException {
+        return timeslots.clone();
     }
 
     @Override
@@ -181,7 +175,8 @@ public class Calendar extends Model {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(name).append(employeeId).append(enabled).append(createdAt).append(updatedAt).append(caldav).append(timeslots).toHashCode();
+        return new HashCodeBuilder().append(id).append(name).append(employeeId).append(enabled).
+                append(createdAt).append(updatedAt).append(caldav).toHashCode();
     }
 
     @Override
@@ -193,7 +188,10 @@ public class Calendar extends Model {
             return false;
         }
         Calendar rhs = ((Calendar) other);
-        return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).append(employeeId, rhs.employeeId).append(enabled, rhs.enabled).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).append(caldav, rhs.caldav).append(timeslots, rhs.timeslots).isEquals();
+        return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).
+                append(employeeId, rhs.employeeId).append(enabled, rhs.enabled).
+                append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).
+                append(caldav, rhs.caldav).isEquals();
     }
 
     @Override

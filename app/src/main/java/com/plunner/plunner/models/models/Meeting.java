@@ -40,6 +40,7 @@ public class Meeting extends Model {
     @SerializedName("updated_at")
     @Expose
     private String updatedAt;
+    private ModelList<MeetingTimeslot> timeslots = new ModelList<MeetingTimeslot>();
 
     /**
      * No args constructor for use in serialization
@@ -102,6 +103,10 @@ public class Meeting extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public ModelList<MeetingTimeslot> getTimeslots() throws CloneNotSupportedException {
+        return timeslots.clone();
     }
 
     /**
@@ -186,7 +191,8 @@ public class Meeting extends Model {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(title).append(description).append(groupId).append(startTime).append(duration).append(createdAt).append(updatedAt).toHashCode();
+        return new HashCodeBuilder().append(id).append(title).append(description).append(groupId).
+                append(startTime).append(duration).append(createdAt).append(updatedAt).toHashCode();
     }
 
     @Override
@@ -198,7 +204,10 @@ public class Meeting extends Model {
             return false;
         }
         Meeting rhs = ((Meeting) other);
-        return new EqualsBuilder().append(id, rhs.id).append(title, rhs.title).append(description, rhs.description).append(groupId, rhs.groupId).append(startTime, rhs.startTime).append(duration, rhs.duration).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
+        return new EqualsBuilder().append(id, rhs.id).append(title, rhs.title).
+                append(description, rhs.description).append(groupId, rhs.groupId).
+                append(startTime, rhs.startTime).append(duration, rhs.duration).
+                append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
     }
 
     @Override

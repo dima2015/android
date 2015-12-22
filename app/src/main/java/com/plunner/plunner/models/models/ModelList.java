@@ -14,7 +14,7 @@ import rx.Subscription;
 /**
  * Created by claudio on 22/12/15.
  */
-public class ModelList<T extends Model> extends Model {
+public class ModelList<T extends Model> extends Model implements Cloneable {
     private List<T> models = new ArrayList<T>();
 
     public ModelList(List<T> models) {
@@ -63,5 +63,12 @@ public class ModelList<T extends Model> extends Model {
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
         return null; //TODO implement
+    }
+
+    @Override
+    protected ModelList<T> clone() throws CloneNotSupportedException {
+        ModelList<T> ret = (ModelList<T>) super.clone();
+        ret.models = new ArrayList<T>(models);
+        return ret;
     }
 }

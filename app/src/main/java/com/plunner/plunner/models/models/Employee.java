@@ -11,9 +11,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Generated;
 
 import retrofit.http.GET;
@@ -168,7 +165,8 @@ public class Employee extends Model {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(name).append(email).append(companyId).append(createdAt).append(updatedAt).toHashCode();
+        return new HashCodeBuilder().append(id).append(name).append(email).append(companyId).
+                append(createdAt).append(updatedAt).toHashCode();
     }
 
     @Override
@@ -180,7 +178,9 @@ public class Employee extends Model {
             return false;
         }
         Employee rhs = ((Employee) other);
-        return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).append(email, rhs.email).append(companyId, rhs.companyId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
+        return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).
+                append(email, rhs.email).append(companyId, rhs.companyId).
+                append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
     }
 
     //TODO syncronized??
@@ -220,8 +220,8 @@ public class Employee extends Model {
      *
      * @return list of groups
      */
-    public List<Group> getGroups() {
-        return new ArrayList<Group>(groups.getModels());
+    public ModelList<Group> getGroups() throws CloneNotSupportedException {
+        return groups.clone();
     }
 
     public rx.Subscription loadGroups(LoadGroupsSubscriber subscriber) {
