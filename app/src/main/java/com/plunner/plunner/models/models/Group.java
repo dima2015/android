@@ -232,12 +232,12 @@ public class Group extends Model {
 
     @Override
     public Subscription fresh(FreshSubscriber subscriber) {
-        return null;
+        return null; //TODO implement
     }
 
     @Override
     public Subscription save(Subscriber subscriber) {
-        return null;
+        return null; //TODO implement
     }
 
     @Override
@@ -246,7 +246,6 @@ public class Group extends Model {
             subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
 
         return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).get(), new ListSubscriber<Group>(subscriber));
-
     }
 
     static private interface RestInterface {

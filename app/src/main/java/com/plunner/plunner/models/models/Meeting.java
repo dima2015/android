@@ -216,11 +216,11 @@ public class Meeting extends Model {
 
     @Override
     public Subscription save(Subscriber subscriber) {
-        return null;
+        return null; //TODO implement
     }
 
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
-        return null;
+        return null; //TODO implement
     }
 }
