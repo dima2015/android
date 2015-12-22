@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Stetho.initializeWithDefaults(this);
+        Stetho.initializeWithDefaults(this); //TODO remove
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
