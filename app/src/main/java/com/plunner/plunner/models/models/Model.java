@@ -52,6 +52,7 @@ abstract public class Model {
     abstract public rx.Subscription save(Subscriber subscriber);
 
     /**
+     * <strong>CAUTION:</strong> this give a new object
      * @param subscriber
      * @param parameters the parameters to perform the get unequivocally
      * @return
@@ -59,6 +60,7 @@ abstract public class Model {
     abstract public rx.Subscription get(Subscriber subscriber, String... parameters);
 
     /**
+     * <strong>CAUTION:</strong> this give a new object
      * @param parameters the parameters to perform the get unequivocally
      * @return
      */
@@ -67,8 +69,9 @@ abstract public class Model {
     }
 
     /**
+     * <strong>CAUTION:</strong> this give a new object
      * @param callable   the callable instance to call callback
-     * @param parameters the parameters to perform the get univocally
+     * @param parameters the parameters to perform the get unequivocally
      * @return
      */
     public rx.Subscription get(Callable callable, String... parameters) {

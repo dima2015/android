@@ -45,6 +45,15 @@ class Token extends Model {
         this.token = token;
     }
 
+    /**
+     * <strong>CAUTION:</strong> this give a new object
+     *
+     * @param company
+     * @param email
+     * @param password
+     * @param subscriber
+     * @return
+     */
     public Subscription get(String company, String email, String password, Subscriber subscriber) {
         return get(subscriber, company, email, password);
     }
@@ -117,6 +126,12 @@ class Token extends Model {
         return null; //TODO implement
     }
 
+    /**
+     * <strong>CAUTION:</strong> this give a new object
+     * @param subscriber
+     * @param parameters the parameters to perform the get unequivocally
+     * @return
+     */
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
         if (parameters.length != 3)

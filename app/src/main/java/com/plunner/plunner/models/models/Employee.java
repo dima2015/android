@@ -206,6 +206,14 @@ public class Employee extends Model {
 
     //TODO check if the the old execution is still in waiting status
     //TODO delete, create and so on
+
+    /**
+     * <strong>CAUTION:</strong> this give a new object
+     *
+     * @param subscriber
+     * @param parameters the parameters to perform the get unequivocally
+     * @return
+     */
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
         if (parameters.length != 0)

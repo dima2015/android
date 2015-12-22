@@ -88,11 +88,7 @@ public class Group extends Model {
     /**
      * @param id The id
      */
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Group withId(String id) {
+    public Group setId(String id) {
         this.id = id;
         return this;
     }
@@ -107,11 +103,7 @@ public class Group extends Model {
     /**
      * @param createdAt The created_at
      */
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Group withCreatedAt(String createdAt) {
+    public Group setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -126,11 +118,7 @@ public class Group extends Model {
     /**
      * @param updatedAt The updated_at
      */
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Group withUpdatedAt(String updatedAt) {
+    public Group setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
@@ -145,11 +133,7 @@ public class Group extends Model {
     /**
      * @param name The name
      */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Group withName(String name) {
+    public Group setName(String name) {
         this.name = name;
         return this;
     }
@@ -164,11 +148,7 @@ public class Group extends Model {
     /**
      * @param description The description
      */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Group withDescription(String description) {
+    public Group setDescription(String description) {
         this.description = description;
         return this;
     }
@@ -183,14 +163,11 @@ public class Group extends Model {
     /**
      * @param companyId The company_id
      */
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
-    }
-
-    public Group withCompanyId(String companyId) {
+    public Group setCompanyId(String companyId) {
         this.companyId = companyId;
         return this;
     }
+
 
     /**
      * @return The plannerId
@@ -202,11 +179,7 @@ public class Group extends Model {
     /**
      * @param plannerId The planner_id
      */
-    public void setPlannerId(String plannerId) {
-        this.plannerId = plannerId;
-    }
-
-    public Group withPlannerId(String plannerId) {
+    public Group setPlannerId(String plannerId) {
         this.plannerId = plannerId;
         return this;
     }
@@ -221,11 +194,7 @@ public class Group extends Model {
     /**
      * @param plannerName The planner_name
      */
-    public void setPlannerName(String plannerName) {
-        this.plannerName = plannerName;
-    }
-
-    public Group withPlannerName(String plannerName) {
+    public Group setPlannerName(String plannerName) {
         this.plannerName = plannerName;
         return this;
     }
@@ -234,19 +203,7 @@ public class Group extends Model {
      * @return The meetings
      */
     public List<Meeting> getMeetings() {
-        return meetings;
-    }
-
-    /**
-     * @param meetings The meetings
-     */
-    public void setMeetings(List<Meeting> meetings) {
-        this.meetings = meetings;
-    }
-
-    public Group withMeetings(List<Meeting> meetings) {
-        this.meetings = meetings;
-        return this;
+        return new ArrayList<Meeting>(meetings);  //new object
     }
 
     @Override
