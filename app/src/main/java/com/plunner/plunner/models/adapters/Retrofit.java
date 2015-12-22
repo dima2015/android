@@ -1,5 +1,7 @@
 package com.plunner.plunner.models.adapters;
 
+import android.util.Log;
+
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.Model;
@@ -35,7 +37,7 @@ public class Retrofit {
         OkHttpClient client = new OkHttpClient();
         client.setReadTimeout(TIMEOUT, TimeUnit.SECONDS);
         client.setConnectTimeout(TIMEOUT, TimeUnit.SECONDS);
-        client.interceptors().add(new InterceptorClass()); //TODO don't insert if we are makign login
+        client.interceptors().add(new InterceptorClass());
         client.networkInterceptors().add(new StethoInterceptor());//TODO remove
 
         return new retrofit.Retrofit.Builder()
@@ -60,12 +62,23 @@ public class Retrofit {
     static private class InterceptorClass implements Interceptor {
         @Override
         public Response intercept(Chain chain) throws IOException {
-            //TODO token refresh
+            String token;
             LoginManager loginManager = LoginManager.getInstance();
             Request newRequest = chain.request();
-            if (loginManager.getToken() != null)
-                newRequest = newRequest.newBuilder().addHeader("Authorization", "Bearer " + loginManager.getToken()).build();
-            return chain.proceed(newRequest);
+            if (loginManager.getToken() != null) {
+                token = loginManager.getToken();
+                //for security reason show only the start of the token
+                Log.v("Token set in connection", token.substring(0, 20));
+                newRequest = newRequest.newBuilder().addHeader("Authorization", token).build();
+            }
+            Response response = chain.proceed(newRequest);
+            token = response.header("Authorization");
+            if (token != null) {
+                //for security reason show only the start of the token
+                Log.v("Fresh token stored", token.substring(0, 20));
+                loginManager.setToken(token);
+            }
+            return response;
         }
     }
 }

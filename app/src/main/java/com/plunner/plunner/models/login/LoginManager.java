@@ -11,6 +11,7 @@ import retrofit.HttpException;
 public class LoginManager implements CallOnHttpError {
     private static LoginManager ourInstance = new LoginManager();
     private String token;
+    private boolean tokenCanBeSet = true;
 
     private LoginManager() {
     }
@@ -21,11 +22,13 @@ public class LoginManager implements CallOnHttpError {
 
     public static rx.Subscription loginByData(String company, String email, String password) {
         final LoginManager loginManager = getInstance();
+        loginManager.tokenCanBeSet = false;
         return (new Token()).get(company, email, password, new Subscriber<Token>() {
             @Override
             public void onNext(Token token) {
                 super.onNext(token);
-                loginManager.token = token.getToken();
+                loginManager.tokenCanBeSet = true;
+                loginManager.token = "Bearer " + token.getToken();
             }
         });
     }
@@ -34,8 +37,11 @@ public class LoginManager implements CallOnHttpError {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public LoginManager setToken(String token) {
+        if (tokenCanBeSet) {
+            this.token = token;
+        }
+        return this;
     }
 
     @Override

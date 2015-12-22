@@ -189,10 +189,6 @@ public class Employee extends Model {
     }
 
     //TODO check if the the old execution is still in waiting status
-    //TODO timeout
-    //TODO create an adapter for rest with creation and subscribe
-    //TODO insert extends where it is possible
-    //TODO interface toi set model into activuty or null on error (with errors?)
     //TODO delete, create and so on
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {

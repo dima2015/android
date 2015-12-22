@@ -64,7 +64,9 @@ class Token extends Model {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        //for security reason show only the start of the token
+        return new ToStringBuilder(this).append("additionalProperties", additionalProperties).
+                append("token", token.substring(0, 20)).toString();
     }
 
     public Map<String, Object> getAdditionalProperties() {
@@ -94,7 +96,8 @@ class Token extends Model {
             return false;
         }
         Token rhs = ((Token) other);
-        return new EqualsBuilder().append(token, rhs.token).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(token, rhs.token).append(additionalProperties, rhs.
+                additionalProperties).isEquals();
     }
 
 
