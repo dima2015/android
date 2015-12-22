@@ -252,8 +252,6 @@ public class Employee extends Model {
         Observable<Employee> get();
     }
 
-    //TODO is it correct T exteends Model, do we need a mroe restrictive?
-
     /**
      * LoadGroupsSubscriber that insert the groups list in employee model
      *

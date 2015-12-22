@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
 
                 if (employee != null) {
                     employee.fresh();
+                    employee.loadGroups(); //TEST
                     Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 } else {
