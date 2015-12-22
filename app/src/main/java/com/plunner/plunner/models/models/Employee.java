@@ -239,7 +239,7 @@ public class Employee extends Model {
         return new Group().get(subscriber);
     }
 
-    public rx.Subscription loadGroups(Callable callable) {
+    public rx.Subscription loadGroups(Callable<ModelList<Group>> callable) {
         return loadGroups(new LoadGroupsSubscriber(callable));
     }
 

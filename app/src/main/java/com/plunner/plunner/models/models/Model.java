@@ -25,8 +25,8 @@ abstract public class Model {
      * @param callable the callable instance to call callback
      * @return
      */
-    public rx.Subscription fresh(Callable callable) {
-        return fresh(new FreshSubscriber(callable));
+    public <T extends Model> rx.Subscription fresh(Callable<T> callable) {
+        return fresh(new FreshSubscriber<T>(callable));
     }
 
     /**
@@ -45,8 +45,8 @@ abstract public class Model {
      * @param callable the callable instance to call callback
      * @return
      */
-    public rx.Subscription save(Callable callable) {
-        return save(new Subscriber(callable));
+    public <T extends Model> rx.Subscription save(Callable<T> callable) {
+        return save(new Subscriber<T>(callable));
     }
 
     abstract public rx.Subscription save(Subscriber subscriber);
@@ -74,8 +74,8 @@ abstract public class Model {
      * @param parameters the parameters to perform the get unequivocally
      * @return
      */
-    public rx.Subscription get(Callable callable, String... parameters) {
-        return get(new Subscriber(callable), parameters);
+    public <T extends Model> rx.Subscription get(Callable<T> callable, String... parameters) {
+        return get(new Subscriber<T>(callable), parameters);
     }
 
     /**
@@ -87,7 +87,7 @@ abstract public class Model {
      */
     protected Model copy(Model model) throws ModelException {
         if (this.getClass().getName() != model.getClass().getName())
-            throw new ModelException("this and class given are different");
+            throw new ModelException("this and the class given are different");
 
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
@@ -107,7 +107,7 @@ abstract public class Model {
      * @param <T>
      */
     public class FreshSubscriber<T extends Model> extends Subscriber<T> {
-        public FreshSubscriber(Callable callable) {
+        public FreshSubscriber(Callable<T> callable) {
             super(callable);
         }
 

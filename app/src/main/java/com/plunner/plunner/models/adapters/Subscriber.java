@@ -23,7 +23,7 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
      * given
      * @param callable
      */
-    public Subscriber(Callable callable)
+    public Subscriber(Callable<T> callable)
     {
         super();
         this.callable = callable;
@@ -71,7 +71,7 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
     @Override
     public void onNext(T t) {
         Log.v("data", t.toString());
-        if (callable != null && callable instanceof SetModel) //TODO check if the type is correct
+        if (callable != null && callable instanceof SetModel)
             ((SetModel) callable).setModel(t);
         if(callable != null && callable instanceof CallOnNext)
             ((CallOnNext) callable).onNext(t);

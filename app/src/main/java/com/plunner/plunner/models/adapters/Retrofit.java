@@ -56,11 +56,11 @@ public class Retrofit {
      * @param <T>
      * @return
      */
-    static public <T extends Model> rx.Subscription subscribe(Observable<T> call, rx.Subscriber<T> subscriber) {
+    static public <T extends Model> rx.Subscription subscribe(Observable<T> call, Subscriber<T> subscriber) {
         return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
     }
 
-    static public <T extends Model> rx.Subscription subscribeList(Observable<List<T>> call, rx.Subscriber<List<T>> subscriber) {
+    static public <T extends Model> rx.Subscription subscribeList(Observable<List<T>> call, ListSubscriber<T> subscriber) {
         return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
     }
 

@@ -17,10 +17,12 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.Employee;
+import com.plunner.plunner.models.models.Group;
+import com.plunner.plunner.models.models.ModelList;
 
 import retrofit.HttpException;
 
-public class MainActivity extends AppCompatActivity implements SetModel<Employee>, CallOnHttpError, CallOnNext<Employee> {
+public class MainActivity extends AppCompatActivity {
 
     Employee employee = null;
 
@@ -40,11 +42,11 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
 
                 if (employee != null) {
                     employee.fresh();
-                    employee.loadGroups(); //TEST
-                    Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    employee.loadGroups(new GroupsCallback()); //TEST in the logger
+                    Snackbar.make(view, "Already loaded name " + employee.getName(),
+                            Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 } else {
-                    (new Employee()).get(new Subscriber<Employee>(MainActivity.this) {
+                    (new Employee()).get(new Subscriber<Employee>(new EmployeeCallback()) {
                         @Override
                         public void onNext(Employee employee) {
                             super.onNext(employee);
@@ -79,21 +81,43 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void setModel(Employee employee) {
-        this.employee = employee;
-    }
-
-    @Override
-    public void onHttpError(HttpException e) {
+    private void onHttpError(HttpException e) {
         int code = e.code(); //HTTP code
         //TODO error, eventually ask the login
         //TODO automatically try to get token by long token
     }
 
-    @Override
-    public void onNext(Employee employee) {
-        ;
-        //TODO implement or remove
+
+    private class EmployeeCallback implements SetModel<Employee>,
+            CallOnHttpError<Employee>, CallOnNext<Employee> {
+
+        @Override
+        public void setModel(Employee employee) {
+            MainActivity.this.employee = employee;
+        }
+
+        @Override
+        public void onHttpError(HttpException e) {
+            MainActivity.this.onHttpError(e);
+        }
+
+        @Override
+        public void onNext(Employee employee) {
+            ;
+            //TODO implement or remove
+        }
+    }
+
+    private class GroupsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>> {
+        @Override
+        public void onHttpError(HttpException e) {
+            MainActivity.this.onHttpError(e);
+        }
+
+        @Override
+        public void onNext(ModelList<Group> groups) {
+            ;
+            //TODO implement or remove
+        }
     }
 }
