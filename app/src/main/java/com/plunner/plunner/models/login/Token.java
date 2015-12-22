@@ -21,7 +21,7 @@ import rx.Observable;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
-class Login extends Model {
+class Token extends Model {
 
     private String token;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
@@ -29,13 +29,13 @@ class Login extends Model {
     /**
      * No args constructor for use in serialization
      */
-    public Login() {
+    public Token() {
     }
 
     /**
      * @param token
      */
-    public Login(String token) {
+    public Token(String token) {
         this.token = token;
     }
 
@@ -57,7 +57,7 @@ class Login extends Model {
         this.token = token;
     }
 
-    public Login withToken(String token) {
+    public Token withToken(String token) {
         this.token = token;
         return this;
     }
@@ -75,7 +75,7 @@ class Login extends Model {
         this.additionalProperties.put(name, value);
     }
 
-    public Login withAdditionalProperty(String name, Object value) {
+    public Token withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
@@ -90,17 +90,17 @@ class Login extends Model {
         if (other == this) {
             return true;
         }
-        if ((other instanceof Login) == false) {
+        if ((other instanceof Token) == false) {
             return false;
         }
-        Login rhs = ((Login) other);
+        Token rhs = ((Token) other);
         return new EqualsBuilder().append(token, rhs.token).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 
     @Override
     public Subscription fresh(Subscriber subscriber) {
-        return null; //TODO implement
+        return null; //TODO implement, we need route for refresh
     }
 
     @Override
@@ -119,7 +119,7 @@ class Login extends Model {
     private static interface RestInterface {
         @FormUrlEncoded
         @POST("/employees/auth/login")
-        Observable<Login> login(@Field("company") String company, @Field("email") String email,
+        Observable<Token> login(@Field("company") String company, @Field("email") String email,
                                 @Field("password") String password);
     }
 }

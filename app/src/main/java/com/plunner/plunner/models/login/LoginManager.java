@@ -21,11 +21,11 @@ public class LoginManager implements CallOnHttpError {
 
     public static rx.Subscription loginByData(String company, String email, String password) {
         final LoginManager loginManager = getInstance();
-        return (new Login()).get(company, email, password, new Subscriber<Login>() {
+        return (new Token()).get(company, email, password, new Subscriber<Token>() {
             @Override
-            public void onNext(Login login) {
-                super.onNext(login);
-                loginManager.token = login.getToken();
+            public void onNext(Token token) {
+                super.onNext(token);
+                loginManager.token = token.getToken();
             }
         });
     }
