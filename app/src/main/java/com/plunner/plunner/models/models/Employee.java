@@ -3,7 +3,6 @@ package com.plunner.plunner.models.models;
 
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
-import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -52,29 +51,6 @@ public class Employee extends Model {
         this.company_id = company_id;
         this.created_at = created_at;
         this.updated_at = updated_at;
-    }
-
-    //TODO chose a different name
-    static public rx.Subscription getEmployee(Subscriber subscriber) {
-        RestInterface rest = Retrofit.createRetrofit(RestInterface.class);
-
-        Observable<Employee> call = rest.get();
-
-        //TODO check if the the old execution is still in waiting status
-        //TODO timeout
-        //TODO create an adapter for rest with creation and subscribe
-        //TODO insert extends where it is possible
-        //TODO interface toi set model into activuty or null on error (with errors?)
-        //TODO delete, create and so on
-        return Retrofit.subscribe(call, subscriber);
-    }
-
-    static public rx.Subscription getEmployee() {
-        return getEmployee(new <Employee>Subscriber());
-    }
-
-    static public rx.Subscription getEmployee(SetModel setModel) {
-        return getEmployee(new <Employee>Subscriber(setModel));
     }
 
     /**
@@ -203,7 +179,7 @@ public class Employee extends Model {
 
     @Override
     public rx.Subscription fresh(Subscriber subscriber) {
-        return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).get(), subscriber);
+        return get(subscriber);
     }
 
     @Override
@@ -212,23 +188,20 @@ public class Employee extends Model {
         return null;
     }
 
+    //TODO check if the the old execution is still in waiting status
+    //TODO timeout
+    //TODO create an adapter for rest with creation and subscribe
+    //TODO insert extends where it is possible
+    //TODO interface toi set model into activuty or null on error (with errors?)
+    //TODO delete, create and so on
     @Override
-    public Subscription get(String... parameters) {
-        return null;
+    public Subscription get(Subscriber subscriber, String... parameters) {
+        if (parameters.length != 0)
+            subscriber.onError(new ModelException("Get parameters are not correctly"));
+
+        return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).get(), subscriber);
     }
 
-    private Employee copy(Employee employee2) {
-        id = employee2.id;
-        name = employee2.name;
-        email = employee2.email;
-        company_id = employee2.company_id;
-        created_at = employee2.created_at;
-        updated_at = employee2.updated_at;
-        additionalProperties = employee2.additionalProperties;
-        return this;
-    }
-
-    //TODO is it possible extends a generic interface with standard rest calls?
     static private interface RestInterface {
         @GET("/employees/employee/")
         Observable<Employee> get();

@@ -122,6 +122,11 @@ class Login extends Model {
         return null;
     }
 
+    @Override
+    public Subscription get(Subscriber subscriber, String... parameters) {
+        return null;
+    }
+
     private static interface RestInterface {
         @FormUrlEncoded
         @POST("/employees/auth/login")

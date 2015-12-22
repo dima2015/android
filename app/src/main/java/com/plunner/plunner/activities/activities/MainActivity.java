@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
                     Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 } else {
-                    Employee.getEmployee(new Subscriber<Employee>(MainActivity.this) {
+                    (new Employee()).get(new Subscriber<Employee>(MainActivity.this) {
                         @Override
                         public void onNext(Employee employee) {
                             super.onNext(employee);
@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
 
     @Override
     public void onHttpError(HttpException e) {
-        ;
         int code = e.code(); //HTTP code
         //TODO error, eventually ask the login
         //TODO automatically try to get token by long token
