@@ -1,6 +1,8 @@
 
 package com.plunner.plunner.models.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
 
@@ -20,12 +22,26 @@ import rx.Subscription;
 @Generated("org.jsonschema2pojo")
 public class Employee extends Model {
 
+    @SerializedName("id")
+    @Expose
     private String id;
+    @SerializedName("name")
+    @Expose
     private String name;
+    @SerializedName("email")
+    @Expose
     private String email;
+    @SerializedName("company_id")
+    @Expose
     private String company_id;
+    @SerializedName("created_at")
+    @Expose
     private String created_at;
+    @SerializedName("updated_at")
+    @Expose
     private String updated_at;
+    @SerializedName("additionalProperties")
+    @Expose
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     //TODO serialization?

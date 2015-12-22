@@ -1,5 +1,7 @@
 package com.plunner.plunner.models.login;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Model;
@@ -23,7 +25,11 @@ import rx.Subscription;
 @Generated("org.jsonschema2pojo")
 class Token extends Model {
 
+    @SerializedName("token")
+    @Expose
     private String token;
+    @SerializedName("additionalProperties")
+    @Expose
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
