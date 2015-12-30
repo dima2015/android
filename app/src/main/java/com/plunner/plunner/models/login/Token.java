@@ -116,13 +116,13 @@ class Token extends Model {
         if (parameters.length != 3)
             subscriber.onError(new ModelException("Get parameters number is not correct (!= 3)"));
         return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).
-                login(parameters[0], parameters[1], parameters[2]), subscriber);
+                login(parameters[0], parameters[1], parameters[2], "1"), subscriber);
     }
 
     private static interface RestInterface {
         @FormUrlEncoded
         @POST("/employees/auth/login")
         Observable<Token> login(@Field("company") String company, @Field("email") String email,
-                                @Field("password") String password);
+                                @Field("password") String password, @Field("remember") String remember);
     }
 }

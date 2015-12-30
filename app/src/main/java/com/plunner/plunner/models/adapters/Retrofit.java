@@ -65,13 +65,21 @@ public class Retrofit {
             String token;
             LoginManager loginManager = LoginManager.getInstance();
             Request newRequest = chain.request();
+            //add authorization token
             if (loginManager.getToken() != null) {
                 token = loginManager.getToken();
                 //for security reason show only the start of the token
                 Log.v("Token set in connection", token.substring(token.length() - 20));
                 newRequest = newRequest.newBuilder().addHeader("Authorization", token).build();
             }
+            //add additional headers
+            newRequest = newRequest.newBuilder().addHeader("Accept", "application/json").build();
+            newRequest = newRequest.newBuilder().addHeader("CONTENT_TYPE", "application/json").build();
+
+            //perform request
             Response response = chain.proceed(newRequest);
+
+            //set new authorization token
             token = response.header("Authorization");
             if (token != null) {
                 //for security reason show only the start of the token

@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        LoginManager.loginByData("testInit", "testEmp@test.com", "123456");
+        LoginManager.loginByData("testInit", "testEmp@test.com", "test");
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
