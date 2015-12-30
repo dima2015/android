@@ -10,6 +10,8 @@ import com.plunner.plunner.models.callbacks.interfaces.Callable;
 import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.models.Model;
 
+import java.io.IOException;
+
 import retrofit.HttpException;
 
 /**
@@ -52,7 +54,11 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
             if(callable != null && callable instanceof CallOnHttpError)
                 ((CallOnHttpError) callable).onHttpError(response);
             int code = response.code();
-            Log.w("Net error", Integer.toString(code));
+            try {
+                Log.w("Net error", Integer.toString(code)+ " " + response.message() + " " + response.response().errorBody().string().toString());
+            } catch (IOException e1) {
+                Log.w("errorBody error", Integer.toString(code) + " " + response.message() + " " + e1);
+            }
             //TODO automatically fresh token if 401???
         }
         //NO HTTP error
@@ -66,6 +72,7 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
             if (!onError)
                 e.printStackTrace();
         }
+
     }
 
     @Override
