@@ -8,8 +8,11 @@ import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.plunner.plunner.activities.activities.AuthenticatorActivity;
 
@@ -18,10 +21,12 @@ import com.plunner.plunner.activities.activities.AuthenticatorActivity;
  */
 public class Authenticator extends AbstractAccountAuthenticator {
     private final Context mContext;
+    private final AccountManager mAccountManager;
 
     public Authenticator(Context context) {
         super(context);
         this.mContext = context;
+        mAccountManager = AccountManager.get(mContext);
     }
 
     @Override
@@ -32,6 +37,25 @@ public class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         Log.d("login", "addAccount");
+
+        if (mAccountManager.getAccountsByType("plunner.com").length >= 1) {
+            Log.d("login", "error more than one account");
+            final Bundle result = new Bundle();
+            result.putInt(AccountManager.KEY_ERROR_CODE, 1);//AccountManager.ERROR_CODE_ERROR_CODE_ONE_ACCOUNT_ALLOWED);
+            result.putString(AccountManager.KEY_ERROR_MESSAGE, "Only one account allowed");
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, "Only one account allowed", Toast.LENGTH_SHORT).show();
+                    // This is where you do your work in the UI thread.
+                    // Your worker tells you in the message what to do.
+                }
+            });
+
+            return result;
+        }
 
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.ARG_ACCOUNT_TYPE, accountType);
