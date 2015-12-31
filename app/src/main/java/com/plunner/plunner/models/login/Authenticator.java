@@ -41,16 +41,14 @@ public class Authenticator extends AbstractAccountAuthenticator {
         if (mAccountManager.getAccountsByType("plunner.com").length >= 1) {
             Log.d("login", "error more than one account");
             final Bundle result = new Bundle();
+            //TODO right error code
             result.putInt(AccountManager.KEY_ERROR_CODE, 1);//AccountManager.ERROR_CODE_ERROR_CODE_ONE_ACCOUNT_ALLOWED);
             result.putString(AccountManager.KEY_ERROR_MESSAGE, "Only one account allowed");
 
             new Handler(Looper.getMainLooper()).post(new Runnable() {
-
                 @Override
                 public void run() {
                     Toast.makeText(mContext, "Only one account allowed", Toast.LENGTH_SHORT).show();
-                    // This is where you do your work in the UI thread.
-                    // Your worker tells you in the message what to do.
                 }
             });
 
