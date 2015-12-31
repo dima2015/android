@@ -21,10 +21,7 @@
             </intent-filter>
         </activity>
 
-        <service
-        android:name=".models.login.AuthenticatorService"
-        android:enabled="true"
-        android:exported="true">
+        <service android:name=".models.login.AuthenticatorService">
         <intent-filter>
             <action android:name="android.accounts.AccountAuthenticator" />
         </intent-filter>

@@ -2,17 +2,24 @@ package com.plunner.plunner.models.login;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
+import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
 import android.accounts.NetworkErrorException;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * Created by claudio on 31/12/15.
  */
 public class Authenticator extends AbstractAccountAuthenticator {
+    private final Context mContext;
+
     public Authenticator(Context context) {
         super(context);
+        this.mContext = context;
     }
 
     @Override
@@ -22,7 +29,14 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
-        return null;
+        Log.v("login", "addAccount");
+
+        final Intent intent = new Intent(mContext, AccountAuthenticatorActivity.class);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+        return bundle;
     }
 
     @Override
