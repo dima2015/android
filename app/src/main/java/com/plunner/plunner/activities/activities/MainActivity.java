@@ -20,6 +20,10 @@ import com.plunner.plunner.models.models.Employee;
 
 import retrofit.HttpException;
 
+/**
+ * @author Claudio Cardinale <cardi@thecsea.it>
+ * @version 1.0.0
+ */
 public class MainActivity extends AppCompatActivity implements SetModel<Employee>, CallOnHttpError, CallOnNext<Employee> {
 
     Employee employee = null;
@@ -92,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
 
     @Override
     public void onNext(Employee employee) {
-        ;
         //TODO implement or remove
     }
 }
