@@ -9,6 +9,7 @@ android restful client for employees users of [https://github.com/dsd-meetme/bac
 * [https://stormpath.com/blog/jjwt-how-it-works-why/](https://stormpath.com/blog/jjwt-how-it-works-why/)
 * [http://randomdotnext.com/retrofit-rxjava/](http://randomdotnext.com/retrofit-rxjava/)
 * [http://blog.udinic.com/2013/04/24/write-your-own-android-authenticator/](http://blog.udinic.com/2013/04/24/write-your-own-android-authenticator/) used for authentication
+* [http://developer.android.com/training/sync-adapters/creating-authenticator.html](http://developer.android.com/training/sync-adapters/creating-authenticator.html)
 
 # Credits
  * [backend](https://github.com/dsd-meetme/backend)
