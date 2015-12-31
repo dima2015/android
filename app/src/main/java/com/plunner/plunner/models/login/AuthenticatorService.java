@@ -1,4 +1,4 @@
-package com.plunner.plunner;
+package com.plunner.plunner.models.login;
 
 import android.app.Service;
 import android.content.Intent;
@@ -10,7 +10,6 @@ public class AuthenticatorService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new Authenticator(this).getIBinder();
     }
 }
