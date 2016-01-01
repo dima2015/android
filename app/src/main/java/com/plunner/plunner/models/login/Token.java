@@ -9,11 +9,14 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Generated;
 
+import retrofit.Call;
+import retrofit.Response;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.POST;
@@ -116,13 +119,22 @@ class Token extends Model {
         if (parameters.length != 3)
             subscriber.onError(new ModelException("Get parameters number is not correct (!= 3)"));
         return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).
-                login(parameters[0], parameters[1], parameters[2], "1"), subscriber);
+                loginAsync(parameters[0], parameters[1], parameters[2], "1"), subscriber);
+    }
+
+    public Response<Token> getSync(String company, String email, String password) throws IOException {
+        return Retrofit.createRetrofit(RestInterface.class).loginSync(company, email, password, "1").execute();
     }
 
     private static interface RestInterface {
         @FormUrlEncoded
         @POST("/employees/auth/login")
-        Observable<Token> login(@Field("company") String company, @Field("email") String email,
+        Observable<Token> loginAsync(@Field("company") String company, @Field("email") String email,
+                                     @Field("password") String password, @Field("remember") String remember);
+
+        @FormUrlEncoded
+        @POST("/employees/auth/login")
+        Call<Token> loginSync(@Field("company") String company, @Field("email") String email,
                                 @Field("password") String password, @Field("remember") String remember);
     }
 }

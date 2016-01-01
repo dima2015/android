@@ -32,6 +32,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.plunner.plunner.R;
+import com.plunner.plunner.models.login.LoginException;
+import com.plunner.plunner.models.login.LoginManager;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,13 +57,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+
     private AccountManager mAccountManager;
     private String mAuthTokenType;
     /**
@@ -70,6 +68,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mCompanyView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -85,10 +84,11 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mCompanyView = (EditText) findViewById(R.id.company);
         populateAutoComplete();
         if (accountName != null) {
             mEmailView.setText(accountName);
-        }
+        }//TODO same thign for company name
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -175,6 +175,9 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String company = mCompanyView.getText().toString();
+        //TODO company check
+
 
         boolean cancel = false;
         View focusView = null;
@@ -205,7 +208,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password, getIntent().getStringExtra(ARG_ACCOUNT_TYPE));
+            mAuthTask = new UserLoginTask(company, email, password, getIntent().getStringExtra(ARG_ACCOUNT_TYPE));
             mAuthTask.execute((Void) null);
         }
     }
@@ -218,7 +221,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         //TODO password is not optional
-        return password.length() > 4;
+        return password.length() >= 4;
     }
 
     /**
@@ -341,11 +344,13 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Intent> {
 
+        private final String mCompany;
         private final String mEmail;
         private final String mPassword;
         private final String accountType;
 
-        UserLoginTask(String email, String password, String accountType) {
+        UserLoginTask(String company, String email, String password, String accountType) {
+            mCompany = company;
             mEmail = email;
             mPassword = password;
             this.accountType = accountType;
@@ -361,15 +366,23 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
             Bundle data = new Bundle();
             try {
                 //authtoken = sServerAuthenticate.userSignIn(userName, userPass, mAuthTokenType);
-                authtoken = "Bearer XXX";
+                LoginManager loginManager = LoginManager.getInstance();
+                authtoken = loginManager.loginSync(mCompany, mEmail, mPassword).getToken();
 
                 data.putString(AccountManager.KEY_ACCOUNT_NAME, mEmail);
                 data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
                 data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
                 data.putString(PARAM_USER_PASS, mPassword);
 
-            } catch (Exception e) {
-                data.putString(KEY_ERROR_MESSAGE, e.getMessage());
+            } catch (LoginException e) {
+                if (e.getJsonErrors() == null) {
+                    data.putString(KEY_ERROR_MESSAGE, e.getMessage());
+                } else {
+                    JSONArray errors = e.getJsonErrors();
+                    //for(String error : errors)
+
+                    data.putString(KEY_ERROR_MESSAGE, e.getMessage());
+                }
             }
 
             final Intent res = new Intent();
@@ -383,6 +396,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
             showProgress(false);
 
             if (intent.hasExtra(KEY_ERROR_MESSAGE)) {
+                //TODO company errors
                 //mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.setError(intent.getStringExtra(KEY_ERROR_MESSAGE));
                 mPasswordView.requestFocus();
