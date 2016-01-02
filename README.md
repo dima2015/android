@@ -15,3 +15,6 @@ android restful client for employees users of [https://github.com/dsd-meetme/bac
  * [backend](https://github.com/dsd-meetme/backend)
  * [reactivex](http://reactivex.io/)
  * [retrofit](http://square.github.io/retrofit/)
+
+# Notes
+* To avoid errors get the response body (or errorBody) just one time
