@@ -1,6 +1,7 @@
 package com.plunner.plunner.models.callbacks.interfaces;
 
-import retrofit.HttpException;
+
+import com.plunner.plunner.models.adapters.HttpException;
 
 /**
  * Created by claudio on 20/12/15.
