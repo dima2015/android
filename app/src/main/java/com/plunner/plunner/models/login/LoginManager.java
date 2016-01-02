@@ -5,8 +5,8 @@ import android.util.Log;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 
-import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -74,11 +74,11 @@ public class LoginManager implements CallOnHttpError {
             return this;
         }
         try {
-            //TODO error for response.errorBody().string().toString() -> empty
+            String body = response.errorBody().string().toString();
             Log.w("Login error", Integer.toString(response.code()) + " " + response.message() +
-                    " " + response.errorBody().string().toString());
+                    " " + body);
             throw new LoginException(Integer.toString(response.code()) + " " +
-                    response.message(), new JSONArray(response.errorBody().string().toString()));
+                    response.message(), new JSONObject(body));
         } catch (IOException e) {
             Log.w("errorBody error", Integer.toString(response.code()) + " " + response.message() + e);
             throw new LoginException("errorBody error: " + Integer.toString(response.code()) + " " + e);

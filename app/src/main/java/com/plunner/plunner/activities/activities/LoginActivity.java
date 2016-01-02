@@ -35,7 +35,8 @@ import com.plunner.plunner.R;
 import com.plunner.plunner.models.login.LoginException;
 import com.plunner.plunner.models.login.LoginManager;
 
-import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -378,10 +379,19 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
                 if (e.getJsonErrors() == null) {
                     data.putString(KEY_ERROR_MESSAGE, e.getMessage());
                 } else {
-                    JSONArray errors = e.getJsonErrors();
-                    //for(String error : errors)
-
-                    data.putString(KEY_ERROR_MESSAGE, e.getMessage());
+                    JSONObject errors = e.getJsonErrors();
+                    java.util.Iterator<java.lang.String> keys = errors.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        try {
+                            data.putString(key, errors.getString(key));
+                        } catch (JSONException e1) {
+                            Log.w("Login", "errors parsing errors: " + e1);
+                            //TODO show the error to user
+                            //e1.printStackTrace();
+                        }
+                    }
+                    //data.putString(KEY_ERROR_MESSAGE, e.getMessage());
                 }
             }
 
@@ -395,12 +405,16 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
             mAuthTask = null;
             showProgress(false);
 
-            if (intent.hasExtra(KEY_ERROR_MESSAGE)) {
+            //intent.getExtras().
+            //for(String error : )
+            //if (intent.hasExtra(KEY_ERROR_MESSAGE)) {
+            //TODO catch all and fix focus
+            if (intent.hasExtra("email")) {
                 //TODO company errors
                 //mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.setError(intent.getStringExtra(KEY_ERROR_MESSAGE));
+                mPasswordView.setError(intent.getStringExtra("email"));
                 mPasswordView.requestFocus();
-                Log.v("Login", "errors: " + intent.getStringExtra(KEY_ERROR_MESSAGE));
+                Log.v("Login", "errors: " + intent.getStringExtra("email"));
             } else {
                 finish(intent);
             }

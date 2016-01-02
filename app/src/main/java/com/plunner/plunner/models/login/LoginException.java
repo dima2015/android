@@ -2,13 +2,13 @@ package com.plunner.plunner.models.login;
 
 import com.plunner.plunner.general.PlunnerException;
 
-import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Created by claudio on 22/12/15.
  */
 public class LoginException extends PlunnerException {
-    private JSONArray jsonErrors = null;
+    private JSONObject jsonErrors = null;
     //TODO use the same way for models
 
     public LoginException() {
@@ -27,12 +27,12 @@ public class LoginException extends PlunnerException {
         super(throwable);
     }
 
-    public LoginException(String detailMessage, JSONArray jsonErrors) {
+    public LoginException(String detailMessage, JSONObject jsonErrors) {
         super(detailMessage);
         this.jsonErrors = jsonErrors;
     }
 
-    public JSONArray getJsonErrors() {
+    public JSONObject getJsonErrors() {
         return jsonErrors;
     }
 }
