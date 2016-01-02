@@ -1,7 +1,9 @@
 package com.plunner.plunner.models.login;
 
+
 import android.util.Log;
 
+import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 
@@ -10,8 +12,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import retrofit.HttpException;
 import retrofit.Response;
+
 
 /**
  * Created by claudio on 20/12/15.

@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.facebook.stetho.Stetho;
 import com.plunner.plunner.R;
+import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
@@ -18,7 +19,6 @@ import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.Employee;
 
-import retrofit.HttpException;
 
 /**
  * @author Claudio Cardinale <cardi@thecsea.it>
@@ -89,7 +89,9 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
 
     @Override
     public void onHttpError(HttpException e) {
-        int code = e.code(); //HTTP code
+        retrofit.HttpException response = e.getCause();
+        int code = response.code(); //HTTP code
+        String errorBody = e.getErrorBody();
         //TODO error, eventually ask the login
         //TODO automatically try to get token by long token
     }
