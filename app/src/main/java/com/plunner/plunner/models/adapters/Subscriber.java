@@ -2,7 +2,6 @@ package com.plunner.plunner.models.adapters;
 
 import android.util.Log;
 
-import com.plunner.plunner.models.callbacks.interfaces.CallOnError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
@@ -41,38 +40,41 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
     }
 
     @Override
-    public void onError(Throwable e) {
-        boolean onError = false;
-        //generic error
-        if (callable != null && callable instanceof CallOnError) {
-            ((CallOnError) callable).onError(e);
-            onError = true;
-        }
+    final public void onError(Throwable e) {
         // HTTP error
         if (e instanceof HttpException) {
             HttpException response = (HttpException) e;
-            if(callable != null && callable instanceof CallOnHttpError)
-                ((CallOnHttpError) callable).onHttpError(response);
-            int code = response.code();
+            com.plunner.plunner.models.adapters.HttpException httpException = null;
             try {
-                Log.w("Net error", Integer.toString(code)+ " " + response.message() + " " + response.response().errorBody().string().toString());
+                httpException = new com.plunner.plunner.models.adapters.HttpException(response,
+                        response.response().errorBody().string().toString());
+                onError(httpException);
             } catch (IOException e1) {
-                Log.w("errorBody error", Integer.toString(code) + " " + response.message() + " " + e1);
+                onError(new NoHttpException("errorBody error: " + Integer.toString(response.code()) +
+                        " " + response.message() + " - " + e1.getMessage(), e1));
             }
-            //TODO automatically fresh token if 401???
         }
         //NO HTTP error
         else {
-            Log.e("Net error", "Unknown error", e);
-            if (callable != null && callable instanceof CallOnNoHttpError) {
-                ((CallOnNoHttpError) callable).onNoHttpError(e);
-                onError = true;
-            }
-            //if the no HTTP error is not tracked I print the stack trace
-            if (!onError)
-                e.printStackTrace();
+            onError(new NoHttpException(e.getMessage(), e));
         }
+    }
 
+    public void onError(NoHttpException e) {
+        Log.e("Net error", e.getMessage(), e.getCause());
+        if (callable != null && callable instanceof CallOnNoHttpError) {
+            ((CallOnNoHttpError) callable).onNoHttpError(e);
+        }
+    }
+
+    public void onError(com.plunner.plunner.models.adapters.HttpException e) {
+        HttpException response = e.getCause();
+        Log.w("Net error", Integer.toString(response.code()) + " " + response.message() + " " +
+                e.getErrorBody());
+        if (callable != null && callable instanceof CallOnHttpError) {
+            ((CallOnHttpError) callable).onHttpError(e);
+        }
+        //TODO automatically fresh token if 401???
     }
 
     @Override

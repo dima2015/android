@@ -1,9 +1,9 @@
 package com.plunner.plunner.models.login;
 
+import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 
-import retrofit.HttpException;
 
 /**
  * Created by claudio on 20/12/15.
