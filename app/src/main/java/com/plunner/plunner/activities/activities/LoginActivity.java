@@ -35,6 +35,7 @@ import com.plunner.plunner.R;
 import com.plunner.plunner.models.login.LoginException;
 import com.plunner.plunner.models.login.LoginManager;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -384,11 +385,29 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
                     while (keys.hasNext()) {
                         String key = keys.next();
                         try {
-                            data.putString(key, errors.getString(key));
+                            JSONArray errors2 = errors.getJSONArray(key);
+                            String errorsJoined = "";
+                            for (int i = 0; i < errors2.length(); i++) {
+                                try {
+                                    errorsJoined += errors2.getString(i) + "\n";
+                                } catch (JSONException e3) {
+                                    Log.w("Login", "errors parsing errors: " + e3);
+                                    //TODO show the error to user
+                                }
+                            }
+                            if (errorsJoined.length() > 0) {
+                                //remove last ", "
+                                errorsJoined = errorsJoined.substring(0, errorsJoined.length() - 1);
+                                data.putString(key, errorsJoined);
+                            }
                         } catch (JSONException e1) {
-                            Log.w("Login", "errors parsing errors: " + e1);
-                            //TODO show the error to user
-                            //e1.printStackTrace();
+                            //it is not an array
+                            try {
+                                data.putString(key, errors.getString(key));
+                            } catch (JSONException e2) {
+                                Log.w("Login", "errors parsing errors: " + e2);
+                                //TODO show the error to user
+                            }
                         }
                     }
                     //data.putString(KEY_ERROR_MESSAGE, e.getMessage());
@@ -409,12 +428,18 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
             //for(String error : )
             //if (intent.hasExtra(KEY_ERROR_MESSAGE)) {
             //TODO catch all and fix focus
+            //TODO even password and not thrown like remember
+            //TODO even generic error called 'error'
             if (intent.hasExtra("email")) {
                 //TODO company errors
                 //mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.setError(intent.getStringExtra("email"));
                 mPasswordView.requestFocus();
                 Log.v("Login", "errors: " + intent.getStringExtra("email"));
+            } else if (intent.hasExtra("company")) {
+                mCompanyView.setError(intent.getStringExtra("company"));
+                mCompanyView.requestFocus();
+                Log.v("Login", "errors: " + intent.getStringExtra("company"));
             } else {
                 finish(intent);
             }
