@@ -1,26 +1,21 @@
 package com.plunner.plunner.activities.activities;
 
-import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
-import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,12 +27,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.plunner.plunner.R;
-import com.plunner.plunner.models.login.LoginException;
 import com.plunner.plunner.models.login.LoginManager;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,22 +40,19 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AccountAuthenticatorActivity implements LoaderCallbacks<Cursor> {
 
     public final static String ARG_ACCOUNT_NAME = "ACCOUNT_NAME";
-    public final static String ARG_AUTH_TYPE = "AUTH_TYPE";
     public final static String ARG_ACCOUNT_TYPE = "ACCOUNT_TYPE";
-    public final static String PARAM_USER_PASS = "USER_PASS";
-    public static final String KEY_ERROR_MESSAGE = "ERR_MSG";
-    public final static String ARG_IS_ADDING_NEW_ACCOUNT = "IS_ADDING_ACCOUNT";
+    public final static String ARG_AUTH_TYPE = "AUTH_TYPE";
     /**
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-
-    private AccountManager mAccountManager;
     private String mAuthTokenType;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private LoginManager.UserLoginTask mAuthTask = null;
+
+    private LoginManager loginManager = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -78,11 +65,15 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mAccountManager = AccountManager.get(getBaseContext());
+        loginManager = LoginManager.getInstance();
+
+        //TODO fix
+
         String accountName = getIntent().getStringExtra(ARG_ACCOUNT_NAME);
         mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
         if (mAuthTokenType == null)
             mAuthTokenType = "Full access token";//TODO FIX//AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS;
+
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -90,7 +81,8 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         populateAutoComplete();
         if (accountName != null) {
             mEmailView.setText(accountName);
-        }//TODO same thign for company name
+        }
+        //TODO same thign for company name
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -210,7 +202,8 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(company, email, password, getIntent().getStringExtra(ARG_ACCOUNT_TYPE));
+            //mAuthTask = new UserLoginTask(company, email, password, getIntent().getStringExtra(ARG_ACCOUNT_TYPE));
+            mAuthTask = loginManager.new UserLoginTask(this);
             mAuthTask.execute((Void) null);
         }
     }
@@ -305,29 +298,52 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         mEmailView.setAdapter(adapter);
     }
 
-    private void finish(Intent intent) {
-        Log.v("Login", "Store login data");
-        String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-        String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
-        final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+    public String getCompanyText() {
+        return mCompanyView.getText().toString();
+    }
 
-        if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
-            Log.v("login", "Store explicitly");
-            String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
-            String authtokenType = mAuthTokenType;
+    public String getEmailText() {
+        return mEmailView.getText().toString();
+    }
 
-            // Creating the account on the device and setting the auth token we got
-            // (Not setting the auth token will cause another call to the server to authenticate the user)
-            mAccountManager.addAccountExplicitly(account, accountPassword, null);
-            mAccountManager.setAuthToken(account, authtokenType, authtoken);
-        } else {
-            Log.v("login", "Store only password");
-            mAccountManager.setPassword(account, accountPassword);
-        }
+    public String getPasswordText() {
+        return mPasswordView.getText().toString();
+    }
 
-        setAccountAuthenticatorResult(intent.getExtras());
-        setResult(RESULT_OK, intent);
-        finish();
+    public void setAuthTask(LoginManager.UserLoginTask mAuthTask) {
+        this.mAuthTask = mAuthTask;
+    }
+
+    public void setShowProgress(boolean showProgress) {
+        showProgress(showProgress);
+    }
+
+    public void setCompanyError(String error) {
+        mCompanyView.setError(error);
+    }
+
+    public void setEmailError(String error) {
+        mEmailView.setError(error);
+    }
+
+    public void setPasswordError(String error) {
+        mPasswordView.setError(error);
+    }
+
+    public boolean requestCompanyFocus() {
+        return mCompanyView.requestFocus();
+    }
+
+    public boolean requestEmailFocus() {
+        return mEmailView.requestFocus();
+    }
+
+    public boolean requestPasswordFocus() {
+        return mPasswordView.requestFocus();
+    }
+
+    public String getmAuthTokenType() {
+        return mAuthTokenType;
     }
 
     private interface ProfileQuery {
@@ -338,118 +354,6 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
 
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Intent> {
-
-        private final String mCompany;
-        private final String mEmail;
-        private final String mPassword;
-        private final String accountType;
-
-        UserLoginTask(String company, String email, String password, String accountType) {
-            mCompany = company;
-            mEmail = email;
-            mPassword = password;
-            this.accountType = accountType;
-        }
-
-        @Override
-        protected Intent doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            Log.v("Login", "login background started");
-
-            String authtoken = null;
-            Bundle data = new Bundle();
-            try {
-                //authtoken = sServerAuthenticate.userSignIn(userName, userPass, mAuthTokenType);
-                LoginManager loginManager = LoginManager.getInstance();
-                authtoken = loginManager.loginSync(mCompany, mEmail, mPassword).getToken();
-
-                data.putString(AccountManager.KEY_ACCOUNT_NAME, mEmail);
-                data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
-                data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
-                data.putString(PARAM_USER_PASS, mPassword);
-
-            } catch (LoginException e) {
-                if (e.getJsonErrors() == null) {
-                    data.putString(KEY_ERROR_MESSAGE, e.getMessage());
-                } else {
-                    JSONObject errors = e.getJsonErrors();
-                    java.util.Iterator<java.lang.String> keys = errors.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next();
-                        try {
-                            JSONArray errors2 = errors.getJSONArray(key);
-                            String errorsJoined = "";
-                            for (int i = 0; i < errors2.length(); i++) {
-                                try {
-                                    errorsJoined += errors2.getString(i) + "\n";
-                                } catch (JSONException e3) {
-                                    Log.w("Login", "errors parsing errors: " + e3);
-                                    //TODO show the error to user
-                                }
-                            }
-                            if (errorsJoined.length() > 0) {
-                                //remove last ", "
-                                errorsJoined = errorsJoined.substring(0, errorsJoined.length() - 1);
-                                data.putString(key, errorsJoined);
-                            }
-                        } catch (JSONException e1) {
-                            //it is not an array
-                            try {
-                                data.putString(key, errors.getString(key));
-                            } catch (JSONException e2) {
-                                Log.w("Login", "errors parsing errors: " + e2);
-                                //TODO show the error to user
-                            }
-                        }
-                    }
-                    //data.putString(KEY_ERROR_MESSAGE, e.getMessage());
-                }
-            }
-
-            final Intent res = new Intent();
-            res.putExtras(data);
-            return res;
-        }
-
-        @Override
-        protected void onPostExecute(final Intent intent) {
-            mAuthTask = null;
-            showProgress(false);
-
-            //intent.getExtras().
-            //for(String error : )
-            //if (intent.hasExtra(KEY_ERROR_MESSAGE)) {
-            //TODO catch all and fix focus
-            //TODO even password and not thrown like remember
-            //TODO even generic error called 'error'
-            if (intent.hasExtra("email")) {
-                //TODO company errors
-                //mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.setError(intent.getStringExtra("email"));
-                mPasswordView.requestFocus();
-                Log.v("Login", "errors: " + intent.getStringExtra("email"));
-            } else if (intent.hasExtra("company")) {
-                mCompanyView.setError(intent.getStringExtra("company"));
-                mCompanyView.requestFocus();
-                Log.v("Login", "errors: " + intent.getStringExtra("company"));
-            } else {
-                finish(intent);
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
     }
 }
 
