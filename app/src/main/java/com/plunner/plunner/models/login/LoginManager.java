@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.ArrayMap;
 import android.util.Log;
 
 import com.plunner.plunner.R;
@@ -23,6 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 import retrofit.Response;
 
@@ -182,8 +185,8 @@ public class LoginManager {
 
         @Override
         protected Intent doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
+            //TODO improve
             Log.v("Login", "login background started");
 
             Bundle data = new Bundle();
@@ -248,22 +251,18 @@ public class LoginManager {
             loginActivity.setAuthTask(null);
             loginActivity.setShowProgress(false);
 
-            //intent.getExtras().
-            //for(String error : )
-            //if (intent.hasExtra(KEY_ERROR_MESSAGE)) {
-            //TODO catch all and fix focus
-            //TODO even password and not thrown like remember
+            //TODO remember
             //TODO even generic error called 'error'
-            if (intent.hasExtra("email")) {
-                //TODO company errors
-                //mPasswordView.setError(getString(R.string.error_incorrect_password));
-                loginActivity.setPasswordError(intent.getStringExtra("email"));
-                loginActivity.requestPasswordFocus();
-                Log.v("Login", "errors: " + intent.getStringExtra("email"));
-            } else if (intent.hasExtra("company")) {
-                loginActivity.setCompanyError(intent.getStringExtra("company"));
-                loginActivity.requestCompanyFocus();
-                Log.v("Login", "errors: " + intent.getStringExtra("company"));
+            Bundle extras = intent.getExtras();
+
+            //this to avoid useless bundleStrings call
+            if (extras.size() > 0) {
+                Map<String, String> errors = bundleStrings(extras);
+                if (errors.size() == 0) {
+                    Log.e("Login", "errors found but they are not strings");
+                } else {
+                    loginActivity.onLoginError(errors);
+                }
             } else {
                 finish(intent);
             }
@@ -300,6 +299,18 @@ public class LoginManager {
             loginActivity.setAccountAuthenticatorResult(intent.getExtras());
             loginActivity.setResult(loginActivity.RESULT_OK, intent);
             loginActivity.finish();
+        }
+
+        private Map<String, String> bundleStrings(Bundle bundle) {
+            Map<String, String> ret = new ArrayMap<>();
+            Set<String> keys = bundle.keySet();
+            String value;
+            for (String key : keys) {
+                value = bundle.getString(key);
+                if (value != null)
+                    ret.put(key, value);
+            }
+            return ret;
         }
     }
 }

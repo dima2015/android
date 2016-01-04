@@ -16,6 +16,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,6 +32,7 @@ import com.plunner.plunner.models.login.LoginManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -38,6 +40,8 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AccountAuthenticatorActivity implements LoaderCallbacks<Cursor> {
+
+    //TODO implement all actions done for password and email for company like mCompanyView.setError(null);
 
     public final static String ARG_ACCOUNT_NAME = "ACCOUNT_NAME";
     public final static String ARG_ACCOUNT_TYPE = "ACCOUNT_TYPE";
@@ -60,6 +64,12 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
     private EditText mCompanyView;
     private View mProgressView;
     private View mLoginFormView;
+
+    static private void setError(EditText view, Map.Entry<String, String> error) {
+        view.setError(view.getError() != null ? view.getError() + "\n" : "" + error.getValue());
+        view.requestFocus();
+        Log.v("Login", "errors in " + error.getKey() + ": " + error.getValue());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,7 +161,6 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -165,6 +174,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mCompanyView.setError(null);
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
@@ -318,32 +328,30 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         showProgress(showProgress);
     }
 
-    public void setCompanyError(String error) {
-        mCompanyView.setError(error);
-    }
-
-    public void setEmailError(String error) {
-        mEmailView.setError(error);
-    }
-
-    public void setPasswordError(String error) {
-        mPasswordView.setError(error);
-    }
-
-    public boolean requestCompanyFocus() {
-        return mCompanyView.requestFocus();
-    }
-
-    public boolean requestEmailFocus() {
-        return mEmailView.requestFocus();
-    }
-
-    public boolean requestPasswordFocus() {
-        return mPasswordView.requestFocus();
-    }
-
     public String getmAuthTokenType() {
         return mAuthTokenType;
+    }
+
+    public void onLoginError(Map<String, String> errors) {
+        //TODO manage set focus
+        for (Map.Entry<String, String> error : errors.entrySet()) {
+            switch (error.getKey()) {
+                //same behaviour
+                case "email":
+                case "password":
+                    setError(mPasswordView, error);
+                    break;
+                case "company":
+                    setError(mCompanyView, error);
+                    break;
+                case "error":
+                    //TODO implement
+                    break;
+                default:
+                    //TODO implement
+                    break;
+            }
+        }
     }
 
     private interface ProfileQuery {
