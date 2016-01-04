@@ -1,12 +1,17 @@
 package com.plunner.plunner.models.adapters;
 
+import android.accounts.AccountManager;
+import android.content.Context;
 import android.util.Log;
 
+import com.plunner.plunner.R;
+import com.plunner.plunner.general.Plunner;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.Callable;
 import com.plunner.plunner.models.callbacks.interfaces.SetModel;
+import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.Model;
 
 import java.io.IOException;
@@ -71,6 +76,16 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
         HttpException response = e.getCause();
         Log.w("Net error", Integer.toString(response.code()) + " " + response.message() + " " +
                 e.getErrorBody());
+        //invalidate token
+        LoginManager loginManager = LoginManager.getInstance();
+        if (response.code() == 401 && loginManager.getToken() != null) {
+            Context context = Plunner.getAppContext();
+            AccountManager.get(context).invalidateAuthToken(context.getString(R.string.account_type),
+                    loginManager.getToken());
+            //TODO request new token? here we can perform sync task but we need a timeout??? re call original on error?
+            //TODO or the user should manage the refresh of the token, maybe we can create a abstract calss
+            //TODO how to manage request timeout? on error?
+        }
         if (callable != null && callable instanceof CallOnHttpError) {
             ((CallOnHttpError) callable).onHttpError(e);
         }

@@ -36,7 +36,7 @@ import retrofit.Response;
 public class LoginManager {
     public final static String PARAM_USER_PASS = "USER_PASS";
     public static final String KEY_ERROR_MESSAGE = "ERR_MSG";
-    public final static String ARG_IS_ADDING_NEW_ACCOUNT = "IS_ADDING_ACCOUNT";
+    public final static String PARAM_COMPANY_NAME = "COMPANY_NAME";
     private static LoginManager ourInstance = new LoginManager();
     private AccountManager mAccountManager;
     private String token = null;
@@ -73,7 +73,7 @@ public class LoginManager {
                             final String authtoken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
                             accountName = bnd.getString(AccountManager.KEY_ACCOUNT_NAME);
                             token = authtoken;
-                            Log.v("Login", "Token set correctly " +
+                            Log.v("Login", "Token set correctly via Account manager " +
                                     authtoken.substring(token.length() - 20));
                             callback.onOk(token);
                         } catch (Throwable e) {
@@ -118,6 +118,12 @@ public class LoginManager {
         }
     }
 
+    public void invalidateToken() {
+        //TODO tmp method
+        AccountManager.get(mContext).invalidateAuthToken(mContext.getString(R.string.account_type),
+                token);
+    }
+
     public LoginManager withToken(String token) {
         if (tokenCanBeSet) {
             this.token = token;
@@ -126,6 +132,7 @@ public class LoginManager {
     }
 
     private LoginManager loginSync(String company, String email, String password) throws LoginException {
+        //TODO improve, do we need LoginException?
         Response<Token> response = null;
         try {
             response = new Token().getSync(company, email, password);
@@ -196,11 +203,14 @@ public class LoginManager {
                 authtoken = LoginManager.this.loginSync(loginActivity.getCompanyText(),
                         loginActivity.getEmailText(), loginActivity.getPasswordText()).getToken();
 
+
                 data.putString(AccountManager.KEY_ACCOUNT_NAME, loginActivity.getEmailText());
                 data.putString(AccountManager.KEY_ACCOUNT_TYPE, loginActivity.getIntent().
-                        getStringExtra(LoginActivity.ARG_ACCOUNT_TYPE));
+                        getStringExtra(LoginActivity.ARG_ACCOUNT_TYPE)); //TODO why this way?
                 data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
                 data.putString(PARAM_USER_PASS, loginActivity.getPasswordText());
+                data.putString(PARAM_COMPANY_NAME, loginActivity.getCompanyText());
+
                 //TODO insert also company and test re-login
 
             } catch (LoginException e) {
@@ -237,7 +247,6 @@ public class LoginManager {
                             }
                         }
                     }
-                    //data.putString(KEY_ERROR_MESSAGE, e.getMessage());
                 }
             }
 
@@ -255,8 +264,7 @@ public class LoginManager {
             //TODO even generic error called 'error'
             Bundle extras = intent.getExtras();
 
-            //this to avoid useless bundleStrings call
-            if (extras.size() > 0) {
+            if (!intent.hasExtra(AccountManager.KEY_ACCOUNT_NAME)) {
                 Map<String, String> errors = bundleStrings(extras);
                 if (errors.size() == 0) {
                     Log.e("Login", "errors found but they are not strings");
@@ -276,24 +284,45 @@ public class LoginManager {
 
         private void finish(Intent intent) {
             Log.v("Login", "Store login data");
+            //TODO what do we have to do if we are trying to create an account that exists?
             String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
+            String companyName = intent.getStringExtra(PARAM_COMPANY_NAME);
+            String originalAccountName = loginActivity.getIntent().getStringExtra(loginActivity.ARG_ACCOUNT_NAME);
             final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+            String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+            String authtokenType = loginActivity.getmAuthTokenType();
 
             //TODO needed getIntent?
-            if (loginActivity.getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
+            //TODO maybe it's better store this const inside activity
+            //originalAccoutnName = null if this is a new account
+            if (originalAccountName == null || !originalAccountName.equals(accountName)) {
                 Log.v("login", "Store explicitly");
-                //TODO add company
-                String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
-                String authtokenType = loginActivity.getmAuthTokenType();
+
+                //TODO fix
+                //remove old acocunt
+/*                if(originalAccountName != null)
+                {
+                    final Account old = new Account(originalAccountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+                    mAccountManager.removeAccountExplicitly(old);
+                }*/
 
                 // Creating the account on the device and setting the auth token we got
                 // (Not setting the auth token will cause another call to the server to authenticate the user)
-                mAccountManager.addAccountExplicitly(account, accountPassword, null);
+                Bundle extras = new Bundle();
+                //TODO use const
+                extras.putString("company", companyName);
+                mAccountManager.addAccountExplicitly(account, accountPassword, extras);
                 mAccountManager.setAuthToken(account, authtokenType, authtoken);
             } else {
                 Log.v("login", "Store only password");
+                //TODO during tests we see 401, why?
+                //TODO if I change the email the acocutn keep the same?
+                //TODO manage this case for other parameters, errors and otken
                 mAccountManager.setPassword(account, accountPassword);
+                mAccountManager.setAuthToken(account, authtokenType, authtoken);
+                //TODO use const
+                mAccountManager.setUserData(account, "company", companyName);
             }
 
             loginActivity.setAccountAuthenticatorResult(intent.getExtras());

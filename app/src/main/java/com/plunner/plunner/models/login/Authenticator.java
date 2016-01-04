@@ -8,13 +8,9 @@ import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.plunner.plunner.R;
 import com.plunner.plunner.activities.activities.LoginActivity;
 
 /**
@@ -39,6 +35,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         Log.d("login", "addAccount");
 
+        /*
         if (mAccountManager.getAccountsByType(mContext.getString(R.string.account_type)).length >= 1) {
             Log.d("login", "error more than one account");
             final Bundle result = new Bundle();
@@ -54,12 +51,11 @@ public class Authenticator extends AbstractAccountAuthenticator {
             });
 
             return result;
-        }
+        }*/
 
         final Intent intent = new Intent(mContext, LoginActivity.class);
         intent.putExtra(LoginActivity.ARG_ACCOUNT_TYPE, accountType);
         intent.putExtra(LoginActivity.ARG_AUTH_TYPE, authTokenType);
-        intent.putExtra(LoginManager.ARG_IS_ADDING_NEW_ACCOUNT, true);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
 
@@ -95,14 +91,18 @@ public class Authenticator extends AbstractAccountAuthenticator {
         Log.d("login", "> peekAuthToken returned - " + authToken);
 
         //TODO fix debug
-        //TODo fix with compaany and with our syncLogin
+        //TODo fix with company and with our syncLogin
 
         // Lets give another try to authenticate the user
         if (TextUtils.isEmpty(authToken)) {
             final String password = am.getPassword(account);
             if (password != null) {
                 try {
-                    Log.d("login", "> re-authenticating with the existing password");
+
+                    //TODO use const
+                    Log.d("login", "> re-authenticating with the existing password" + account.toString() +
+                            am.getUserData(account, "company"));
+
                     // authToken = sServerAuthenticate.userSignIn(account.name, password, authTokenType);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -118,6 +118,8 @@ public class Authenticator extends AbstractAccountAuthenticator {
             result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
             return result;
         }
+
+        //TODO remvoe accunts if they are not logged
 
         //TODO call addAccount to check automaticlaly if an acocunt is present or not????
 
@@ -148,6 +150,16 @@ public class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account, String[] features) throws NetworkErrorException {
         return null;
+    }
+
+    @Override
+    public Bundle getAccountRemovalAllowed(AccountAuthenticatorResponse response, Account account) throws NetworkErrorException {
+
+        final Bundle result = super.getAccountRemovalAllowed(response, account);
+
+        result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true);
+
+        return result;
     }
 
     //TODO remove
