@@ -93,6 +93,9 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
         Log.d("login", "> peekAuthToken returned - " + authToken);
 
+        //TODO fix debug
+        //TODo fix with compaany and with our syncLogin
+
         // Lets give another try to authenticate the user
         if (TextUtils.isEmpty(authToken)) {
             final String password = am.getPassword(account);
