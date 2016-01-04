@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
             @Override
             public void onError(Throwable e) {
                 //TODO manage
+                //TODO how do we proceed if the aauthenticator knwos the password but it is not able to verify it becaseu we have a connection lack?
             }
         });
         fab.setOnClickListener(new View.OnClickListener() {
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
 
                 if (employee != null) {
                     employee.fresh();
+                    //TODO fresh is async so this is not the correct way to use it, it's just an example
                     Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 } else {

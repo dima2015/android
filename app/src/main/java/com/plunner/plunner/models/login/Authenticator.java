@@ -79,6 +79,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
         // If the caller requested an authToken type we don't support, then
         // return an error
+        //TODO fix this check?
         /*if (!authTokenType.equals(AccountGeneral.AUTHTOKEN_TYPE_READ_ONLY) && !authTokenType.equals(AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS)) {
             final Bundle result = new Bundle();
             result.putString(AccountManager.KEY_ERROR_MESSAGE, "invalid authTokenType");
@@ -133,6 +134,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
         return bundle;
     }
 
+    //TODO write this method
     @Override
     public String getAuthTokenLabel(String authTokenType) {
         return null;

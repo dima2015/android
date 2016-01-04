@@ -10,13 +10,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.activities.LoginActivity;
 import com.plunner.plunner.general.Plunner;
-import com.plunner.plunner.models.adapters.HttpException;
-import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +30,7 @@ import retrofit.Response;
 /**
  * Created by claudio on 20/12/15.
  */
-public class LoginManager implements CallOnHttpError {
+public class LoginManager {
     public final static String PARAM_USER_PASS = "USER_PASS";
     public static final String KEY_ERROR_MESSAGE = "ERR_MSG";
     public final static String ARG_IS_ADDING_NEW_ACCOUNT = "IS_ADDING_ACCOUNT";
@@ -39,6 +39,7 @@ public class LoginManager implements CallOnHttpError {
     private String token = null;
     private boolean tokenCanBeSet = true;
     private Context mContext;
+    private String accountName = null;
 
     private LoginManager() {
         mContext = Plunner.getAppContext();
@@ -57,9 +58,8 @@ public class LoginManager implements CallOnHttpError {
      * @param callback callback used to inform the caller about the request status
      */
     public void storeToken(Activity activity, final storeTokenCallback callback) {
-        //TODo give the possibility to give a callback
         //TODO better way for auth type
-        //TODO set actvity for perform login
+        //TODO use  String blockingGetAuthToken???
         mAccountManager.getAuthTokenByFeatures(mContext.getString(R.string.account_type),
                 "Full access token", null, activity, null, null, new AccountManagerCallback<Bundle>() {
                     @Override
@@ -68,8 +68,9 @@ public class LoginManager implements CallOnHttpError {
                         try {
                             bnd = future.getResult();
                             final String authtoken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
+                            accountName = bnd.getString(AccountManager.KEY_ACCOUNT_NAME);
                             token = authtoken;
-                            Log.v("Login", "Token set correctly" +
+                            Log.v("Login", "Token set correctly " +
                                     authtoken.substring(token.length() - 20));
                             callback.onOk(token);
                         } catch (Throwable e) {
@@ -94,9 +95,23 @@ public class LoginManager implements CallOnHttpError {
         return token;
     }
 
-    public void setToken(String token) {
+    //TODO according to setAuthToken this shoudl be called by the main thread
+    public void setToken(final String token) {
         if (tokenCanBeSet) {
             this.token = token;
+            //TODO better way for auth type
+            //TODO use the same way used for the toast notification
+            //TODO correct use new Account?
+            //update the token stored using the main thread as suggested by javadoc
+            if (accountName != null)
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAccountManager.setAuthToken(new Account(accountName,
+                                        mContext.getString(R.string.account_type)), "Full access token",
+                                token);
+                    }
+                });
         }
     }
 
@@ -135,11 +150,6 @@ public class LoginManager implements CallOnHttpError {
             throw new LoginException("JSON error: " + Integer.toString(response.code()) + " " + e);
         }
 
-    }
-
-    @Override
-    public void onHttpError(HttpException e) {
-        //TODO implement CallOnHttpError
     }
 
     public static class storeTokenCallback {
@@ -274,6 +284,7 @@ public class LoginManager implements CallOnHttpError {
             //TODO needed getIntent?
             if (loginActivity.getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
                 Log.v("login", "Store explicitly");
+                //TODO add company
                 String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
                 String authtokenType = loginActivity.getmAuthTokenType();
 
