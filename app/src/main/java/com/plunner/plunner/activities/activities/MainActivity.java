@@ -27,6 +27,7 @@ import com.plunner.plunner.models.models.Employee;
 public class MainActivity extends AppCompatActivity implements SetModel<Employee>, CallOnHttpError, CallOnNext<Employee> {
 
     Employee employee = null;
+    LoginManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,15 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        LoginManager.loginByData("testInit", "testEmp@test.com", "test");
+        loginManager = LoginManager.getInstance();
+        //TODO check if the token is not null before perform other actions
+        loginManager.storeToken(this, new LoginManager.storeTokenCallback() {
+            //TODO of cours eit is possible override onOk
+            @Override
+            public void onError(Throwable e) {
+                //TODO manage
+            }
+        });
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {

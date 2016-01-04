@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.plunner.plunner.R;
 import com.plunner.plunner.activities.activities.LoginActivity;
 
 /**
@@ -38,7 +39,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         Log.d("login", "addAccount");
 
-        if (mAccountManager.getAccountsByType("plunner.com").length >= 1) {
+        if (mAccountManager.getAccountsByType(mContext.getString(R.string.account_type)).length >= 1) {
             Log.d("login", "error more than one account");
             final Bundle result = new Bundle();
             //TODO right error code

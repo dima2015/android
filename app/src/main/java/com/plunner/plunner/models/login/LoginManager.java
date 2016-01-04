@@ -3,15 +3,19 @@ package com.plunner.plunner.models.login;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.plunner.plunner.R;
 import com.plunner.plunner.activities.activities.LoginActivity;
 import com.plunner.plunner.general.Plunner;
 import com.plunner.plunner.models.adapters.HttpException;
-import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 
 import org.json.JSONArray;
@@ -32,29 +36,58 @@ public class LoginManager implements CallOnHttpError {
     public final static String ARG_IS_ADDING_NEW_ACCOUNT = "IS_ADDING_ACCOUNT";
     private static LoginManager ourInstance = new LoginManager();
     private AccountManager mAccountManager;
-    private String token;
+    private String token = null;
     private boolean tokenCanBeSet = true;
+    private Context mContext;
 
     private LoginManager() {
-        mAccountManager = AccountManager.get(Plunner.getAppContext());
+        mContext = Plunner.getAppContext();
+        mAccountManager = AccountManager.get(mContext);
     }
 
     public static LoginManager getInstance() {
         return ourInstance;
     }
 
-    //TODO not static
-    public static rx.Subscription loginByData(String company, String email, String password) {
-        final LoginManager loginManager = getInstance();
-        loginManager.tokenCanBeSet = false;
-        return (new Token()).get(company, email, password, new Subscriber<Token>() {
-            @Override
-            public void onNext(Token token) {
-                super.onNext(token);
-                loginManager.tokenCanBeSet = true;
-                loginManager.token = "Bearer " + token.getToken();
-            }
-        });
+    /**
+     * Get the stored token or show the login activity<br>
+     * <strong>Caution:</strong> it iss an async task
+     *
+     * @param activity needed to show the login activity
+     * @param callback callback used to inform the caller about the request status
+     */
+    public void storeToken(Activity activity, final storeTokenCallback callback) {
+        //TODo give the possibility to give a callback
+        //TODO better way for auth type
+        //TODO set actvity for perform login
+        mAccountManager.getAuthTokenByFeatures(mContext.getString(R.string.account_type),
+                "Full access token", null, activity, null, null, new AccountManagerCallback<Bundle>() {
+                    @Override
+                    public void run(AccountManagerFuture<Bundle> future) {
+                        Bundle bnd = null;
+                        try {
+                            bnd = future.getResult();
+                            final String authtoken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
+                            token = authtoken;
+                            Log.v("Login", "Token set correctly" +
+                                    authtoken.substring(token.length() - 20));
+                            callback.onOk(token);
+                        } catch (Throwable e) {
+                            Log.e("Login", "Problems during getting authToken");
+                            callback.onError(e);
+                        }
+                    }
+                }, null);
+    }
+
+    /**
+     * Get the stored token or show the login activity<br>
+     * <strong>Caution:</strong> it iss an async task
+     *
+     * @param activity needed to show the login activity
+     */
+    public void storeToken(Activity activity) {
+        storeToken(activity, new storeTokenCallback());
     }
 
     public String getToken() {
@@ -107,6 +140,18 @@ public class LoginManager implements CallOnHttpError {
     @Override
     public void onHttpError(HttpException e) {
         //TODO implement CallOnHttpError
+    }
+
+    public static class storeTokenCallback {
+        public void onOk(String authtoken) {
+        }
+
+        ;
+
+        public void onError(Throwable e) {
+        }
+
+        ;
     }
     //TODO when the error is not http?
 
