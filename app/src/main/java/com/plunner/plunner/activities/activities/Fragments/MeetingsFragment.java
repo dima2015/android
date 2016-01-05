@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,7 +76,9 @@ public class MeetingsFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast toast = new Toast(getActivity());
+                    Snackbar.make(v, "Trying adding a meeting", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+
             }
         });
 
