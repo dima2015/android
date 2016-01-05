@@ -1,4 +1,4 @@
-package com.plunner.plunner.ApplicationView.Fragments;
+package com.plunner.plunner.activities.activities.Fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -7,7 +7,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+
 import com.plunner.plunner.R;
+import com.plunner.plunner.activities.activities.Adapters.MeetingsListAdapter;
+import com.plunner.plunner.activities.activities.Adapters.SchedulesListAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -89,6 +96,18 @@ public class SchedulesFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        List<String> strings = new ArrayList<>();
+        ListView listView = (ListView) getActivity().findViewById(R.id.schedulesList);
+        for(int i=0; i<5; i++){
+            strings.add("String "+i);
+        }
+        SchedulesListAdapter listAdapter = new SchedulesListAdapter(getActivity(), strings);
+        listView.setAdapter(listAdapter);
     }
 
     /**

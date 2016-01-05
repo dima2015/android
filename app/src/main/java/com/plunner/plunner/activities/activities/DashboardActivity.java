@@ -1,6 +1,5 @@
 package com.plunner.plunner.activities.activities;
 
-import android.app.ActionBar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,16 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 
-import com.plunner.plunner.ApplicationView.Adapters.ViewPageAdapter;
-import com.plunner.plunner.ApplicationView.Fragments.MeetingsFragment;
-import com.plunner.plunner.ApplicationView.Fragments.SchedulesFragment;
+import com.plunner.plunner.activities.activities.Adapters.FragmentsTabViewAdapter;
+import com.plunner.plunner.activities.activities.Fragments.MeetingsFragment;
+import com.plunner.plunner.activities.activities.Fragments.SchedulesFragment;
 import com.plunner.plunner.R;
-import com.plunner.plunner.ApplicationView.Adapters.ListAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MeetingsFragment.OnFragmentInteractionListener, SchedulesFragment.OnFragmentInteractionListener {
@@ -36,8 +30,11 @@ public class DashboardActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        //Action bar setting
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,20 +42,23 @@ public class DashboardActivity extends AppCompatActivity
             }
         });
 
+        //Navigation drawer setting
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Tab layout setting
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
-        ViewPageAdapter viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
-        viewPageAdapter.addFragment(new MeetingsFragment(), "Meetings");
-        viewPageAdapter.addFragment(new SchedulesFragment(), "Schedules");
-        viewPager.setAdapter(viewPageAdapter);
+        FragmentsTabViewAdapter fragmentsTabViewAdapter = new FragmentsTabViewAdapter(getSupportFragmentManager());
+        //Binding tabs to fragments
+        fragmentsTabViewAdapter.addFragment(new MeetingsFragment(), "Meetings");
+        fragmentsTabViewAdapter.addFragment(new SchedulesFragment(), "Schedules");
+        viewPager.setAdapter(fragmentsTabViewAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
 

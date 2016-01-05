@@ -17,13 +17,13 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Medium Text"
-            android:id="@+id/scheduleTitle" />
+            android:id="@+id/meetingTitle" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
-            android:id="@+id/scheduleDescription"
+            android:id="@+id/meetingDescription"
             android:layout_marginTop="2dp" />
     </LinearLayout>
 </LinearLayout>

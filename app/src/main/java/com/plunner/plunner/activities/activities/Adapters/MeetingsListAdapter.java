@@ -1,4 +1,4 @@
-package com.plunner.plunner.ApplicationView.Adapters;
+package com.plunner.plunner.activities.activities.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,9 +14,11 @@ import java.util.List;
 /**
  * Created by giorgiopea on 04/01/16.
  */
-public class ListAdapter extends ArrayAdapter<String> {
+public class MeetingsListAdapter extends ArrayAdapter<String> {
 
-    public ListAdapter(Context context, List<String> objects) {
+    private ListItem listItem;
+
+    public MeetingsListAdapter(Context context, List<String> objects) {
         super(context, 0, objects);
     }
 
@@ -27,39 +29,37 @@ public class ListAdapter extends ArrayAdapter<String> {
 
         String text = getItem(position);
 
-
-        liContent liContent;
-
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             convertView = layoutInflater.inflate(R.layout.meetings_row, null);
 
-            liContent = new liContent();
+            //Binds values to view
+            this.listItem = new ListItem();
+            this.listItem.title = (TextView) convertView.
+                    findViewById(R.id.meetingTitle);
+            this.listItem.description = (TextView) convertView
+                    .findViewById(R.id.meetingDescription);
 
-            liContent.title = (TextView) convertView.
-                    findViewById(R.id.liTitle);
-            liContent.subtitle = (TextView) convertView
-                    .findViewById(R.id.liSubtitle);
 
-            convertView.setTag(liContent);
+            convertView.setTag(listItem);
 
         } else {
-            liContent = (liContent) convertView.getTag();
+            this.listItem = (ListItem) convertView.getTag();
         }
 
 
-        liContent.title.setText(text);
-        liContent.subtitle.setText(text+" subtitle");
+        this.listItem.title.setText(text+"meetings");
+        this.listItem.description.setText(text + " subtitle");
 
         return convertView;
 
     }
 
-    static class liContent {
+    static class ListItem {
         TextView title;
-        TextView subtitle;
+        TextView description;
 
     }
 }
