@@ -33,11 +33,12 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
-        Log.d("login", "addAccount");
+        Log.v("login", "addAccount called");
 
+        //only one account check
         /*
         if (mAccountManager.getAccountsByType(mContext.getString(R.string.account_type)).length >= 1) {
-            Log.d("login", "error more than one account");
+            Log.v("login", "error more than one account");
             final Bundle result = new Bundle();
             //TODO right error code
             result.putInt(AccountManager.KEY_ERROR_CODE, 1);//AccountManager.ERROR_CODE_ERROR_CODE_ONE_ACCOUNT_ALLOWED);
@@ -71,7 +72,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
-        Log.d("login", "> getAuthToken");
+        Log.v("login", "getAuthToken called");
 
         // If the caller requested an authToken type we don't support, then
         // return an error
@@ -88,7 +89,6 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
         String authToken = am.peekAuthToken(account, authTokenType);
 
-        Log.d("login", "> peekAuthToken returned - " + authToken);
 
         //TODO fix debug
         //TODo fix with company and with our syncLogin
@@ -98,8 +98,8 @@ public class Authenticator extends AbstractAccountAuthenticator {
             final String password = am.getPassword(account);
             if (password != null) {
                 //TODO use const
-                Log.d("login", "> re-authenticating with the existing password" + account.toString() +
-                        am.getUserData(account, "company"));
+                Log.v("login", "re-authenticating with the existing password, since it was not" +
+                        " possible restore toekn form cache");
                 Bundle data = LoginManager.getInstance().getTokenWithErrors(account.name,
                         password, am.getUserData(account, "company"));
 
@@ -109,6 +109,8 @@ public class Authenticator extends AbstractAccountAuthenticator {
                 }
                 //errors are already logged
             }
+        } else {
+            Log.v("login", "token restored from cache");
         }
 
         // If we get an authToken - we return it
@@ -127,6 +129,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
         // If we get here, then we couldn't access the user's password - so we
         // need to re-prompt them for their credentials. We do that by creating
         // an intent to display our AuthenticatorActivity.
+        Log.v("login", "set new credentials");
         final Intent intent = new Intent(mContext, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         intent.putExtra(LoginActivity.ARG_ACCOUNT_TYPE, account.type);
