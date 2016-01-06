@@ -20,9 +20,14 @@ import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.Employee;
 
 
+/**
+ * @author Claudio Cardinale <cardi@thecsea.it>
+ * @version 1.0.0
+ */
 public class MainActivity extends AppCompatActivity implements SetModel<Employee>, CallOnHttpError, CallOnNext<Employee> {
 
     Employee employee = null;
+    LoginManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +38,26 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        LoginManager.loginByData("testInit", "testEmp@test.com", "test");
+        loginManager = LoginManager.getInstance();
+        //TODO check if the token is not null before perform other actions
+        loginManager.storeToken(this, new LoginManager.storeTokenCallback() {
+            //TODO of cours eit is possible override onOk
+            @Override
+            public void onError(Throwable e) {
+                //TODO manage
+                //TODO how do we proceed if the aauthenticator knwos the password but it is not able to verify it becaseu we have a connection lack?
+            }
+        });
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-
+                //Tests for auth
+                //loginManager.invalidateToken();
+                //loginManager.setToken(null);
+                //loginManager.storeToken(MainActivity.this);
                 if (employee != null) {
                     employee.fresh();
+                    //TODO fresh is async so this is not the correct way to use it, it's just an example
                     Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 } else {
@@ -94,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
 
     @Override
     public void onNext(Employee employee) {
-        ;
         //TODO implement or remove
     }
 }
