@@ -51,7 +51,10 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-
+                //Tests for auth
+                //loginManager.invalidateToken();
+                //loginManager.setToken(null);
+                //loginManager.storeToken(MainActivity.this);
                 if (employee != null) {
                     employee.fresh();
                     //TODO fresh is async so this is not the correct way to use it, it's just an example
