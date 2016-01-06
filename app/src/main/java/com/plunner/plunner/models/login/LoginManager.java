@@ -18,6 +18,7 @@ import android.util.Log;
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.activities.LoginActivity;
 import com.plunner.plunner.general.Plunner;
+import com.plunner.plunner.models.adapters.HttpException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,10 +76,12 @@ public class LoginManager {
                             token = authtoken;
                             Log.v("Login", "Token set correctly via Account manager " +
                                     authtoken.substring(token.length() - 20));
-                            callback.onOk(token);
+                            if (callback != null)
+                                callback.onOk(token);
                         } catch (Throwable e) {
                             Log.e("Login", "Problems during getting authToken");
-                            callback.onError(e);
+                            if (callback != null)
+                                callback.onError(e);
                         }
                     }
                 }, null);
@@ -91,7 +94,7 @@ public class LoginManager {
      * @param activity needed to show the login activity
      */
     public void storeToken(Activity activity) {
-        storeToken(activity, new storeTokenCallback());
+        storeToken(activity, null);
     }
 
     public String getToken() {
@@ -220,6 +223,42 @@ public class LoginManager {
 
     //TODO static?
 
+    /**
+     * this check automatically if a relogin is needed and perform it, via a async way
+     *
+     * @param e        httpException need to get code of error
+     * @param activity needed to show the login view
+     * @param callback login callback, if login is not need thsi is not called
+     * @return true if the reLogin was perofrmn (not if it successful since it's async)
+     */
+    public boolean reLogin(HttpException e, Activity activity, storeTokenCallback callback) {
+        //invalidate token
+        retrofit.HttpException response = e.getCause();
+        //TODO test
+        //TODO right && token != null
+        if (response.code() == 401 && token != null) {
+            Log.i("Login", "401 -> relogin needed");
+            mAccountManager.invalidateAuthToken(mContext.getString(R.string.account_type),
+                    this.getToken());
+            token = null;
+            this.storeToken(activity, callback);
+            return true;
+            //TODO how to manage request timeout? on error?
+        }
+        return false;
+    }
+
+    /**
+     * this check automatically if a relogin is needed and perform it, via a async way
+     *
+     * @param e        httpException need to get code of error
+     * @param activity needed to show the login view
+     * @return true if the reLogin was perofrmn (not if it successful since it's async)
+     */
+    public boolean reLogin(HttpException e, Activity activity) {
+        return reLogin(e, activity, null);
+    }
+
     public static class storeTokenCallback {
         public void onOk(String authtoken) {
         }
@@ -308,6 +347,7 @@ public class LoginManager {
             //TODO needed getIntent?
             //TODO maybe it's better store this const inside activity
             //originalAccoutnName = null if this is a new account
+            //!originalAccountName.equals(accountName) -> new email so new account
             if (originalAccountName == null || !originalAccountName.equals(accountName)) {
                 Log.v("login", "Store explicitly");
 

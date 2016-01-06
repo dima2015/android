@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         retrofit.HttpException response = e.getCause();
         int code = response.code(); //HTTP code
         String errorBody = e.getErrorBody();
+        loginManager.reLogin(e, this, null);//TODO reed javadoc before use
         //TODO error, eventually ask the login
         //TODO automatically try to get token by long token
     }
