@@ -238,8 +238,7 @@ public class LoginManager {
         //TODO right && token != null
         if (response.code() == 401 && token != null) {
             Log.i("Login", "401 -> relogin needed");
-            mAccountManager.invalidateAuthToken(mContext.getString(R.string.account_type),
-                    this.getToken());
+            this.invalidateToken();
             token = null;
             this.storeToken(activity, callback);
             return true;
