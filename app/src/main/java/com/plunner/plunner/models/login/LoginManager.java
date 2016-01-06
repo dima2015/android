@@ -162,6 +162,64 @@ public class LoginManager {
 
     }
 
+    /**
+     * get the token and return errors<br>
+     * <strong>Caution</strong> errors are already logged
+     *
+     * @param company
+     * @param email
+     * @param password
+     * @return
+     */
+    public Bundle getTokenWithErrors(String company, String email, String password) {
+        Bundle data = new Bundle();
+        try {
+            //TODO execute these on the main thread?
+            String authtoken = this.loginSync(company, email, password).getToken();
+            data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
+        } catch (LoginException e) {
+            if (e.getJsonErrors() == null) {
+                data.putString(KEY_ERROR_MESSAGE, e.getMessage());
+            } else {
+                JSONObject errors = e.getJsonErrors();
+                java.util.Iterator<java.lang.String> keys = errors.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    try {
+                        JSONArray errors2 = errors.getJSONArray(key);
+                        String errorsJoined = "";
+                        for (int i = 0; i < errors2.length(); i++) {
+                            try {
+                                errorsJoined += errors2.getString(i) + "\n";
+                            } catch (JSONException e3) {
+                                Log.w("Login", "errors parsing errors: " + e3);
+                                //TODO show the error to user
+                            }
+                        }
+                        if (errorsJoined.length() > 0) {
+                            //remove last ", "
+                            errorsJoined = errorsJoined.substring(0, errorsJoined.length() - 1);
+                            data.putString(key, errorsJoined);
+                        }
+                    } catch (JSONException e1) {
+                        //it is not an array
+                        try {
+                            data.putString(key, errors.getString(key));
+                        } catch (JSONException e2) {
+                            Log.w("Login", "errors parsing errors: " + e2);
+                            //TODO show the error to user
+                        }
+                    }
+                }
+            }
+        }
+        return data;
+    }
+    //TODO when the error is not http?
+
+
+    //TODO static?
+
     public static class storeTokenCallback {
         public void onOk(String authtoken) {
         }
@@ -173,10 +231,6 @@ public class LoginManager {
 
         ;
     }
-    //TODO when the error is not http?
-
-
-    //TODO static?
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -196,58 +250,16 @@ public class LoginManager {
             //TODO improve
             Log.v("Login", "login background started");
 
-            Bundle data = new Bundle();
-            try {
-                String authtoken = null;
-                //TODO execute these on the main thread?
-                authtoken = LoginManager.this.loginSync(loginActivity.getCompanyText(),
-                        loginActivity.getEmailText(), loginActivity.getPasswordText()).getToken();
+            Bundle data = LoginManager.this.getTokenWithErrors(loginActivity.getCompanyText(),
+                    loginActivity.getEmailText(), loginActivity.getPasswordText());
 
-
+            //no errors
+            if (data.get(AccountManager.KEY_AUTHTOKEN) != null) {
                 data.putString(AccountManager.KEY_ACCOUNT_NAME, loginActivity.getEmailText());
                 data.putString(AccountManager.KEY_ACCOUNT_TYPE, loginActivity.getIntent().
                         getStringExtra(LoginActivity.ARG_ACCOUNT_TYPE)); //TODO why this way?
-                data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
                 data.putString(PARAM_USER_PASS, loginActivity.getPasswordText());
                 data.putString(PARAM_COMPANY_NAME, loginActivity.getCompanyText());
-
-                //TODO insert also company and test re-login
-
-            } catch (LoginException e) {
-                if (e.getJsonErrors() == null) {
-                    data.putString(KEY_ERROR_MESSAGE, e.getMessage());
-                } else {
-                    JSONObject errors = e.getJsonErrors();
-                    java.util.Iterator<java.lang.String> keys = errors.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next();
-                        try {
-                            JSONArray errors2 = errors.getJSONArray(key);
-                            String errorsJoined = "";
-                            for (int i = 0; i < errors2.length(); i++) {
-                                try {
-                                    errorsJoined += errors2.getString(i) + "\n";
-                                } catch (JSONException e3) {
-                                    Log.w("Login", "errors parsing errors: " + e3);
-                                    //TODO show the error to user
-                                }
-                            }
-                            if (errorsJoined.length() > 0) {
-                                //remove last ", "
-                                errorsJoined = errorsJoined.substring(0, errorsJoined.length() - 1);
-                                data.putString(key, errorsJoined);
-                            }
-                        } catch (JSONException e1) {
-                            //it is not an array
-                            try {
-                                data.putString(key, errors.getString(key));
-                            } catch (JSONException e2) {
-                                Log.w("Login", "errors parsing errors: " + e2);
-                                //TODO show the error to user
-                            }
-                        }
-                    }
-                }
             }
 
             final Intent res = new Intent();

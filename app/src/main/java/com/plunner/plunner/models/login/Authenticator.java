@@ -97,16 +97,17 @@ public class Authenticator extends AbstractAccountAuthenticator {
         if (TextUtils.isEmpty(authToken)) {
             final String password = am.getPassword(account);
             if (password != null) {
-                try {
+                //TODO use const
+                Log.d("login", "> re-authenticating with the existing password" + account.toString() +
+                        am.getUserData(account, "company"));
+                Bundle data = LoginManager.getInstance().getTokenWithErrors(account.name,
+                        password, am.getUserData(account, "company"));
 
-                    //TODO use const
-                    Log.d("login", "> re-authenticating with the existing password" + account.toString() +
-                            am.getUserData(account, "company"));
-
-                    // authToken = sServerAuthenticate.userSignIn(account.name, password, authTokenType);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                //no errors
+                if (data.get(AccountManager.KEY_AUTHTOKEN) != null) {
+                    authToken = data.getString(AccountManager.KEY_AUTHTOKEN);
                 }
+                //errors are already logged
             }
         }
 
