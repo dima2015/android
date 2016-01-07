@@ -19,3 +19,5 @@ android restful client for employees users of [https://github.com/dsd-meetme/bac
 
 # Notes
 * To avoid errors get the response body (or errorBody) just one time
+* for security reason after a fixed amount of time the re-login is needed but if the password is the same, the process is automatic
+* **UTC time????**
