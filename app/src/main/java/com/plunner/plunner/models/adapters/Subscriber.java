@@ -17,7 +17,7 @@ import retrofit.HttpException;
  * Created by claudio on 19/12/15.
  */
 public class Subscriber<T extends Model> extends rx.Subscriber<T> {
-    Callable callable = null;
+    Callable<T> callable = null;
 
     /**
      * constructor called if we want to set the model get if wwe don't have errors on the the object
@@ -63,7 +63,7 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
     public void onError(NoHttpException e) {
         Log.e("Net error", e.getMessage(), e.getCause());
         if (callable != null && callable instanceof CallOnNoHttpError) {
-            ((CallOnNoHttpError) callable).onNoHttpError(e);
+            ((CallOnNoHttpError<T>) callable).onNoHttpError(e);
         }
     }
 
@@ -72,7 +72,7 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
         Log.w("Net error", Integer.toString(response.code()) + " " + response.message() + " " +
                 e.getErrorBody());
         if (callable != null && callable instanceof CallOnHttpError) {
-            ((CallOnHttpError) callable).onHttpError(e);
+            ((CallOnHttpError<T>) callable).onHttpError(e);
         }
         //TODO automatically fresh token if 401???
     }
@@ -81,8 +81,8 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
     public void onNext(T t) {
         Log.v("data", t.toString());
         if (callable != null && callable instanceof SetModel)
-            ((SetModel) callable).setModel(t);
+            ((SetModel<T>) callable).setModel(t);
         if(callable != null && callable instanceof CallOnNext)
-            ((CallOnNext) callable).onNext(t);
+            ((CallOnNext<T>) callable).onNext(t);
     }
 }
