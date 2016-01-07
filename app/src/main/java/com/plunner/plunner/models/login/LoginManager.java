@@ -224,7 +224,8 @@ public class LoginManager {
     //TODO static?
 
     /**
-     * this check automatically if a relogin is needed and perform it, via a async way
+     * this check automatically if a relogin is needed and perform it (invalidating also the old
+     * token) in an async way
      *
      * @param e        httpException need to get code of error
      * @param activity needed to show the login view

@@ -99,9 +99,9 @@ public class Authenticator extends AbstractAccountAuthenticator {
             if (password != null) {
                 //TODO use const
                 Log.v("login", "re-authenticating with the existing password, since it was not" +
-                        " possible restore toekn form cache");
-                Bundle data = LoginManager.getInstance().getTokenWithErrors(account.name,
-                        password, am.getUserData(account, "company"));
+                        " possible restore token form cache");
+                Bundle data = LoginManager.getInstance().getTokenWithErrors(
+                        am.getUserData(account, "company").toString(), account.name, password);
 
                 //no errors
                 if (data.get(AccountManager.KEY_AUTHTOKEN) != null) {
@@ -129,7 +129,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
         // If we get here, then we couldn't access the user's password - so we
         // need to re-prompt them for their credentials. We do that by creating
         // an intent to display our AuthenticatorActivity.
-        Log.v("login", "set new credentials");
+        Log.v("login", "set new credentials, since other methods fails");
         final Intent intent = new Intent(mContext, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         intent.putExtra(LoginActivity.ARG_ACCOUNT_TYPE, account.type);

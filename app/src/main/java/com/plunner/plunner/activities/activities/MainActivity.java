@@ -51,12 +51,8 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                //Tests for auth
-                //loginManager.invalidateToken();
-                //loginManager.setToken(null);
-                //loginManager.storeToken(MainActivity.this);
                 if (employee != null) {
-                    employee.fresh();
+                    employee.fresh(MainActivity.this);
                     //TODO fresh is async so this is not the correct way to use it, it's just an example
                     Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();

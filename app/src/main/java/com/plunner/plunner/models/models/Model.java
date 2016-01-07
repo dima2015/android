@@ -10,6 +10,9 @@ import java.lang.reflect.Field;
  * Created by claudio on 19/12/15.
  */
 abstract public class Model {
+
+    //TODO set a default callable with the get?
+
     /**
      * fresh the proprieties of the object
      *
