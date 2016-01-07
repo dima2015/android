@@ -149,20 +149,24 @@ public class LoginManager {
             this.token = "Bearer " + token.getToken();
             return this;
         }
-        try {
-            String body = response.errorBody().string().toString();
-            Log.w("Login error", Integer.toString(response.code()) + " " + response.message() +
-                    " " + body);
-            throw new LoginException(Integer.toString(response.code()) + " " +
-                    response.message(), new JSONObject(body));
-        } catch (IOException e) {
-            Log.w("errorBody error", Integer.toString(response.code()) + " " + response.message() + e);
-            throw new LoginException("errorBody error: " + Integer.toString(response.code()) + " " + e);
-        } catch (JSONException e) {
-            Log.w("JSON error", Integer.toString(response.code()) + " " + response.message() + e);
-            throw new LoginException("JSON error: " + Integer.toString(response.code()) + " " + e);
+        if (response.code() == 422) {
+            try {
+                String body = response.errorBody().string().toString();
+                Log.w("Login error", Integer.toString(response.code()) + " " + response.message() +
+                        " " + body);
+                throw new LoginException(Integer.toString(response.code()) + " " +
+                        response.message(), new JSONObject(body));
+            } catch (IOException e) {
+                Log.w("errorBody error", Integer.toString(response.code()) + " " + response.message() + e);
+                throw new LoginException("errorBody error: " + Integer.toString(response.code()) + " " + e);
+            } catch (JSONException e) {
+                Log.w("JSON error", Integer.toString(response.code()) + " " + response.message() + e);
+                throw new LoginException("JSON error: " + Integer.toString(response.code()) + " " + e);
+            }
+        } else {
+            Log.w("Login error", Integer.toString(response.code()) + " " + response.message());
+            throw new LoginException(Integer.toString(response.code()) + " " + response.message());
         }
-
     }
 
     /**
