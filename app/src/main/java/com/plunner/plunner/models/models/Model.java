@@ -10,13 +10,21 @@ import java.lang.reflect.Field;
  * Created by claudio on 19/12/15.
  */
 abstract public class Model {
+
+    protected Callable callable;
+
+    //TODO <? extends Model>
+    public void setCallable(Callable callable) {
+        this.callable = callable;
+    }
+
     /**
      * fresh the proprieties of the object
      *
      * @return
      */
     public rx.Subscription fresh() {
-        return fresh(new FreshSubscriber());
+        return fresh(new FreshSubscriber(callable));
     }
 
     /**
@@ -26,7 +34,8 @@ abstract public class Model {
      * @return
      */
     public <T extends Model> rx.Subscription fresh(Callable<T> callable) {
-        return fresh(new FreshSubscriber<T>(callable));
+        this.callable = callable;
+        return fresh(new FreshSubscriber(callable));
     }
 
     /**
@@ -38,7 +47,7 @@ abstract public class Model {
     abstract public rx.Subscription fresh(FreshSubscriber subscriber);
 
     public rx.Subscription save() {
-        return save(new Subscriber());
+        return save(new Subscriber(callable));
     }
 
     /**
@@ -46,7 +55,8 @@ abstract public class Model {
      * @return
      */
     public <T extends Model> rx.Subscription save(Callable<T> callable) {
-        return save(new Subscriber<T>(callable));
+        this.callable = callable;
+        return save(new Subscriber(callable));
     }
 
     abstract public rx.Subscription save(Subscriber subscriber);
@@ -65,7 +75,7 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription get(String... parameters) {
-        return get(new Subscriber(), parameters);
+        return get(new Subscriber(callable), parameters);
     }
 
     /**
@@ -75,7 +85,8 @@ abstract public class Model {
      * @return
      */
     public <T extends Model> rx.Subscription get(Callable<T> callable, String... parameters) {
-        return get(new Subscriber<T>(callable), parameters);
+        this.callable = callable;
+        return get(new Subscriber(callable), parameters);
     }
 
     /**
