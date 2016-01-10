@@ -24,7 +24,7 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription fresh() {
-        return fresh(new freshSubscriber(callable));
+        return fresh(new FreshSubscriber(callable));
     }
 
     /**
@@ -35,7 +35,7 @@ abstract public class Model {
      */
     public rx.Subscription fresh(Callable callable) {
         this.callable = callable;
-        return fresh(new freshSubscriber(callable));
+        return fresh(new FreshSubscriber(callable));
     }
 
     /**
@@ -110,16 +110,16 @@ abstract public class Model {
     }
 
     /**
-     * freshSubscriber that perform the proprieties fresh and manage errors
+     * FreshSubscriber that perform the proprieties fresh and manage errors
      *
      * @param <T>
      */
-    public class freshSubscriber<T extends Model> extends Subscriber<T> {
-        public freshSubscriber(Callable callable) {
+    public class FreshSubscriber<T extends Model> extends Subscriber<T> {
+        public FreshSubscriber(Callable callable) {
             super(callable);
         }
 
-        public freshSubscriber() {
+        public FreshSubscriber() {
         }
 
         @Override
