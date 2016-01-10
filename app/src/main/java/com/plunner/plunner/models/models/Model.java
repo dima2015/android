@@ -11,7 +11,12 @@ import java.lang.reflect.Field;
  */
 abstract public class Model {
 
-    //TODO set a default callable with the get?
+    protected Callable callable;
+
+    //TODO <? extends Model>
+    public void setCallable(Callable callable) {
+        this.callable = callable;
+    }
 
     /**
      * fresh the proprieties of the object
@@ -19,7 +24,7 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription fresh() {
-        return fresh(new freshSubscriber());
+        return fresh(new freshSubscriber(callable));
     }
 
     /**
@@ -29,6 +34,7 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription fresh(Callable callable) {
+        this.callable = callable;
         return fresh(new freshSubscriber(callable));
     }
 
@@ -41,7 +47,7 @@ abstract public class Model {
     abstract public rx.Subscription fresh(Subscriber subscriber);
 
     public rx.Subscription save() {
-        return save(new Subscriber());
+        return save(new Subscriber(callable));
     }
 
     /**
@@ -49,6 +55,7 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription save(Callable callable) {
+        this.callable = callable;
         return save(new Subscriber(callable));
     }
 
@@ -66,7 +73,7 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription get(String... parameters) {
-        return get(new Subscriber(), parameters);
+        return get(new Subscriber(callable), parameters);
     }
 
     /**
@@ -75,6 +82,7 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription get(Callable callable, String... parameters) {
+        this.callable = callable;
         return get(new Subscriber(callable), parameters);
     }
 
