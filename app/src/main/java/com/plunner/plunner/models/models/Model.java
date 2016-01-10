@@ -13,7 +13,6 @@ abstract public class Model {
 
     protected Callable callable;
 
-    //TODO <? extends Model>
     public void setCallable(Callable callable) {
         this.callable = callable;
     }
