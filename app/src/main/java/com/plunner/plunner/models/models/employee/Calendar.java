@@ -24,7 +24,7 @@ import rx.Observable;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
-public class Calendar extends Model {
+public class Calendar extends Model<Calendar> {
 
     @SerializedName("id")
     @Expose

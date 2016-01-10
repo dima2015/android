@@ -9,12 +9,11 @@ import java.lang.reflect.Field;
 /**
  * Created by claudio on 19/12/15.
  */
-abstract public class Model {
+abstract public class Model<S extends Model> {
 
-    protected Callable callable;
+    protected Callable<? extends S> callable;
 
-    //TODO <? extends Model>
-    public void setCallable(Callable callable) {
+    public <T extends S> void setCallable(Callable<T> callable) {
         this.callable = callable;
     }
 
@@ -33,7 +32,7 @@ abstract public class Model {
      * @param callable the callable instance to call callback
      * @return
      */
-    public <T extends Model> rx.Subscription fresh(Callable<T> callable) {
+    public <T extends S> rx.Subscription fresh(Callable<T> callable) {
         this.callable = callable;
         return fresh(new FreshSubscriber(callable));
     }
@@ -54,7 +53,7 @@ abstract public class Model {
      * @param callable the callable instance to call callback
      * @return
      */
-    public <T extends Model> rx.Subscription save(Callable<T> callable) {
+    public <T extends S> rx.Subscription save(Callable<T> callable) {
         this.callable = callable;
         return save(new Subscriber(callable));
     }
@@ -84,7 +83,7 @@ abstract public class Model {
      * @param parameters the parameters to perform the get unequivocally
      * @return
      */
-    public <T extends Model> rx.Subscription get(Callable<T> callable, String... parameters) {
+    public <T extends S> rx.Subscription get(Callable<T> callable, String... parameters) {
         this.callable = callable;
         return get(new Subscriber(callable), parameters);
     }
@@ -96,7 +95,7 @@ abstract public class Model {
      * @return this
      * @throws ModelException on errors due to incorrect access to proprieties
      */
-    protected Model copy(Model model) throws ModelException {
+    protected Model<S> copy(Model<S> model) throws ModelException {
         if (this.getClass().getName() != model.getClass().getName())
             throw new ModelException("this and the class given are different");
 
@@ -117,7 +116,7 @@ abstract public class Model {
      *
      * @param <T>
      */
-    public class FreshSubscriber<T extends Model> extends Subscriber<T> {
+    public class FreshSubscriber<T extends S> extends Subscriber<T> {
         public FreshSubscriber(Callable<T> callable) {
             super(callable);
         }

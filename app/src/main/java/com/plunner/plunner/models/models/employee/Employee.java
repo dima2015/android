@@ -13,7 +13,7 @@ import rx.Subscription;
 /**
  * Created by claudio on 22/12/15.
  */
-public class Employee extends com.plunner.plunner.models.models.general.Employee {
+public class Employee extends com.plunner.plunner.models.models.general.Employee<Employee> {
     private ModelList<Group> groups = new ModelList<>();
     private ModelList<Calendar> calendars = new ModelList<>();
     private ModelList<com.plunner.plunner.models.models.employee.Meeting> meetings = new ModelList<>();

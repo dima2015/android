@@ -8,7 +8,7 @@ import rx.Subscription;
 /**
  * Created by claudio on 22/12/15.
  */
-public class Planner extends Employee {
+public class Planner extends Employee<Planner> {
     @Override
     public Subscription fresh(FreshSubscriber subscriber) {
         return null;

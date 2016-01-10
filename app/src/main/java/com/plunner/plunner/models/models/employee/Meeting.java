@@ -15,7 +15,7 @@ import rx.Subscription;
 /**
  * Created by claudio on 22/12/15.
  */
-public class Meeting extends com.plunner.plunner.models.models.general.Meeting {
+public class Meeting extends com.plunner.plunner.models.models.general.Meeting<Meeting> {
     public Meeting() {
         timeslots = new ModelList<MeetingTimeslot>();
     }

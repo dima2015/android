@@ -19,7 +19,7 @@ import rx.Subscription;
 /**
  * Created by claudio on 22/12/15.
  */
-public class Group extends com.plunner.plunner.models.models.general.Group {
+public class Group extends com.plunner.plunner.models.models.general.Group<Group> {
     @SerializedName("meetings")
     @Expose
     @Valid

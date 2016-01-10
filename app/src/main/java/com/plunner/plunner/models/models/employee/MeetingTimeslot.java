@@ -7,7 +7,7 @@ import rx.Subscription;
 /**
  * Created by claudio on 22/12/15.
  */
-public class MeetingTimeslot extends com.plunner.plunner.models.models.general.MeetingTimeslot {
+public class MeetingTimeslot extends com.plunner.plunner.models.models.general.MeetingTimeslot<MeetingTimeslot> {
 
     @Override
     public Subscription fresh(FreshSubscriber subscriber) {

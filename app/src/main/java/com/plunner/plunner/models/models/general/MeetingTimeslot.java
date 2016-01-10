@@ -12,7 +12,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
-abstract public class MeetingTimeslot extends Model {
+abstract public class MeetingTimeslot<S extends MeetingTimeslot> extends Model<S> {
 
     @SerializedName("id")
     @Expose

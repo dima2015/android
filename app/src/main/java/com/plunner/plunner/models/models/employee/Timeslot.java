@@ -15,7 +15,7 @@ import javax.annotation.Generated;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
-public class Timeslot extends Model {
+public class Timeslot extends Model<Timeslot> {
 
     @SerializedName("id")
     @Expose
