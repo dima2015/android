@@ -1,9 +1,10 @@
-package com.plunner.plunner.activities.activities.Fragments;
+package com.plunner.plunner.activities.Fragments;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.activities.Adapters.MeetingsListAdapter;
-import com.plunner.plunner.activities.activities.Adapters.SchedulesListAdapter;
+import com.plunner.plunner.activities.Adapters.MeetingsListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,16 +20,13 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SchedulesFragment.OnFragmentInteractionListener} interface
+ * {@link MeetingsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
-
  */
-public class SchedulesFragment extends Fragment {
-
+public class MeetingsFragment extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
-
 
 
     @Override
@@ -42,15 +39,9 @@ public class SchedulesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_schedules, container, false);
+        return inflater.inflate(R.layout.fragment_meetings, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -68,17 +59,26 @@ public class SchedulesFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
         List<String> strings = new ArrayList<>();
-        ListView listView = (ListView) getActivity().findViewById(R.id.schedulesList);
+        ListView listView = (ListView) getActivity().findViewById(R.id.meetingsList);
         for(int i=0; i<5; i++){
             strings.add("String "+i);
         }
-        SchedulesListAdapter listAdapter = new SchedulesListAdapter(getActivity(), strings);
+        MeetingsListAdapter listAdapter = new MeetingsListAdapter(getActivity(), strings);
         listView.setAdapter(listAdapter);
+
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.meetingsFab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    Snackbar.make(v, "Trying adding a meeting", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+
+            }
+        });
 
 
 
@@ -95,7 +95,8 @@ public class SchedulesFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+        //This method should be defined in the activity
+        //and allows the communication between the fragment and the activity
         void onFragmentInteraction(Uri uri);
     }
 }

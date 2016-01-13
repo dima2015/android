@@ -1,4 +1,4 @@
-package com.plunner.plunner.activities.activities.Adapters;
+package com.plunner.plunner.activities.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,13 +14,12 @@ import java.util.List;
 /**
  * Created by giorgiopea on 04/01/16.
  */
-public class SchedulesListAdapter extends ArrayAdapter<String> {
+public class MeetingsListAdapter extends ArrayAdapter<String> {
 
     private ListItem listItem;
 
-    public SchedulesListAdapter(Context context, List<String> objects) {
+    public MeetingsListAdapter(Context context, List<String> objects) {
         super(context, 0, objects);
-
     }
 
     @Override
@@ -34,14 +33,14 @@ public class SchedulesListAdapter extends ArrayAdapter<String> {
             LayoutInflater layoutInflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            convertView = layoutInflater.inflate(R.layout.schedules_row, null);
+            convertView = layoutInflater.inflate(R.layout.meetings_row, null);
 
-            this.listItem  = new ListItem();
-
+            //Binds values to view
+            this.listItem = new ListItem();
             this.listItem.title = (TextView) convertView.
-                    findViewById(R.id.scheduleTitle);
+                    findViewById(R.id.meetingTitle);
             this.listItem.description = (TextView) convertView
-                    .findViewById(R.id.scheduleDescription);
+                    .findViewById(R.id.meetingDescription);
 
 
             convertView.setTag(listItem);
@@ -51,7 +50,7 @@ public class SchedulesListAdapter extends ArrayAdapter<String> {
         }
 
 
-        this.listItem.title.setText(text+"schedule");
+        this.listItem.title.setText(text+"meetings");
         this.listItem.description.setText(text + " subtitle");
 
         return convertView;
