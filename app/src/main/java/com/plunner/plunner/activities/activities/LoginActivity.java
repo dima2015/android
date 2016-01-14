@@ -350,6 +350,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
                 default:
                     //TODO implement
                     break;
+                //TODO manage also LoginManager.KEY_ERROR_MESSAGE
             }
         }
     }

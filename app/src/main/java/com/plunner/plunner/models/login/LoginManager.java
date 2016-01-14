@@ -18,6 +18,7 @@ import android.util.Log;
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.activities.LoginActivity;
 import com.plunner.plunner.general.Plunner;
+import com.plunner.plunner.models.adapters.HttpException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,10 +76,12 @@ public class LoginManager {
                             token = authtoken;
                             Log.v("Login", "Token set correctly via Account manager " +
                                     authtoken.substring(token.length() - 20));
-                            callback.onOk(token);
+                            if (callback != null)
+                                callback.onOk(token);
                         } catch (Throwable e) {
                             Log.e("Login", "Problems during getting authToken");
-                            callback.onError(e);
+                            if (callback != null)
+                                callback.onError(e);
                         }
                     }
                 }, null);
@@ -91,7 +94,7 @@ public class LoginManager {
      * @param activity needed to show the login activity
      */
     public void storeToken(Activity activity) {
-        storeToken(activity, new storeTokenCallback());
+        storeToken(activity, null);
     }
 
     public String getToken() {
@@ -146,20 +149,118 @@ public class LoginManager {
             this.token = "Bearer " + token.getToken();
             return this;
         }
-        try {
-            String body = response.errorBody().string().toString();
-            Log.w("Login error", Integer.toString(response.code()) + " " + response.message() +
-                    " " + body);
-            throw new LoginException(Integer.toString(response.code()) + " " +
-                    response.message(), new JSONObject(body));
-        } catch (IOException e) {
-            Log.w("errorBody error", Integer.toString(response.code()) + " " + response.message() + e);
-            throw new LoginException("errorBody error: " + Integer.toString(response.code()) + " " + e);
-        } catch (JSONException e) {
-            Log.w("JSON error", Integer.toString(response.code()) + " " + response.message() + e);
-            throw new LoginException("JSON error: " + Integer.toString(response.code()) + " " + e);
+        if (response.code() == 422) {
+            try {
+                String body = response.errorBody().string().toString();
+                Log.w("Login error", Integer.toString(response.code()) + " " + response.message() +
+                        " " + body);
+                throw new LoginException(Integer.toString(response.code()) + " " +
+                        response.message(), new JSONObject(body));
+            } catch (IOException e) {
+                Log.w("errorBody error", Integer.toString(response.code()) + " " + response.message() + e);
+                throw new LoginException("errorBody error: " + Integer.toString(response.code()) + " " + e);
+            } catch (JSONException e) {
+                Log.w("JSON error", Integer.toString(response.code()) + " " + response.message() + e);
+                throw new LoginException("JSON error: " + Integer.toString(response.code()) + " " + e);
+            }
+        } else {
+            Log.w("Login error", Integer.toString(response.code()) + " " + response.message());
+            throw new LoginException(Integer.toString(response.code()) + " " + response.message());
         }
+    }
 
+    /**
+     * get the token and return errors<br>
+     * <strong>Caution</strong> errors are already logged
+     *
+     * @param company
+     * @param email
+     * @param password
+     * @return
+     */
+    public Bundle getTokenWithErrors(String company, String email, String password) {
+        Bundle data = new Bundle();
+        try {
+            //TODO execute these on the main thread?
+            String authtoken = this.loginSync(company, email, password).getToken();
+            data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
+        } catch (LoginException e) {
+            if (e.getJsonErrors() == null) {
+                data.putString(KEY_ERROR_MESSAGE, e.getMessage());
+            } else {
+                JSONObject errors = e.getJsonErrors();
+                java.util.Iterator<java.lang.String> keys = errors.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    try {
+                        JSONArray errors2 = errors.getJSONArray(key);
+                        String errorsJoined = "";
+                        for (int i = 0; i < errors2.length(); i++) {
+                            try {
+                                errorsJoined += errors2.getString(i) + "\n";
+                            } catch (JSONException e3) {
+                                Log.w("Login", "errors parsing errors: " + e3);
+                                //TODO show the error to user
+                            }
+                        }
+                        if (errorsJoined.length() > 0) {
+                            //remove last ", "
+                            errorsJoined = errorsJoined.substring(0, errorsJoined.length() - 1);
+                            data.putString(key, errorsJoined);
+                        }
+                    } catch (JSONException e1) {
+                        //it is not an array
+                        try {
+                            data.putString(key, errors.getString(key));
+                        } catch (JSONException e2) {
+                            Log.w("Login", "errors parsing errors: " + e2);
+                            //TODO show the error to user
+                        }
+                    }
+                }
+            }
+        }
+        return data;
+    }
+    //TODO when the error is not http?
+
+
+    //TODO static?
+
+    /**
+     * this check automatically if a relogin is needed and perform it (invalidating also the old
+     * token) in an async way
+     *
+     * @param e        httpException need to get code of error
+     * @param activity needed to show the login view
+     * @param callback login callback, if login is not need thsi is not called
+     * @return true if the reLogin was perofrmn (not if it successful since it's async)
+     */
+    public boolean reLogin(HttpException e, Activity activity, storeTokenCallback callback) {
+        //invalidate token
+        retrofit.HttpException response = e.getCause();
+        //TODO test
+        //TODO right && token != null
+        if (response.code() == 401 && token != null) {
+            Log.i("Login", "401 -> relogin needed");
+            this.invalidateToken();
+            token = null;
+            this.storeToken(activity, callback);
+            return true;
+            //TODO how to manage request timeout? on error?
+        }
+        return false;
+    }
+
+    /**
+     * this check automatically if a relogin is needed and perform it, via a async way
+     *
+     * @param e        httpException need to get code of error
+     * @param activity needed to show the login view
+     * @return true if the reLogin was perofrmn (not if it successful since it's async)
+     */
+    public boolean reLogin(HttpException e, Activity activity) {
+        return reLogin(e, activity, null);
     }
 
     public static class storeTokenCallback {
@@ -173,10 +274,6 @@ public class LoginManager {
 
         ;
     }
-    //TODO when the error is not http?
-
-
-    //TODO static?
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -196,58 +293,16 @@ public class LoginManager {
             //TODO improve
             Log.v("Login", "login background started");
 
-            Bundle data = new Bundle();
-            try {
-                String authtoken = null;
-                //TODO execute these on the main thread?
-                authtoken = LoginManager.this.loginSync(loginActivity.getCompanyText(),
-                        loginActivity.getEmailText(), loginActivity.getPasswordText()).getToken();
+            Bundle data = LoginManager.this.getTokenWithErrors(loginActivity.getCompanyText(),
+                    loginActivity.getEmailText(), loginActivity.getPasswordText());
 
-
+            //no errors
+            if (data.get(AccountManager.KEY_AUTHTOKEN) != null) {
                 data.putString(AccountManager.KEY_ACCOUNT_NAME, loginActivity.getEmailText());
                 data.putString(AccountManager.KEY_ACCOUNT_TYPE, loginActivity.getIntent().
                         getStringExtra(LoginActivity.ARG_ACCOUNT_TYPE)); //TODO why this way?
-                data.putString(AccountManager.KEY_AUTHTOKEN, authtoken);
                 data.putString(PARAM_USER_PASS, loginActivity.getPasswordText());
                 data.putString(PARAM_COMPANY_NAME, loginActivity.getCompanyText());
-
-                //TODO insert also company and test re-login
-
-            } catch (LoginException e) {
-                if (e.getJsonErrors() == null) {
-                    data.putString(KEY_ERROR_MESSAGE, e.getMessage());
-                } else {
-                    JSONObject errors = e.getJsonErrors();
-                    java.util.Iterator<java.lang.String> keys = errors.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next();
-                        try {
-                            JSONArray errors2 = errors.getJSONArray(key);
-                            String errorsJoined = "";
-                            for (int i = 0; i < errors2.length(); i++) {
-                                try {
-                                    errorsJoined += errors2.getString(i) + "\n";
-                                } catch (JSONException e3) {
-                                    Log.w("Login", "errors parsing errors: " + e3);
-                                    //TODO show the error to user
-                                }
-                            }
-                            if (errorsJoined.length() > 0) {
-                                //remove last ", "
-                                errorsJoined = errorsJoined.substring(0, errorsJoined.length() - 1);
-                                data.putString(key, errorsJoined);
-                            }
-                        } catch (JSONException e1) {
-                            //it is not an array
-                            try {
-                                data.putString(key, errors.getString(key));
-                            } catch (JSONException e2) {
-                                Log.w("Login", "errors parsing errors: " + e2);
-                                //TODO show the error to user
-                            }
-                        }
-                    }
-                }
             }
 
             final Intent res = new Intent();
@@ -296,6 +351,7 @@ public class LoginManager {
             //TODO needed getIntent?
             //TODO maybe it's better store this const inside activity
             //originalAccoutnName = null if this is a new account
+            //!originalAccountName.equals(accountName) -> new email so new account
             if (originalAccountName == null || !originalAccountName.equals(accountName)) {
                 Log.v("login", "Store explicitly");
 
