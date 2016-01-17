@@ -70,18 +70,6 @@ public class MeetingsFragment extends Fragment {
         MeetingsListAdapter listAdapter = new MeetingsListAdapter(getActivity(), strings);
         listView.setAdapter(listAdapter);
 
-        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.meetingsFab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                    Snackbar.make(v, "Trying adding a meeting", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-
-            }
-        });
-
-
-
     }
 
     /**
