@@ -10,13 +10,20 @@ import java.lang.reflect.Field;
  * Created by claudio on 19/12/15.
  */
 abstract public class Model {
+
+    protected Callable callable;
+
+    public void setCallable(Callable callable) {
+        this.callable = callable;
+    }
+
     /**
      * fresh the proprieties of the object
      *
      * @return
      */
     public rx.Subscription fresh() {
-        return fresh(new freshSubscriber());
+        return fresh(new FreshSubscriber(callable));
     }
 
     /**
@@ -26,7 +33,8 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription fresh(Callable callable) {
-        return fresh(new freshSubscriber(callable));
+        this.callable = callable;
+        return fresh(new FreshSubscriber(callable));
     }
 
     /**
@@ -38,7 +46,7 @@ abstract public class Model {
     abstract public rx.Subscription fresh(Subscriber subscriber);
 
     public rx.Subscription save() {
-        return save(new Subscriber());
+        return save(new Subscriber(callable));
     }
 
     /**
@@ -46,6 +54,7 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription save(Callable callable) {
+        this.callable = callable;
         return save(new Subscriber(callable));
     }
 
@@ -63,7 +72,7 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription get(String... parameters) {
-        return get(new Subscriber(), parameters);
+        return get(new Subscriber(callable), parameters);
     }
 
     /**
@@ -72,6 +81,7 @@ abstract public class Model {
      * @return
      */
     public rx.Subscription get(Callable callable, String... parameters) {
+        this.callable = callable;
         return get(new Subscriber(callable), parameters);
     }
 
@@ -99,16 +109,16 @@ abstract public class Model {
     }
 
     /**
-     * freshSubscriber that perform the proprieties fresh and manage errors
+     * FreshSubscriber that perform the proprieties fresh and manage errors
      *
      * @param <T>
      */
-    public class freshSubscriber<T extends Model> extends Subscriber<T> {
-        public freshSubscriber(Callable callable) {
+    public class FreshSubscriber<T extends Model> extends Subscriber<T> {
+        public FreshSubscriber(Callable callable) {
             super(callable);
         }
 
-        public freshSubscriber() {
+        public FreshSubscriber() {
         }
 
         @Override

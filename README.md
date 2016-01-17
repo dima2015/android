@@ -15,6 +15,9 @@ android restful client for employees users of [https://github.com/dsd-meetme/bac
  * [backend](https://github.com/dsd-meetme/backend)
  * [reactivex](http://reactivex.io/)
  * [retrofit](http://square.github.io/retrofit/)
+ * [Authenticator examples](http://blog.udinic.com/2013/04/24/write-your-own-android-authenticator/)
 
 # Notes
 * To avoid errors get the response body (or errorBody) just one time
+* for security reason after a fixed amount of time the re-login is needed but if the password is the same, the process is automatic
+* **UTC time????**

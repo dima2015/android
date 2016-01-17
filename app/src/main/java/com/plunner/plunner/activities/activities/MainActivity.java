@@ -20,9 +20,14 @@ import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.Employee;
 
 
+/**
+ * @author Claudio Cardinale <cardi@thecsea.it>
+ * @version 1.0.0
+ */
 public class MainActivity extends AppCompatActivity implements SetModel<Employee>, CallOnHttpError, CallOnNext<Employee> {
 
     Employee employee = null;
+    LoginManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +38,22 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        LoginManager.loginByData("testInit", "testEmp@test.com", "test");
+        loginManager = LoginManager.getInstance();
+        //TODO check if the token is not null before perform other actions
+        loginManager.storeToken(this, new LoginManager.storeTokenCallback() {
+            //TODO of cours eit is possible override onOk
+            @Override
+            public void onError(Throwable e) {
+                //TODO manage
+                //TODO how do we proceed if the aauthenticator knwos the password but it is not able to verify it becaseu we have a connection lack?
+            }
+        });
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-
                 if (employee != null) {
-                    employee.fresh();
+                    employee.fresh(MainActivity.this);
+                    //TODO fresh is async so this is not the correct way to use it, it's just an example
                     Snackbar.make(view, "Already loaded name " + employee.getName(), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 } else {
@@ -88,13 +102,13 @@ public class MainActivity extends AppCompatActivity implements SetModel<Employee
         retrofit.HttpException response = e.getCause();
         int code = response.code(); //HTTP code
         String errorBody = e.getErrorBody();
+        loginManager.reLogin(e, this, null);//TODO reed javadoc before use
         //TODO error, eventually ask the login
         //TODO automatically try to get token by long token
     }
 
     @Override
     public void onNext(Employee employee) {
-        ;
         //TODO implement or remove
     }
 }
