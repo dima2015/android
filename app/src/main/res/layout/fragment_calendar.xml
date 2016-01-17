@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context="com.plunner.plunner.activities.Fragments.CalendarFragment"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:id="@+id/calendarFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView

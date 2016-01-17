@@ -3,11 +3,16 @@ package com.plunner.plunner.activities.activities;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Spinner;
 
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
@@ -21,6 +26,8 @@ import java.util.List;
 
 public class ComposeScheduleActivity extends AppCompatActivity implements CalendarFragment.OnFragmentInteractionListener {
 
+
+    private WeekView mWeekView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,15 +51,15 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
             }
         });*/
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        /*FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         CalendarFragment fragment = new CalendarFragment();
         transaction.add(R.id.lapal, fragment);
-        transaction.commit();
+        transaction.commit();*/
 
 
         // Get a reference for the week view in the layout.
-       WeekView mWeekView = (WeekView) findViewById(R.id.weekView);
+        mWeekView = (WeekView) findViewById(R.id.weekView);
 
 // Set an action when any event is clicked.
         mWeekView.setOnEventClickListener(new WeekView.EventClickListener() {
@@ -135,7 +142,48 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_calendar:
+                handleFragment();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
+    private void handleFragment(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.lapal);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if(fragment == null){
+            CalendarFragment fragment_1 = new CalendarFragment();
+            transaction.add(R.id.lapal, fragment_1);
+            transaction.commit();
+        }
+        else{
+            if(fragment.isHidden()){
+                transaction.show(fragment);
+            }
+            else{
+                transaction.hide(fragment);
+            }
+            transaction.commit();
+        }
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_compose, menu);
+        return true;
+    }
+
+
+    @Override
+    public void onCalendarDateSelected(Calendar date) {
+        mWeekView.goToDate(date);
+        handleFragment();
     }
 }

@@ -14,6 +14,8 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 
+import java.util.Calendar;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -72,12 +74,7 @@ public class CalendarFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_calendar, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+
 
     @Override
     public void onAttach(Context context) {
@@ -107,17 +104,21 @@ public class CalendarFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
+
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onCalendarDateSelected(Calendar date);
     }
 
     public void  onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
         MaterialCalendarView widget = (MaterialCalendarView) getActivity().findViewById(R.id.calendarView);
+        widget.setSelectedDate(Calendar.getInstance());
         widget.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(MaterialCalendarView widget, CalendarDay date, boolean selected) {
-
+                Calendar calendar = Calendar.getInstance();
+                date.copyTo(calendar);
+                mListener.onCalendarDateSelected(calendar);
             }
         });
         widget.setOnMonthChangedListener(new OnMonthChangedListener() {

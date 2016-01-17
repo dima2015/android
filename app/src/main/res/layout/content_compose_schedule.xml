@@ -13,15 +13,10 @@
     tools:showIn="@layout/activity_compose_schedule"
     android:id="@+id/lapal">
 
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </Spinner>
     <com.alamkanak.weekview.WeekView
         android:id="@+id/weekView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:eventTextColor="@android:color/white"
         app:textSize="12sp"
         app:hourHeight="60dp"
@@ -33,7 +28,8 @@
         app:headerRowBackgroundColor="#ffefefef"
         app:dayBackgroundColor="#05000000"
         app:todayBackgroundColor="#1848adff"
-        app:headerColumnBackground="#ffffffff"/>
+        app:headerColumnBackground="#ffffffff"
+        android:layout_gravity="center" />
 
 
 </FrameLayout>
