@@ -7,11 +7,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.CalendarView;
 import android.widget.Spinner;
 
 import com.alamkanak.weekview.MonthLoader;
@@ -19,6 +21,7 @@ import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Fragments.CalendarFragment;
+import com.plunner.plunner.activities.Fragments.EventDetailFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,13 +31,15 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
 
 
     private WeekView mWeekView;
+    private ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose_schedule);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarSchedule);
         setSupportActionBar(toolbar);
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         /*MaterialCalendarView widget = (MaterialCalendarView) findViewById(R.id.calendarView);
@@ -60,8 +65,35 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
 
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) findViewById(R.id.weekView);
-
+        setWeekView();
 // Set an action when any event is clicked.
+
+
+
+// Set long press listener for events.
+
+
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_compose, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_send:
+                handleFragment();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void setWeekView() {
         mWeekView.setOnEventClickListener(new WeekView.EventClickListener() {
 
             @Override
@@ -91,12 +123,12 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
                 startTime = Calendar.getInstance();
                 startTime.set(Calendar.HOUR_OF_DAY, 3);
                 startTime.set(Calendar.MINUTE, 30);
-                startTime.set(Calendar.MONTH, newMonth-1);
+                startTime.set(Calendar.MONTH, newMonth - 1);
                 startTime.set(Calendar.YEAR, newYear);
                 endTime = (Calendar) startTime.clone();
                 endTime.set(Calendar.HOUR_OF_DAY, 4);
                 endTime.set(Calendar.MINUTE, 30);
-                endTime.set(Calendar.MONTH, newMonth-1);
+                endTime.set(Calendar.MONTH, newMonth - 1);
                 event = new WeekViewEvent(10, startTime.toString(), startTime, endTime);
                 event.setColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
                 events.add(event);
@@ -104,7 +136,7 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
                 startTime = Calendar.getInstance();
                 startTime.set(Calendar.HOUR_OF_DAY, 4);
                 startTime.set(Calendar.MINUTE, 20);
-                startTime.set(Calendar.MONTH, newMonth-1);
+                startTime.set(Calendar.MONTH, newMonth - 1);
                 startTime.set(Calendar.YEAR, newYear);
                 endTime = (Calendar) startTime.clone();
                 endTime.set(Calendar.HOUR_OF_DAY, 5);
@@ -116,11 +148,11 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
                 startTime = Calendar.getInstance();
                 startTime.set(Calendar.HOUR_OF_DAY, 5);
                 startTime.set(Calendar.MINUTE, 30);
-                startTime.set(Calendar.MONTH, newMonth-1);
+                startTime.set(Calendar.MONTH, newMonth - 1);
                 startTime.set(Calendar.YEAR, newYear);
                 endTime = (Calendar) startTime.clone();
                 endTime.add(Calendar.HOUR_OF_DAY, 2);
-                endTime.set(Calendar.MONTH, newMonth-1);
+                endTime.set(Calendar.MONTH, newMonth - 1);
                 event = new WeekViewEvent(2, startTime.toString(), startTime, endTime);
                 event.setColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
                 events.add(event);
@@ -129,56 +161,49 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
                 return events;
             }
 
-    });
-// Set long press listener for events.
-        mWeekView.setEventLongPressListener(new WeekView.EventLongPressListener() {
+        });
+        mWeekView.setEmptyViewClickListener(new WeekView.EmptyViewClickListener() {
             @Override
-            public void onEventLongPress(WeekViewEvent event, RectF eventRect) {
+            public void onEmptyViewClicked(Calendar time) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                Fragment fragment = new EventDetailFragment();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                // To make it fullscreen, use the 'content' root view as the container
+                // for the fragment, which is always the root view for the activity
+                actionBar.hide();
+                transaction.add(R.id.best, fragment)
+                        .addToBackStack(null).commit();
+
 
             }
         });
-
-
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.action_calendar:
-                handleFragment();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    public void showToolbar() {
+        actionBar.show();
     }
 
-    private void handleFragment(){
+
+    private void handleFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.lapal);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if(fragment == null){
+        if (fragment == null) {
             CalendarFragment fragment_1 = new CalendarFragment();
             transaction.add(R.id.lapal, fragment_1);
             transaction.commit();
-        }
-        else{
-            if(fragment.isHidden()){
+        } else {
+            if (fragment.isHidden()) {
                 transaction.show(fragment);
-            }
-            else{
+            } else {
                 transaction.hide(fragment);
             }
             transaction.commit();
         }
 
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_compose, menu);
-        return true;
-    }
+
+
 
 
     @Override

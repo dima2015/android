@@ -3,10 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.activities.ComposeScheduleActivity">
     <item
-        android:id="@+id/action_calendar"
+        android:id="@+id/action_send"
+        android:icon="@drawable/ic_menu_send"
         android:orderInCategory="100"
-        android:title="Calendar"
+        android:title="Send"
         app:showAsAction="always"
-        android:icon="@drawable/ic_menu_camera"/>
-
+        />
+    <item
+        android:id="@+id/action_try"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="Calendar"
+        app:showAsAction="always" />
 </menu>

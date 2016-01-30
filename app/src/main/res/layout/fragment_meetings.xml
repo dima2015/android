@@ -1,16 +1,56 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.Fragments.MeetingsFragment">
 
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/horizontalScrollView"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="15dp">
+
+            <Button style="@style/subCategoryButton"
+                android:id="@+id/button_meeting_tbp"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="@string/meeting_tbp"
+                android:layout_marginRight="15dp"
+                />
+
+            <Button style="@style/subCategoryButton"
+                android:id="@+id/button_meeting_p"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="@string/meeting_p"
+                android:layout_marginRight="15dp" />
+
+            <Button style="@style/subCategoryButton"
+                android:id="@+id/button_meeting_c"
+                android:layout_height="30dp"
+                android:layout_width="wrap_content"
+                android:text="@string/meeting_c"
+                />
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <android.widget.ListView
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:id="@+id/meetingsList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
 
     </android.widget.ListView>
 
 
-
-</FrameLayout>
+</LinearLayout>
