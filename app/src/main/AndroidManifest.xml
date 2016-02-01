@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
-
     <application
         android:name=".general.Plunner"
         android:allowBackup="true"
@@ -34,8 +33,7 @@
         <activity
             android:name=".activities.activities.DashboardActivity"
             android:label="@string/title_activity_dashboard"
-            android:theme="@style/AppTheme.NoActionBar"
-            >
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,10 +43,8 @@
         <activity
             android:name=".activities.activities.ComposeScheduleActivity"
             android:label="@string/title_activity_compose_schedule"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activities.activities.DashboardActivity">
-
-        </activity>
+            android:parentActivityName=".activities.activities.DashboardActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service android:name=".models.login.AuthenticatorService">
             <intent-filter>
@@ -62,7 +58,8 @@
 
         <activity
             android:name=".activities.activities.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+            android:label="@string/title_activity_login" />
+        <activity android:name=".activities.activities.MeetingDetailActivity"></activity>
     </application>
 
 </manifest>

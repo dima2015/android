@@ -26,7 +26,7 @@
     </string>
     <string name="account_type">com.plunner.plunner</string>
     <string name="action_search" />
-    <string name="meeting" >Meeting</string>
+    <string name="meeting">Meeting</string>
     <string name="lipsum">Secondary line text lorem ipsum dapibus, neque id cursus faucibus</string>
     <string name="meeting_tbp">TO BE PLANNED</string>
     <string name="meeting_p">PLANNED</string>

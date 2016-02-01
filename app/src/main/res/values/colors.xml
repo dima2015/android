@@ -6,4 +6,5 @@
     <color name="colorPrimaryLowOpacity">#61ABEC</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="red">#EF5350</color>
 </resources>

@@ -13,7 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.alamkanak.weekview.MonthLoader;
@@ -22,15 +26,22 @@ import com.alamkanak.weekview.WeekViewEvent;
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Fragments.CalendarFragment;
 import com.plunner.plunner.activities.Fragments.EventDetailFragment;
+import com.plunner.plunner.utils.MonthSlider;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 public class ComposeScheduleActivity extends AppCompatActivity implements CalendarFragment.OnFragmentInteractionListener {
 
 
     private WeekView mWeekView;
+
+    private  List<String> months;
+    private  List<String> computedLabels;
     private ActionBar actionBar;
 
     @Override
@@ -41,6 +52,13 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        LinearLayout horScroll = (LinearLayout) findViewById(R.id.months_cal);
+        this.months = new ArrayList<>();
+        this.computedLabels = new ArrayList<>();
+        populateMonths();
+        build();
+        attachToView(horScroll);
 
         /*MaterialCalendarView widget = (MaterialCalendarView) findViewById(R.id.calendarView);
         widget.setOnDateChangedListener(new OnDateSelectedListener() {
@@ -61,7 +79,7 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         CalendarFragment fragment = new CalendarFragment();
         transaction.add(R.id.lapal, fragment);
         transaction.commit();*/
-
+        
 
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) findViewById(R.id.weekView);
@@ -210,5 +228,51 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
     public void onCalendarDateSelected(Calendar date) {
         mWeekView.goToDate(date);
         handleFragment();
+    }
+
+
+    private void populateMonths(){
+        this.months.add("JANUARY");
+        this.months.add("FEBRUARY");
+        this.months.add("MARCH");
+        this.months.add("APRIL");
+        this.months.add("MAY");
+        this.months.add("JUNE");
+        this.months.add("JULY");
+        this.months.add("AUGUST");
+        this.months.add("SEPTEMBER");
+        this.months.add("OCTOBER");
+        this.months.add("NOVEMBER");
+        this.months.add("DECEMBER");
+    }
+    private void build(){
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int nextYear = currentYear + 1;
+        int previousYear = currentYear - 1;
+        int currentMonth = calendar.get(Calendar.MONTH);
+        for(int i=currentMonth; i<12; i++){
+            computedLabels.add(this.months.get(i) + " " + previousYear);
+        }
+        for(int i=0; i<12; i++){
+            computedLabels.add(this.months.get(i) + " " + currentYear);
+        }
+        for(int i=0; i<=currentMonth; i++){
+            computedLabels.add(this.months.get(i) + " " + nextYear);
+        }
+    }
+    public void attachToView(ViewGroup view){
+        ListIterator<String> iterator = this.computedLabels.listIterator();
+        Button button;
+        String currentItem;
+        final float scale = getResources().getDisplayMetrics().density;
+        int pixels = (int) (10 * scale + 0.5f);
+
+        while(iterator.hasNext()){
+            currentItem = iterator.next();
+            button = (Button) getLayoutInflater().inflate(R.layout.month_button, view,false);
+            button.setText(currentItem);
+            view.addView(button);
+        }
     }
 }
