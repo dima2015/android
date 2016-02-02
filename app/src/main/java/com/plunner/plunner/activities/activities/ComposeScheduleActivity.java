@@ -1,7 +1,6 @@
 package com.plunner.plunner.activities.activities;
 
 import android.graphics.RectF;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,15 +9,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CalendarView;
-import android.widget.HorizontalScrollView;
+import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
@@ -26,22 +24,20 @@ import com.alamkanak.weekview.WeekViewEvent;
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Fragments.CalendarFragment;
 import com.plunner.plunner.activities.Fragments.EventDetailFragment;
-import com.plunner.plunner.utils.MonthSlider;
+import com.plunner.plunner.utils.CalendarPickers;
+import com.plunner.plunner.utils.DayMonthStructure;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 public class ComposeScheduleActivity extends AppCompatActivity implements CalendarFragment.OnFragmentInteractionListener {
 
 
     private WeekView mWeekView;
-
-    private  List<String> months;
-    private  List<String> computedLabels;
+    private LinearLayout monthsPicker;
+    private LinearLayout daysPicker;
     private ActionBar actionBar;
 
     @Override
@@ -53,37 +49,14 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        LinearLayout horScroll = (LinearLayout) findViewById(R.id.months_cal);
-        this.months = new ArrayList<>();
-        this.computedLabels = new ArrayList<>();
-        populateMonths();
-        build();
-        attachToView(horScroll);
+        monthsPicker = (LinearLayout) findViewById(R.id.months_picker);
+        daysPicker = (LinearLayout) findViewById(R.id.days_picker);
 
-        /*MaterialCalendarView widget = (MaterialCalendarView) findViewById(R.id.calendarView);
-        widget.setOnDateChangedListener(new OnDateSelectedListener() {
-            @Override
-            public void onDateSelected(MaterialCalendarView widget, CalendarDay date, boolean selected) {
-                NavUtils.navigateUpFromSameTask(ComposeScheduleActivity.this);
-            }
-        });
-        widget.setOnMonthChangedListener(new OnMonthChangedListener() {
-            @Override
-            public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
-
-            }
-        });*/
-
-        /*FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        CalendarFragment fragment = new CalendarFragment();
-        transaction.add(R.id.lapal, fragment);
-        transaction.commit();*/
-        
-
-        // Get a reference for the week view in the layout.
+        createCalendarPickersView(-1);
         mWeekView = (WeekView) findViewById(R.id.weekView);
         setWeekView();
+
+
 // Set an action when any event is clicked.
 
 
@@ -129,51 +102,13 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
                 Calendar startTime = Calendar.getInstance();
                 startTime.set(Calendar.HOUR_OF_DAY, 3);
                 startTime.set(Calendar.MINUTE, 0);
-                startTime.set(Calendar.MONTH, newMonth - 1);
-                startTime.set(Calendar.YEAR, newYear);
                 Calendar endTime = (Calendar) startTime.clone();
-                endTime.add(Calendar.HOUR, 1);
-                endTime.set(Calendar.MONTH, newMonth - 1);
+                endTime.add(Calendar.HOUR, 15);
                 WeekViewEvent event = new WeekViewEvent(1, startTime.toString(), startTime, endTime);
                 event.setColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
                 events.add(event);
 
-                startTime = Calendar.getInstance();
-                startTime.set(Calendar.HOUR_OF_DAY, 3);
-                startTime.set(Calendar.MINUTE, 30);
-                startTime.set(Calendar.MONTH, newMonth - 1);
-                startTime.set(Calendar.YEAR, newYear);
-                endTime = (Calendar) startTime.clone();
-                endTime.set(Calendar.HOUR_OF_DAY, 4);
-                endTime.set(Calendar.MINUTE, 30);
-                endTime.set(Calendar.MONTH, newMonth - 1);
-                event = new WeekViewEvent(10, startTime.toString(), startTime, endTime);
-                event.setColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
-                events.add(event);
-
-                startTime = Calendar.getInstance();
-                startTime.set(Calendar.HOUR_OF_DAY, 4);
-                startTime.set(Calendar.MINUTE, 20);
-                startTime.set(Calendar.MONTH, newMonth - 1);
-                startTime.set(Calendar.YEAR, newYear);
-                endTime = (Calendar) startTime.clone();
-                endTime.set(Calendar.HOUR_OF_DAY, 5);
-                endTime.set(Calendar.MINUTE, 0);
-                event = new WeekViewEvent(10, startTime.toString(), startTime, endTime);
-                event.setColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
-                events.add(event);
-
-                startTime = Calendar.getInstance();
-                startTime.set(Calendar.HOUR_OF_DAY, 5);
-                startTime.set(Calendar.MINUTE, 30);
-                startTime.set(Calendar.MONTH, newMonth - 1);
-                startTime.set(Calendar.YEAR, newYear);
-                endTime = (Calendar) startTime.clone();
-                endTime.add(Calendar.HOUR_OF_DAY, 2);
-                endTime.set(Calendar.MONTH, newMonth - 1);
-                event = new WeekViewEvent(2, startTime.toString(), startTime, endTime);
-                event.setColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
-                events.add(event);
+                
 
 
                 return events;
@@ -230,49 +165,69 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         handleFragment();
     }
 
+    private void createCalendarPickersView(int month){
+        TextView monthView, dayView;
+        Map<String, List<DayMonthStructure>> labelsLists = CalendarPickers.getInstance().build(month);
+        List<DayMonthStructure> monthsLabels = labelsLists.get("months");
+        List<DayMonthStructure> daysLabels = labelsLists.get("days");
+        LayoutInflater inflater = getLayoutInflater();
+        String currentDay = Integer.toString(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+        DayMonthStructure currentItem;
 
-    private void populateMonths(){
-        this.months.add("JANUARY");
-        this.months.add("FEBRUARY");
-        this.months.add("MARCH");
-        this.months.add("APRIL");
-        this.months.add("MAY");
-        this.months.add("JUNE");
-        this.months.add("JULY");
-        this.months.add("AUGUST");
-        this.months.add("SEPTEMBER");
-        this.months.add("OCTOBER");
-        this.months.add("NOVEMBER");
-        this.months.add("DECEMBER");
+        for(int i=0; i<monthsLabels.size(); i++){
+            monthView = (TextView) inflater.inflate(R.layout.month_item, monthsPicker, false);
+            currentItem = monthsLabels.get(i);
+            monthView.setText(currentItem.getValue());
+            if(month == - 1 && currentItem.getIsCurrent()){
+                monthView.setTextColor(ContextCompat.getColor(this, R.color.red));
+            }
+            monthsPicker.addView(monthView);
+        }
+        for(int i=0; i<daysLabels.size(); i++){
+            dayView = (TextView) inflater.inflate(R.layout.day_item, daysPicker, false);
+            currentItem = daysLabels.get(i);
+            dayView.setText(currentItem.getValue());
+            if(month == -1 && currentItem.getIsCurrent()){
+                dayView.setTextColor(ContextCompat.getColor(this, R.color.red));
+            }
+
+            daysPicker.addView(dayView);
+        }
+
     }
-    private void build(){
+
+    public void changeDay(View v){
         Calendar calendar = Calendar.getInstance();
-        int currentYear = calendar.get(Calendar.YEAR);
-        int nextYear = currentYear + 1;
-        int previousYear = currentYear - 1;
-        int currentMonth = calendar.get(Calendar.MONTH);
-        for(int i=currentMonth; i<12; i++){
-            computedLabels.add(this.months.get(i) + " " + previousYear);
+        TextView textView = (TextView) v;
+        int day = Integer.parseInt(textView.getText().toString());
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        int childCount = daysPicker.getChildCount();
+        for(int i=0; i<childCount; i++){
+            ((TextView) daysPicker.getChildAt(i)).setTextColor(ContextCompat.getColor(this,R.color.light_gray));
         }
-        for(int i=0; i<12; i++){
-            computedLabels.add(this.months.get(i) + " " + currentYear);
-        }
-        for(int i=0; i<=currentMonth; i++){
-            computedLabels.add(this.months.get(i) + " " + nextYear);
-        }
+        textView.setTextColor(ContextCompat.getColor(this, R.color.red));
+        mWeekView.goToDate(calendar);
     }
-    public void attachToView(ViewGroup view){
-        ListIterator<String> iterator = this.computedLabels.listIterator();
-        Button button;
-        String currentItem;
-        final float scale = getResources().getDisplayMetrics().density;
-        int pixels = (int) (10 * scale + 0.5f);
 
-        while(iterator.hasNext()){
-            currentItem = iterator.next();
-            button = (Button) getLayoutInflater().inflate(R.layout.month_button, view,false);
-            button.setText(currentItem);
-            view.addView(button);
+    public void changeMonth(View v){
+        Calendar calendar = Calendar.getInstance();
+        TextView textView = (TextView) v;
+        String[] split = textView.getText().toString().split(" ");
+        String month = split[0];
+        String year = split[1];
+        int monthIndex = CalendarPickers.getInstance().getMonthIndex(month);
+        int yearIndex = Integer.parseInt(year);
+        calendar.set(Calendar.MONTH, monthIndex-1);
+        calendar.set(Calendar.YEAR, yearIndex);
+        int childCount = monthsPicker.getChildCount();
+        for(int i=0; i<childCount; i++){
+            ((TextView) monthsPicker.getChildAt(i)).setTextColor(ContextCompat.getColor(this,R.color.light_gray));
         }
+        ((TextView) v).setTextColor(ContextCompat.getColor(this, R.color.red));
+        calendar.get(Calendar.MONTH);
+        calendar.get(Calendar.YEAR);
+        mWeekView.goToDate(calendar);
+
     }
 }
+
