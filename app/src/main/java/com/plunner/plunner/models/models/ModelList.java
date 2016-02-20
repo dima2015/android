@@ -14,7 +14,7 @@ import rx.Subscription;
 /**
  * Created by claudio on 22/12/15.
  */
-public class ModelList<T extends Model> extends Model implements Cloneable {
+public class ModelList<T extends Model> extends Model<T> implements Cloneable {
     private List<T> models = new ArrayList<T>();
 
     public ModelList(List<T> models) {
