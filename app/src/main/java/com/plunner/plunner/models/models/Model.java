@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 /**
  * Created by claudio on 19/12/15.
  */
+
 abstract public class Model<S extends Model> {
 
     protected Callable<? extends S> callable;
@@ -53,6 +54,7 @@ abstract public class Model<S extends Model> {
      * @param callable the callable instance to call callback
      * @return
      */
+
     public <T extends S> rx.Subscription save(Callable<T> callable) {
         this.callable = callable;
         return save(new Subscriber(callable));

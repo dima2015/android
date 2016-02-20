@@ -22,9 +22,14 @@ import com.plunner.plunner.models.models.employee.Employee;
 import com.plunner.plunner.models.models.employee.Group;
 
 
-public class MainActivity extends AppCompatActivity {
 
+public class MainActivity extends AppCompatActivity {
+/**
+ * @author Claudio Cardinale <cardi@thecsea.it>
+ * @version 1.0.0
+ */
     Employee employee = null;
+    LoginManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +40,19 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        LoginManager.loginByData("testInit", "testEmp@test.com", "test");
+        loginManager = LoginManager.getInstance();
+        //TODO check if the token is not null before perform other actions
+        loginManager.storeToken(this, new LoginManager.storeTokenCallback() {
+            //TODO of cours eit is possible override onOk
+            @Override
+            public void onError(Throwable e) {
+                //TODO manage
+                //TODO how do we proceed if the aauthenticator knwos the password but it is not able to verify it becaseu we have a connection lack?
+            }
+        });
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-
                 if (employee != null) {
                     employee.fresh();
                     employee.loadGroups(new GroupsCallback()); //TEST in the logger
@@ -88,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
         retrofit.HttpException response = e.getCause();
         int code = response.code(); //HTTP code
         String errorBody = e.getErrorBody();
+        loginManager.reLogin(e, this, null);//TODO reed javadoc before use
         //TODO error, eventually ask the login
         //TODO automatically try to get token by long token
     }
-
 
     private class EmployeeCallback implements SetModel<Employee>,
             CallOnHttpError<Employee>, CallOnNext<Employee> {
