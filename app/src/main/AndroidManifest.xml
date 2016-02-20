@@ -44,7 +44,7 @@
             android:name=".activities.activities.ComposeScheduleActivity"
             android:label="@string/title_activity_compose_schedule"
             android:parentActivityName=".activities.activities.DashboardActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/CustomTheme"></activity>
 
         <service android:name=".models.login.AuthenticatorService">
             <intent-filter>

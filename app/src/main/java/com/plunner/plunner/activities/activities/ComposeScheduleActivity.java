@@ -1,5 +1,6 @@
 package com.plunner.plunner.activities.activities;
 
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,15 +10,19 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
+import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
@@ -25,11 +30,14 @@ import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Fragments.CalendarFragment;
 import com.plunner.plunner.activities.Fragments.EventDetailFragment;
 import com.plunner.plunner.utils.CalendarPickers;
-import com.plunner.plunner.utils.DayMonthStructure;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ComposeScheduleActivity extends AppCompatActivity implements CalendarFragment.OnFragmentInteractionListener {
@@ -39,6 +47,11 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
     private LinearLayout monthsPicker;
     private LinearLayout daysPicker;
     private ActionBar actionBar;
+    private EditText scheduleNameInput;
+    private TextView scheduleStatus;
+    private Button currentDayBtn;
+    private Button currentMonthBtn;
+    private Map<Button, Calendar> monthsBtnCalendarMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,32 +59,50 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         setContentView(R.layout.activity_compose_schedule);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarSchedule);
         setSupportActionBar(toolbar);
+        scheduleStatus = (TextView) findViewById(R.id.compose_schedule_status);
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         monthsPicker = (LinearLayout) findViewById(R.id.months_picker);
         daysPicker = (LinearLayout) findViewById(R.id.days_picker);
-
+        scheduleNameInput = (EditText) findViewById(R.id.compose_schedule_schedule_name);
+        monthsBtnCalendarMap = new HashMap<>();
         createCalendarPickersView(-1);
         mWeekView = (WeekView) findViewById(R.id.weekView);
         setWeekView();
+        mWeekView.goToDate(Calendar.getInstance());
+        Switch aSwitch = (Switch) findViewById(R.id.compose_schedule_enabled_switch);
+        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                scheduleNameInput.clearFocus();
+                if(isChecked){
+                    scheduleStatus.setText(getResources().getText(R.string.enabled));
+                    scheduleStatus.setTextColor(ContextCompat.getColor(ComposeScheduleActivity.this,R.color.colorPrimary));
+                }
+                else{
+                    scheduleStatus.setText("DISABLED");
+                    scheduleStatus.setTextColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.light_gray));
+                }
+            }
+        });
 
 
 // Set an action when any event is clicked.
 
 
-
 // Set long press listener for events.
 
 
-
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_compose, menu);
+        inflater.inflate(R.menu.menu_compose_schedule, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -97,7 +128,7 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         mWeekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
             @Override
             public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
-                List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
+                List<WeekViewEvent> events = new ArrayList<>();
 
                 Calendar startTime = Calendar.getInstance();
                 startTime.set(Calendar.HOUR_OF_DAY, 3);
@@ -107,8 +138,6 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
                 WeekViewEvent event = new WeekViewEvent(1, startTime.toString(), startTime, endTime);
                 event.setColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
                 events.add(event);
-
-                
 
 
                 return events;
@@ -128,6 +157,69 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
                         .addToBackStack(null).commit();
 
 
+            }
+        });
+        mWeekView.setScrollListener(new WeekView.ScrollListener() {
+            @Override
+            public void onFirstVisibleDayChanged(Calendar newFirstVisibleDay, Calendar oldFirstVisibleDay) {
+                int oldMonth = monthsBtnCalendarMap.get(currentMonthBtn).get(Calendar.MONTH);
+                int newDayIndex, newYearIndex, newMonth;
+                int currentMonth, currentYear;
+                Calendar currentDate;
+                Button currentButton;
+                if(oldFirstVisibleDay != null){
+                    newDayIndex = newFirstVisibleDay.get(Calendar.DAY_OF_MONTH);
+                    newMonth = newFirstVisibleDay.get(Calendar.MONTH);
+                    newYearIndex = newFirstVisibleDay.get(Calendar.YEAR);
+                    cancelDayBtnAppearance(currentDayBtn);
+                    currentDayBtn = (Button) daysPicker.getChildAt(newDayIndex-1);
+                    imposeDayBtnAppearance(currentDayBtn);
+                    if(oldMonth != newMonth ){
+                        for(int i=0; i<monthsPicker.getChildCount(); i++){
+                            currentButton = (Button) monthsPicker.getChildAt(i);
+                            currentDate = monthsBtnCalendarMap.get(currentButton);
+                            currentMonth = currentDate.get(Calendar.MONTH);
+                            currentYear = currentDate.get(Calendar.YEAR);
+                            if(currentMonth == newMonth && currentYear == newYearIndex){
+                                try {
+                                    changeMonth(currentButton);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+
+            }
+        });
+        mWeekView.setDateTimeInterpreter(new DateTimeInterpreter() {
+            @Override
+            public String interpretDate(Calendar date) {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault());
+                    return sdf.format(date.getTime()).toUpperCase();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "";
+                }
+            }
+
+            @Override
+            public String interpretTime(int hour) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, hour);
+                calendar.set(Calendar.MINUTE, 0);
+
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                    return sdf.format(calendar.getTime());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "";
+                }
             }
         });
     }
@@ -157,77 +249,112 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
     }
 
 
-
-
     @Override
     public void onCalendarDateSelected(Calendar date) {
         mWeekView.goToDate(date);
         handleFragment();
     }
 
-    private void createCalendarPickersView(int month){
-        TextView monthView, dayView;
-        Map<String, List<DayMonthStructure>> labelsLists = CalendarPickers.getInstance().build(month);
-        List<DayMonthStructure> monthsLabels = labelsLists.get("months");
-        List<DayMonthStructure> daysLabels = labelsLists.get("days");
+    private void createCalendarPickersView(int month) {
+        Button monthBtn, dayBtn;
+        Calendar calendar = Calendar.getInstance();
+        CalendarPickers calendarPickers = CalendarPickers.getInstance();
+        List<Integer> days = calendarPickers.computeDays(calendar);
+        //Gets days and months labels to be inserted in the activity view
+        List<Calendar> monthsCompositeList = calendarPickers.buildMonths(month);
         LayoutInflater inflater = getLayoutInflater();
-        String currentDay = Integer.toString(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-        DayMonthStructure currentItem;
+        //String currentDay = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+        int todayMonth = calendar.get(Calendar.MONTH);
+        int todayYear = calendar.get(Calendar.YEAR);
+        int todayDay = calendar.get(Calendar.DAY_OF_MONTH);
+        Calendar currentCompositeMonth;
+        int currentMonth, currentYear, currentDay;
 
-        for(int i=0; i<monthsLabels.size(); i++){
-            monthView = (TextView) inflater.inflate(R.layout.month_item, monthsPicker, false);
-            currentItem = monthsLabels.get(i);
-            monthView.setText(currentItem.getValue());
-            if(month == - 1 && currentItem.getIsCurrent()){
-                monthView.setTextColor(ContextCompat.getColor(this, R.color.red));
+
+        for (int i = 0; i < monthsCompositeList.size(); i++) {
+            currentCompositeMonth = monthsCompositeList.get(i);
+            currentMonth = currentCompositeMonth.get(Calendar.MONTH);
+            currentYear = currentCompositeMonth.get(Calendar.YEAR);
+            monthBtn = (Button) inflater.inflate(R.layout.month_button, monthsPicker, false);
+            monthBtn.setText(calendarPickers.getMonthName(currentCompositeMonth)+" "+currentYear);
+            if (currentMonth == todayMonth && currentYear == todayYear) {
+                imposeMonthBtnAppearance(monthBtn);
+                currentMonthBtn = monthBtn;
             }
-            monthsPicker.addView(monthView);
+            monthsPicker.addView(monthBtn);
+            monthsBtnCalendarMap.put(monthBtn, currentCompositeMonth);
         }
-        for(int i=0; i<daysLabels.size(); i++){
-            dayView = (TextView) inflater.inflate(R.layout.day_item, daysPicker, false);
-            currentItem = daysLabels.get(i);
-            dayView.setText(currentItem.getValue());
-            if(month == -1 && currentItem.getIsCurrent()){
-                dayView.setTextColor(ContextCompat.getColor(this, R.color.red));
+        for (int i = 0; i < days.size(); i++) {
+            currentDay = days.get(i);
+            dayBtn = (Button) inflater.inflate(R.layout.day_button, daysPicker, false);
+            dayBtn.setText(Integer.toString(currentDay));
+            if (currentDay == todayDay) {
+                imposeDayBtnAppearance(dayBtn);
+                currentDayBtn = dayBtn;
             }
-
-            daysPicker.addView(dayView);
+            daysPicker.addView(dayBtn);
         }
 
     }
 
-    public void changeDay(View v){
+    public void changeDay(View v) {
+        scheduleNameInput.clearFocus();
         Calendar calendar = Calendar.getInstance();
-        TextView textView = (TextView) v;
-        int day = Integer.parseInt(textView.getText().toString());
-        calendar.set(Calendar.DAY_OF_MONTH, day);
-        int childCount = daysPicker.getChildCount();
-        for(int i=0; i<childCount; i++){
-            ((TextView) daysPicker.getChildAt(i)).setTextColor(ContextCompat.getColor(this,R.color.light_gray));
-        }
-        textView.setTextColor(ContextCompat.getColor(this, R.color.red));
+        Button pressedDayBtn = (Button) v;
+        int dayPressed = Integer.parseInt(pressedDayBtn.getText().toString());
+        calendar.set(Calendar.DAY_OF_MONTH, dayPressed);
+        cancelDayBtnAppearance(currentDayBtn);
+        imposeDayBtnAppearance(pressedDayBtn);
+        currentDayBtn = pressedDayBtn;
         mWeekView.goToDate(calendar);
     }
 
-    public void changeMonth(View v){
-        Calendar calendar = Calendar.getInstance();
-        TextView textView = (TextView) v;
-        String[] split = textView.getText().toString().split(" ");
-        String month = split[0];
-        String year = split[1];
-        int monthIndex = CalendarPickers.getInstance().getMonthIndex(month);
-        int yearIndex = Integer.parseInt(year);
-        calendar.set(Calendar.MONTH, monthIndex-1);
-        calendar.set(Calendar.YEAR, yearIndex);
-        int childCount = monthsPicker.getChildCount();
-        for(int i=0; i<childCount; i++){
-            ((TextView) monthsPicker.getChildAt(i)).setTextColor(ContextCompat.getColor(this,R.color.light_gray));
+    public void changeMonth(View v) throws ParseException {
+        scheduleNameInput.clearFocus();
+        Button pressedMonthBtn = (Button) v;
+        Calendar associatedDate = monthsBtnCalendarMap.get(v);
+        List<Integer> days = CalendarPickers.getInstance().computeDays(associatedDate);
+        resetMonthBtnAppearance(currentMonthBtn);
+        imposeMonthBtnAppearance(pressedMonthBtn);
+        currentMonthBtn = pressedMonthBtn;
+        if(days.size() != daysPicker.getChildCount()){
+            drawDaysBtns(days);
         }
-        ((TextView) v).setTextColor(ContextCompat.getColor(this, R.color.red));
-        calendar.get(Calendar.MONTH);
-        calendar.get(Calendar.YEAR);
-        mWeekView.goToDate(calendar);
+        mWeekView.goToDate(associatedDate);
+    }
 
+    private void drawDaysBtns(List<Integer> days) {
+        LayoutInflater inflater = getLayoutInflater();
+        int todayDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        Button dayBtn;
+        int currentDay;
+        daysPicker.removeAllViews();
+        for(int i=0; i<days.size(); i++){
+            currentDay = days.get(i);
+            dayBtn = (Button) inflater.inflate(R.layout.day_button, daysPicker, false);
+            dayBtn.setText(Integer.toString(currentDay));
+            if (currentDay == todayDay) {
+                imposeDayBtnAppearance(dayBtn);
+                currentDayBtn = dayBtn;
+            }
+            daysPicker.addView(dayBtn);
+        }
+    }
+
+    private void imposeDayBtnAppearance(Button button) {
+        button.setBackgroundResource(R.drawable.day_button_bkgnd);
+        button.setTextColor(ContextCompat.getColor(this, R.color.white));
+    }
+    private void imposeMonthBtnAppearance(Button button){
+        button.setTextColor(ContextCompat.getColor(this, R.color.red));
+    }
+    private void cancelDayBtnAppearance(Button btn){
+        btn.setTextColor(ContextCompat.getColor(this, R.color.light_gray));
+        btn.setBackgroundResource(0);
+        btn.setBackgroundColor(Color.TRANSPARENT);
+    }
+    private void resetMonthBtnAppearance(Button btn){
+        btn.setTextColor(ContextCompat.getColor(this,R.color.light_gray));
     }
 }
 

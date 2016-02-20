@@ -14,4 +14,5 @@
         android:id="@+id/viewPager">
 
     </android.support.v4.view.ViewPager>
+
 </RelativeLayout>
