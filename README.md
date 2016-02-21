@@ -1,7 +1,7 @@
 # android
 
 # What is it?
-android restful client for employees users of [https://github.com/dsd-meetme/backend](https://github.com/dsd-meetme/backend)
+Android restful client for employees users of [https://github.com/dsd-meetme/backend](https://github.com/dsd-meetme/backend)
 
 # Useful links
 * [https://guides.codepath.com/android/Consuming-APIs-with-Retrofit#references](https://guides.codepath.com/android/Consuming-APIs-with-Retrofit#references)
