@@ -60,18 +60,19 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarSchedule);
         setSupportActionBar(toolbar);
         scheduleStatus = (TextView) findViewById(R.id.compose_schedule_status);
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
         monthsPicker = (LinearLayout) findViewById(R.id.months_picker);
         daysPicker = (LinearLayout) findViewById(R.id.days_picker);
         scheduleNameInput = (EditText) findViewById(R.id.compose_schedule_schedule_name);
-        monthsBtnCalendarMap = new HashMap<>();
-        createCalendarPickersView(-1);
+        Switch aSwitch = (Switch) findViewById(R.id.compose_schedule_enabled_switch);
         mWeekView = (WeekView) findViewById(R.id.weekView);
+        monthsBtnCalendarMap = new HashMap<>();
+
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        createCalendarPickersView(-1);
         setWeekView();
         mWeekView.goToDate(Calendar.getInstance());
-        Switch aSwitch = (Switch) findViewById(R.id.compose_schedule_enabled_switch);
+
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -303,6 +304,8 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         Button pressedDayBtn = (Button) v;
         int dayPressed = Integer.parseInt(pressedDayBtn.getText().toString());
         calendar.set(Calendar.DAY_OF_MONTH, dayPressed);
+        calendar.set(Calendar.MONTH, monthsBtnCalendarMap.get(currentMonthBtn).get(Calendar.MONTH));
+        calendar.set(Calendar.YEAR, monthsBtnCalendarMap.get(currentMonthBtn).get(Calendar.YEAR));
         cancelDayBtnAppearance(currentDayBtn);
         imposeDayBtnAppearance(pressedDayBtn);
         currentDayBtn = pressedDayBtn;
@@ -318,14 +321,14 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         imposeMonthBtnAppearance(pressedMonthBtn);
         currentMonthBtn = pressedMonthBtn;
         if(days.size() != daysPicker.getChildCount()){
-            drawDaysBtns(days);
+            drawDaysBtns(days,Integer.parseInt(currentDayBtn.getText().toString()));
         }
+        associatedDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(currentDayBtn.getText().toString()));
         mWeekView.goToDate(associatedDate);
     }
 
-    private void drawDaysBtns(List<Integer> days) {
+    private void drawDaysBtns(List<Integer> days, int daySelected) {
         LayoutInflater inflater = getLayoutInflater();
-        int todayDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
         Button dayBtn;
         int currentDay;
         daysPicker.removeAllViews();
@@ -333,7 +336,7 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
             currentDay = days.get(i);
             dayBtn = (Button) inflater.inflate(R.layout.day_button, daysPicker, false);
             dayBtn.setText(Integer.toString(currentDay));
-            if (currentDay == todayDay) {
+            if (currentDay == daySelected) {
                 imposeDayBtnAppearance(dayBtn);
                 currentDayBtn = dayBtn;
             }

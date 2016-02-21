@@ -44,7 +44,7 @@
             android:name=".activities.activities.ComposeScheduleActivity"
             android:label="@string/title_activity_compose_schedule"
             android:parentActivityName=".activities.activities.DashboardActivity"
-            android:theme="@style/CustomTheme"></activity>
+            android:theme="@style/CustomTheme" />
 
         <service android:name=".models.login.AuthenticatorService">
             <intent-filter>
@@ -59,7 +59,7 @@
         <activity
             android:name=".activities.activities.LoginActivity"
             android:label="@string/title_activity_login" />
-        <activity android:name=".activities.activities.MeetingDetailActivity"></activity>
+        <activity android:name=".activities.activities.MeetingDetailActivity" />
     </application>
 
 </manifest>

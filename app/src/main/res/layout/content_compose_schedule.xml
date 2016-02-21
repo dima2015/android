@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/lapal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activities.activities.ComposeScheduleActivity"
-    tools:showIn="@layout/activity_compose_schedule">
+    tools:showIn="@layout/activity_compose_schedule"
+>
 
 
     <LinearLayout
@@ -63,13 +63,6 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/colorPrimary" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Button"
-                android:id="@+id/button"
-                android:hint="bla_bla" />
-
             <Switch
                 android:id="@+id/compose_schedule_enabled_switch"
                 android:layout_width="wrap_content"
@@ -85,7 +78,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/darker_gray" />
+        android:background="@color/light_gray" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -143,9 +136,10 @@
         <com.alamkanak.weekview.WeekView
             android:id="@+id/weekView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="1500dp"
             android:layout_marginTop="10dp"
             app:columnGap="8dp"
+
             app:dayBackgroundColor="#05000000"
             app:eventTextColor="@android:color/white"
             app:headerColumnBackground="#ffffffff"
@@ -158,5 +152,6 @@
             app:textSize="12sp"
             app:todayBackgroundColor="#1848adff" />
     </LinearLayout>
+    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
 </LinearLayout>
