@@ -216,16 +216,16 @@ public class Calendar extends Model<Calendar> implements Listable {
 
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
+        return null;
+    }
+
+    @Override
+    public Subscription getList(Subscriber subscriber, String... parameters) {
         if (parameters.length != 0)
             subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
 
         return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(),
                 new ListSubscriber<Calendar>(subscriber, this));
-    }
-
-    @Override
-    public Subscription getList(Subscriber subscriber, String... parameters) {
-        return null;
     }
 
     static private interface RestInterface {

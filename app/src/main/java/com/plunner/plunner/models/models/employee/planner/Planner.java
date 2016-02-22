@@ -1,7 +1,7 @@
-package com.plunner.plunner.models.models.planner;
+package com.plunner.plunner.models.models.employee.planner;
 
 import com.plunner.plunner.models.adapters.Subscriber;
-import com.plunner.plunner.models.models.general.Employee;
+import com.plunner.plunner.models.models.employee.Employee;
 
 import rx.Subscription;
 

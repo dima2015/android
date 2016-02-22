@@ -1,5 +1,5 @@
 
-package com.plunner.plunner.models.models.general;
+package com.plunner.plunner.models.models.employee;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

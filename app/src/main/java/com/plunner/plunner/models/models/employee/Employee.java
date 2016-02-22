@@ -1,5 +1,5 @@
 
-package com.plunner.plunner.models.models.general;
+package com.plunner.plunner.models.models.employee;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -8,7 +8,7 @@ import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelException;
 import com.plunner.plunner.models.models.ModelList;
-import com.plunner.plunner.models.models.general.utility.LoadResource;
+import com.plunner.plunner.models.models.employee.utility.LoadResource;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -48,8 +48,7 @@ public class Employee<S extends Employee> extends Model<S> {
 
     private LoadResource<ModelList<Group>> groups = new LoadResource<ModelList<Group>>(new ModelList<Group>(new Group()));
     private LoadResource<ModelList<Meeting>> meetings = new LoadResource<ModelList<Meeting>>(new ModelList<Meeting>(new Meeting()));
-    //private ModelList<Calendar> calendars = new ModelList<>();
-    //private ModelList<com.plunner.plunner.models.models.employee.Meeting> meetings = new ModelList<>();
+    private LoadResource<ModelList<Calendar>> calendars = new LoadResource<ModelList<Calendar>>(new ModelList<Calendar>(new Calendar()));
 
     //TODO serialization?
 
@@ -86,57 +85,12 @@ public class Employee<S extends Employee> extends Model<S> {
         return get(subscriber);
     }
 
-    /**
-     * Get meetings if they are <strong>already loaded</strong> via loadMeetings
-     *
-     * @return list of groups
-     */
-    // public ModelList<com.plunner.plunner.models.models.employee.Meeting> getMeetings() throws CloneNotSupportedException {
-//        return meetings.clone();
-//    }
     @Override
     public rx.Subscription save(Subscriber subscriber) {
 //TODO implement
         return null;
     }
 
-
-    /**
-     * LoadCalendarsSubscriber that insert the calendars list in employee model
-     */
-  /*  public class LoadCalendarsSubscriber extends Subscriber<ModelList<Calendar>> {
-        public LoadCalendarsSubscriber(Callable callable) {
-            super(callable);
-        }
-
-        public LoadCalendarsSubscriber() {
-        }
-
-        @Override
-        public void onNext(ModelList<Calendar> calendars) {
-            Employee.this.calendars = calendars;
-            super.onNext(calendars);
-        }
-    }*/
-
-    /**
-     * LoadCalendarsSubscriber that insert the calendars list in employee model
-     */
-    /*public class LoadMeetingsSubscriber extends Subscriber<ModelList<com.plunner.plunner.models.models.employee.Meeting>> {
-        public LoadMeetingsSubscriber(Callable callable) {
-            super(callable);
-        }
-
-        public LoadMeetingsSubscriber() {
-            //TODO super in every methods like this???
-        }
-
-        @Override
-        public void onNext(ModelList<Meeting> meetings) {
-            Employee.this.meetings = meetings;
-            super.onNext(meetings);
-        }
-    }*/
 
     /**
      * <strong>CAUTION:</strong> this give a new object
@@ -169,6 +123,15 @@ public class Employee<S extends Employee> extends Model<S> {
      */
     public LoadResource<ModelList<Meeting>> getMeetings() {
         return meetings;
+    }
+
+    /**
+     * Get calendars, you should load them via the laod call
+     *
+     * @return laoder of calendars
+     */
+    public LoadResource<ModelList<Calendar>> getCalendars() {
+        return calendars;
     }
 
     /**
