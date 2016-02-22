@@ -3,18 +3,28 @@ package com.plunner.plunner.models.models.general;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.plunner.plunner.models.adapters.ListSubscriber;
+import com.plunner.plunner.models.adapters.Retrofit;
+import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
+import com.plunner.plunner.models.models.ModelException;
 import com.plunner.plunner.models.models.ModelList;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.List;
+
 import javax.annotation.Generated;
 
+import retrofit.http.GET;
+import rx.Observable;
+import rx.Subscription;
+
 @Generated("org.jsonschema2pojo")
-abstract public class Meeting<S extends Meeting> extends Model<S> implements Listable {
+public class Meeting<S extends Meeting> extends Model<S> implements Listable {
 
     @SerializedName("id")
     @Expose
@@ -40,7 +50,8 @@ abstract public class Meeting<S extends Meeting> extends Model<S> implements Lis
     @SerializedName("updated_at")
     @Expose
     protected String updatedAt;
-    protected ModelList<? extends MeetingTimeslot> timeslots;
+    //TODO use resources??? or not isnce it is already loaded?
+    protected ModelList<? extends MeetingTimeslot> timeslots = new ModelList<MeetingTimeslot>(new MeetingTimeslot());
 
     /**
      * No args constructor for use in serialization
@@ -61,6 +72,30 @@ abstract public class Meeting<S extends Meeting> extends Model<S> implements Lis
         this.description = description;
         this.startTime = startTime;
         this.duration = duration;
+    }
+
+    @Override
+    public Subscription fresh(FreshSubscriber subscriber) {
+        return null; //TODO implement
+    }
+
+    @Override
+    public Subscription save(Subscriber subscriber) {
+        return null; //TODO implement
+    }
+
+    @Override
+    public Subscription get(Subscriber subscriber, String... parameters) {
+        return null;
+    }
+
+    @Override
+    public Subscription getList(Subscriber subscriber, String... parameters) {
+        if (parameters.length != 0)
+            subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
+
+        return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(),
+                new ListSubscriber<Meeting>(subscriber, this));
     }
 
     /**
@@ -189,7 +224,6 @@ abstract public class Meeting<S extends Meeting> extends Model<S> implements Lis
         return this;
     }
 
-
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
@@ -214,6 +248,11 @@ abstract public class Meeting<S extends Meeting> extends Model<S> implements Lis
                 append(description, rhs.description).append(groupId, rhs.groupId).
                 append(startTime, rhs.startTime).append(duration, rhs.duration).
                 append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
+    }
+
+    static private interface RestInterface {
+        @GET("/employees/meetings/")
+        Observable<List<Meeting>> index();
     }
 
     //TODO abstract load timeslots

@@ -54,7 +54,7 @@ public class Group<S extends Group> extends Model<S> implements Listable {
     @SerializedName("meetings")
     @Expose
     @Valid
-    protected List<com.plunner.plunner.models.models.employee.Meeting> meetings = new ArrayList<>();
+    protected List<Meeting> meetings = new ArrayList<>();
 
 
     /**
@@ -92,8 +92,8 @@ public class Group<S extends Group> extends Model<S> implements Listable {
     /**
      * @return The meetings
      */
-    public List<com.plunner.plunner.models.models.employee.Meeting> getMeetings() {
-        return new ArrayList<com.plunner.plunner.models.models.employee.Meeting>(meetings); //new object
+    public List<Meeting> getMeetings() {
+        return new ArrayList<Meeting>(meetings); //new object
     }
 
     @Override

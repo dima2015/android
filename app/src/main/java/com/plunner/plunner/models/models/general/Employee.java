@@ -47,6 +47,7 @@ public class Employee<S extends Employee> extends Model<S> {
 
 
     private LoadResource<ModelList<Group>> groups = new LoadResource<ModelList<Group>>(new ModelList<Group>(new Group()));
+    private LoadResource<ModelList<Meeting>> meetings = new LoadResource<ModelList<Meeting>>(new ModelList<Meeting>(new Meeting()));
     //private ModelList<Calendar> calendars = new ModelList<>();
     //private ModelList<com.plunner.plunner.models.models.employee.Meeting> meetings = new ModelList<>();
 
@@ -153,12 +154,21 @@ public class Employee<S extends Employee> extends Model<S> {
     }
 
     /**
-     * Get groups if they are <strong>already loaded</strong> via loadGroups
+     * Get groups, you should load them via the laod call
      *
      * @return laoder of groups
      */
     public LoadResource<ModelList<Group>> getGroups() {
         return groups;
+    }
+
+    /**
+     * Get meetings, you should load them via the laod call
+     *
+     * @return laoder of meetings
+     */
+    public LoadResource<ModelList<Meeting>> getMeetings() {
+        return meetings;
     }
 
     /**

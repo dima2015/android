@@ -3,6 +3,7 @@ package com.plunner.plunner.models.models.general;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
 
@@ -12,8 +13,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.annotation.Generated;
 
+import rx.Subscription;
+
 @Generated("org.jsonschema2pojo")
-abstract public class MeetingTimeslot<S extends MeetingTimeslot> extends Model<S> implements Listable {
+public class MeetingTimeslot<S extends MeetingTimeslot> extends Model<S> implements Listable {
 
     @SerializedName("id")
     @Expose
@@ -151,5 +154,25 @@ abstract public class MeetingTimeslot<S extends MeetingTimeslot> extends Model<S
         }
         MeetingTimeslot rhs = ((MeetingTimeslot) other);
         return new EqualsBuilder().append(id, rhs.id).append(timeStart, rhs.timeStart).append(timeEnd, rhs.timeEnd).append(meetingId, rhs.meetingId).append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
+    }
+
+    @Override
+    public Subscription fresh(FreshSubscriber subscriber) {
+        return null;
+    }
+
+    @Override
+    public Subscription save(Subscriber subscriber) {
+        return null;
+    }
+
+    @Override
+    public Subscription get(Subscriber subscriber, String... parameters) {
+        return null;
+    }
+
+    @Override
+    public Subscription getList(Subscriber subscriber, String... parameters) {
+        return null;
     }
 }

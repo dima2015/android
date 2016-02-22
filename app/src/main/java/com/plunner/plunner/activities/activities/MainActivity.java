@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                     employee.fresh();
                     employee.getGroups().load(new GroupsCallback()); //TEST in the logger
                     // employee.loadCalendars(); //TEST in the logger
-                    //employee.loadMeetings(); //TEST in the logger
+                    employee.getMeetings().load(); //TEST in the logger
                     Snackbar.make(view, "Already loaded name " + employee.getName(),
                             Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 } else {
