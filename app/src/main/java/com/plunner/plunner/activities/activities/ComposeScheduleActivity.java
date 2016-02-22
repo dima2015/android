@@ -1,11 +1,9 @@
 package com.plunner.plunner.activities.activities;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
+
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -19,19 +17,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.Fragments.CalendarFragment;
 import com.plunner.plunner.activities.Fragments.EventDetailFragment;
 import com.plunner.plunner.utils.CalendarPickers;
 
@@ -44,7 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class ComposeScheduleActivity extends AppCompatActivity implements CalendarFragment.OnFragmentInteractionListener {
+public class ComposeScheduleActivity extends AppCompatActivity{
 
 
     private WeekView mWeekView;
@@ -56,6 +51,8 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
     private Button currentDayBtn;
     private Button currentMonthBtn;
     private Map<Button, Calendar> monthsBtnCalendarMap;
+    private EventDetailFragment addEventFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +84,7 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
                 enabledSwitchOnCheck(isChecked);
             }
         });
+        //setDateTimePickers();
 
 
 // Set an action when any event is clicked.
@@ -120,7 +118,7 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_send:
-                handleFragment();
+                //handleFragment();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -159,14 +157,25 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         mWeekView.setEmptyViewClickListener(new WeekView.EmptyViewClickListener() {
             @Override
             public void onEmptyViewClicked(Calendar time) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                Fragment fragment = new EventDetailFragment();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                // To make it fullscreen, use the 'content' root view as the container
-                // for the fragment, which is always the root view for the activity
-                actionBar.hide();
-                transaction.add(R.id.compose_schedule_root, fragment)
-                        .addToBackStack(null).commit();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                if(addEventFragment == null){
+                    addEventFragment = new EventDetailFragment();
+                    addEventFragment.setInitialDate(time);
+
+                    // To make it fullscreen, use the 'content' root view as the container
+                    // for the fragment, which is always the root view for the activity
+                    actionBar.hide();
+
+                    transaction.add(R.id.compose_schedule_root, addEventFragment)
+                            .addToBackStack(null).commit();
+                }
+                else{
+                    actionBar.hide();
+                    addEventFragment.setInitialDate(time);
+                    transaction.show(addEventFragment).commit();
+
+                }
+
 
 
             }
@@ -197,7 +206,7 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
             @Override
             public String interpretDate(Calendar date) {
                 try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.UK);
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMMM dd, yyyy", Locale.UK);
                     return sdf.format(date.getTime()).toUpperCase();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -227,32 +236,6 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         actionBar.show();
     }
 
-
-    private void handleFragment() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.lapal);
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (fragment == null) {
-            CalendarFragment fragment_1 = new CalendarFragment();
-            transaction.add(R.id.lapal, fragment_1);
-            transaction.commit();
-        } else {
-            if (fragment.isHidden()) {
-                transaction.show(fragment);
-            } else {
-                transaction.hide(fragment);
-            }
-            transaction.commit();
-        }
-
-    }
-
-
-    @Override
-    public void onCalendarDateSelected(Calendar date) {
-        mWeekView.goToDate(date);
-        handleFragment();
-    }
 
     private void createCalendarPickersView(int month) {
         Button monthBtn, dayBtn;
@@ -379,31 +362,21 @@ public class ComposeScheduleActivity extends AppCompatActivity implements Calend
         btn.setTextColor(ContextCompat.getColor(this, R.color.light_gray));
     }
 
-    public void editDate(View v){
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+    public void hideFragment(View v){
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        if(addEventFragment != null){
+            fragmentTransaction.hide(addEventFragment).commit();
+            showToolbar();
+        }
 
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                // TODO Auto-generated method stub
-
-            }
-
-        };
-        Calendar calendar = Calendar.getInstance();
-        new DatePickerDialog(this, date, calendar
-                .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
-    public void editHour(View v){
-        Calendar calendar = Calendar.getInstance();
-        TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-            }
-        };
-        new TimePickerDialog(this,time,calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+
+    public void addEventDateChange(View v){
+        addEventFragment.showDatePicker((Integer) v.getTag());
+    }
+    public void addEventTimeChange(View v){
+        addEventFragment.showTimePicker((Integer) v.getTag());
     }
 }
 
