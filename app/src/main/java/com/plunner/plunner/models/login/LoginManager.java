@@ -41,7 +41,6 @@ public class LoginManager {
     private static LoginManager ourInstance = new LoginManager();
     private AccountManager mAccountManager;
     private String token = null;
-    private boolean tokenCanBeSet = true;
     private Context mContext;
     private String accountName = null;
 
@@ -103,22 +102,20 @@ public class LoginManager {
 
     //TODO according to setAuthToken this shoudl be called by the main thread
     public void setToken(final String token) {
-        if (tokenCanBeSet) {
-            this.token = token;
-            //TODO better way for auth type
-            //TODO use the same way used for the toast notification
-            //TODO correct use new Account?
-            //update the token stored using the main thread as suggested by javadoc
-            if (accountName != null)
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAccountManager.setAuthToken(new Account(accountName,
-                                        mContext.getString(R.string.account_type)), "Full access token",
-                                token);
-                    }
-                });
-        }
+        this.token = token;
+        //TODO better way for auth type
+        //TODO use the same way used for the toast notification
+        //TODO correct use new Account?
+        //update the token stored using the main thread as suggested by javadoc
+        if (accountName != null)
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    mAccountManager.setAuthToken(new Account(accountName,
+                                    mContext.getString(R.string.account_type)), "Full access token",
+                            token);
+                }
+            });
     }
 
     public void invalidateToken() {
@@ -128,9 +125,7 @@ public class LoginManager {
     }
 
     public LoginManager withToken(String token) {
-        if (tokenCanBeSet) {
-            this.token = token;
-        }
+        this.token = token;
         return this;
     }
 
@@ -145,7 +140,6 @@ public class LoginManager {
         }
         if (response.isSuccess()) {
             Token token = response.body();
-            this.tokenCanBeSet = true;
             this.token = "Bearer " + token.getToken();
             return this;
         }
