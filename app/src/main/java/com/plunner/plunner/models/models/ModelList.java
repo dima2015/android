@@ -19,9 +19,10 @@ public class ModelList<T extends Model & Listable> extends Model<T> implements C
     private List<T> models = new ArrayList<T>();
     private T instance = null;
 
-    public ModelList(List<T> models) {
+    public ModelList(List<T> models, T instance) {
         this.models = models;
         //TODO set an instance
+        this.instance = instance;
     }
 
     public ModelList(T instance) {
@@ -52,6 +53,7 @@ public class ModelList<T extends Model & Listable> extends Model<T> implements C
 
     public List<T> getModels() {
         return models;
+        //TODO clone?
     }
 
     @Override

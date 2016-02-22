@@ -41,7 +41,7 @@ public class Meeting extends com.plunner.plunner.models.models.general.Meeting<M
             subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
 
         return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(),
-                new ListSubscriber<Meeting>(subscriber));
+                new ListSubscriber<Meeting>(subscriber, this));
     }
 
     @Override

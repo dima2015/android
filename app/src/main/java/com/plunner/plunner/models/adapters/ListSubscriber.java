@@ -11,9 +11,11 @@ import java.util.List;
  */
 public class ListSubscriber<T extends Model & Listable> extends rx.Subscriber<List<T>> {
     private Subscriber subscriber;
+    private T instance;
 
-    public ListSubscriber(Subscriber subscriber) {
+    public ListSubscriber(Subscriber subscriber, T instance) {
         this.subscriber = subscriber;
+        this.instance = instance;
     }
 
     @Override
@@ -28,6 +30,6 @@ public class ListSubscriber<T extends Model & Listable> extends rx.Subscriber<Li
 
     @Override
     final public void onNext(List<T> models) {
-        subscriber.onNext(new ModelList<T>(models));
+        subscriber.onNext(new ModelList<T>(models, instance));
     }
 }

@@ -3,17 +3,29 @@ package com.plunner.plunner.models.models.general;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.plunner.plunner.models.adapters.ListSubscriber;
+import com.plunner.plunner.models.adapters.Retrofit;
+import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
+import com.plunner.plunner.models.models.ModelException;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Generated;
+import javax.validation.Valid;
+
+import retrofit.http.GET;
+import rx.Observable;
+import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
-abstract public class Group<S extends Group> extends Model<S> implements Listable {
+public class Group<S extends Group> extends Model<S> implements Listable {
 
     @SerializedName("id")
     @Expose
@@ -39,6 +51,10 @@ abstract public class Group<S extends Group> extends Model<S> implements Listabl
     @SerializedName("planner_name")
     @Expose
     protected String plannerName;
+    @SerializedName("meetings")
+    @Expose
+    @Valid
+    protected List<com.plunner.plunner.models.models.employee.Meeting> meetings = new ArrayList<>();
 
 
     /**
@@ -56,6 +72,37 @@ abstract public class Group<S extends Group> extends Model<S> implements Listabl
         this.id = id;
         this.name = name;
         this.description = description;
+    }
+
+    @Override
+    public Subscription fresh(FreshSubscriber subscriber) {
+        return null; //TODO implement
+    }
+
+    @Override
+    public Subscription save(Subscriber subscriber) {
+        return null; //TODO implement
+    }
+
+    @Override
+    public Subscription get(Subscriber subscriber, String... parameters) {
+        return null;
+    }
+
+    /**
+     * @return The meetings
+     */
+    public List<com.plunner.plunner.models.models.employee.Meeting> getMeetings() {
+        return new ArrayList<com.plunner.plunner.models.models.employee.Meeting>(meetings); //new object
+    }
+
+    @Override
+    public Subscription getList(Subscriber subscriber, String... parameters) {
+        if (parameters.length != 0)
+            subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
+
+        return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(),
+                new ListSubscriber<Group>(subscriber, this));
     }
 
     /**
@@ -175,5 +222,10 @@ abstract public class Group<S extends Group> extends Model<S> implements Listabl
                 append(updatedAt, rhs.updatedAt).append(name, rhs.name).
                 append(description, rhs.description).append(companyId, rhs.companyId).
                 append(plannerId, rhs.plannerId).append(plannerName, rhs.plannerName).isEquals();
+    }
+
+    static private interface RestInterface {
+        @GET("/employees/groups/")
+        Observable<List<Group>> index();
     }
 }

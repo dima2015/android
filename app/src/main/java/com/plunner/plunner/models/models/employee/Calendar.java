@@ -220,7 +220,7 @@ public class Calendar extends Model<Calendar> implements Listable {
             subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
 
         return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(),
-                new ListSubscriber<Calendar>(subscriber));
+                new ListSubscriber<Calendar>(subscriber, this));
     }
 
     @Override

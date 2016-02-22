@@ -46,7 +46,7 @@ public class Employee<S extends Employee> extends Model<S> {
     protected Boolean planner;
 
 
-    private LoadResource<ModelList<com.plunner.plunner.models.models.employee.Group>> groups = new LoadResource<ModelList<com.plunner.plunner.models.models.employee.Group>>(new ModelList<com.plunner.plunner.models.models.employee.Group>(new com.plunner.plunner.models.models.employee.Group()));
+    private LoadResource<ModelList<Group>> groups = new LoadResource<ModelList<Group>>(new ModelList<Group>(new Group()));
     //private ModelList<Calendar> calendars = new ModelList<>();
     //private ModelList<com.plunner.plunner.models.models.employee.Meeting> meetings = new ModelList<>();
 
@@ -157,7 +157,7 @@ public class Employee<S extends Employee> extends Model<S> {
      *
      * @return laoder of groups
      */
-    public LoadResource<ModelList<com.plunner.plunner.models.models.employee.Group>> getGroups() {
+    public LoadResource<ModelList<Group>> getGroups() {
         return groups;
     }
 

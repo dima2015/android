@@ -18,9 +18,8 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.ModelList;
-import com.plunner.plunner.models.models.employee.Group;
 import com.plunner.plunner.models.models.general.Employee;
-
+import com.plunner.plunner.models.models.general.Group;
 
 
 public class MainActivity extends AppCompatActivity {
