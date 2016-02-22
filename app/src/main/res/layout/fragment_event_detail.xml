@@ -5,6 +5,7 @@
     tools:context=".activities.Fragments.EventDetailFragment"
     android:orientation="vertical"
     android:background="@color/white"
+    android:id="@+id/add_event_fragment"
     >
 
     <LinearLayout android:orientation="horizontal"
@@ -37,7 +38,8 @@
             android:text="SAVE"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:background="@null"
-            android:textColor="@color/white" />
+            android:onClick="saveEvent"
+            android:textColor="@color/white"/>
     </LinearLayout>
     <LinearLayout
         android:orientation="vertical"

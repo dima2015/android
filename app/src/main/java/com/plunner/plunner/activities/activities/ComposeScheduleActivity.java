@@ -378,5 +378,9 @@ public class ComposeScheduleActivity extends AppCompatActivity{
     public void addEventTimeChange(View v){
         addEventFragment.showTimePicker((Integer) v.getTag());
     }
+
+    public void saveEvent(View v) {
+        addEventFragment.save();
+    }
 }
 

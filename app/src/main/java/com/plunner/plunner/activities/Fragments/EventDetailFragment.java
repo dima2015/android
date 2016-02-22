@@ -7,8 +7,10 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +26,10 @@ import com.plunner.plunner.activities.activities.ComposeScheduleActivity;
 import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -270,6 +274,27 @@ public class EventDetailFragment extends Fragment {
             eventEnds(initialDate, true);
             initialDate.set(Calendar.HOUR_OF_DAY, 12);
             eventEnds(initialDate, false);
+        }
+    }
+
+    public void save() {
+        List<Calendar> dates = new ArrayList<>();
+        Snackbar snackbar;
+        dates.add(textViewCalendarMap.get(startDate));
+        dates.add(textViewCalendarMap.get(endDate));
+        int startDay = dates.get(0).get(Calendar.DAY_OF_MONTH);
+        int endDay = dates.get(1).get(Calendar.DAY_OF_MONTH);
+        int startHour = dates.get(0).get(Calendar.HOUR);
+        int startMinutes = dates.get(0).get(Calendar.MINUTE);
+        int endHour = dates.get(1).get(Calendar.HOUR);
+        int endMinutes = dates.get(1).get(Calendar.MINUTE);
+
+        if (startDay == endDay) {
+            if(endHour < startHour || startHour == endHour && startMinutes > endMinutes){
+                snackbar = Snackbar.make(getActivity().findViewById(R.id.add_event_fragment), "You must insert a valid end time", Snackbar.LENGTH_LONG);
+                snackbar.getView().setBackgroundColor(ContextCompat.getColor(getContext(),R.color.red));
+                snackbar.show();
+            }
         }
     }
 }
