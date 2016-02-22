@@ -4,7 +4,6 @@ package com.plunner.plunner.activities.activities;
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -30,7 +29,6 @@ import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Fragments.EventDetailFragment;
 import com.plunner.plunner.utils.CalendarPickers;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,19 +37,47 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * An activity that lets users compose a schedule by inserting a name for the schedule and some busy time slots
+ */
 public class ComposeScheduleActivity extends AppCompatActivity{
 
-
+    /**
+     * Holds a reference to the WeekView of the activity, that is to say a calendar view that lets users
+     * see events for a given day
+     */
     private WeekView mWeekView;
+    /**
+     * Holds a reference to a view that contains buttons that indicates months, pressing on one of these
+     * buttons causes the {@link #mWeekView} to go to the current day of the selected month
+     */
     private LinearLayout monthsPicker;
+    /**
+     * Holds a reference to a view that contains buttons that indicates days of the current selected month, pressing on one of these
+     * buttons causes the {@link #mWeekView} to go to the selected day of the current month
+     */
     private LinearLayout daysPicker;
     private ActionBar actionBar;
     private EditText scheduleNameInput;
     private TextView scheduleStatus;
+    /**
+     * Current highligthed button of the {@link #daysPicker}
+     */
     private Button currentDayBtn;
+    /**
+     * Current highligthed button of the {@link #monthsPicker}
+     */
     private Button currentMonthBtn;
+    /**
+     * Maps month buttons to {@link Calendar} instancies
+     */
     private Map<Button, Calendar> monthsBtnCalendarMap;
+    /**
+     * A fragment used to create/edit an event in the {@link #mWeekView }
+     */
     private EventDetailFragment addEventFragment;
+    private Switch enabledSwitch ;
+    private List<WeekViewEvent> composedEvents;
 
 
     @Override
@@ -66,10 +92,10 @@ public class ComposeScheduleActivity extends AppCompatActivity{
         monthsPicker = (LinearLayout) findViewById(R.id.months_picker);
         daysPicker = (LinearLayout) findViewById(R.id.days_picker);
         scheduleNameInput = (EditText) findViewById(R.id.compose_schedule_schedule_name);
-        final Switch enabledSwitch = (Switch) findViewById(R.id.compose_schedule_enabled_switch);
         mWeekView = (WeekView) findViewById(R.id.weekView);
         monthsBtnCalendarMap = new HashMap<>();
         actionBar = getSupportActionBar();
+        enabledSwitch = (Switch) findViewById(R.id.compose_schedule_enabled_switch);
         //This activity can come back to the main activity
         actionBar.setDisplayHomeAsUpEnabled(true);
         //Pickers init
@@ -81,29 +107,11 @@ public class ComposeScheduleActivity extends AppCompatActivity{
         enabledSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                enabledSwitchOnCheck(isChecked);
+                onEnabledSwitchStatusChange(isChecked);
             }
         });
-        //setDateTimePickers();
+        composedEvents = new ArrayList<>();
 
-
-// Set an action when any event is clicked.
-
-
-// Set long press listener for events.
-
-
-    }
-
-    private void enabledSwitchOnCheck(boolean isChecked) {
-        scheduleNameInput.clearFocus();
-        if (isChecked) {
-            scheduleStatus.setText(getResources().getText(R.string.enabled));
-            scheduleStatus.setTextColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
-        } else {
-            scheduleStatus.setText("DISABLED");
-            scheduleStatus.setTextColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.light_gray));
-        }
     }
 
     @Override
@@ -138,22 +146,11 @@ public class ComposeScheduleActivity extends AppCompatActivity{
         mWeekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
             @Override
             public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
-                List<WeekViewEvent> events = new ArrayList<>();
-
-                Calendar startTime = Calendar.getInstance();
-                startTime.set(Calendar.HOUR_OF_DAY, 3);
-                startTime.set(Calendar.MINUTE, 0);
-                Calendar endTime = (Calendar) startTime.clone();
-                endTime.add(Calendar.HOUR, 15);
-                WeekViewEvent event = new WeekViewEvent(1, startTime.toString(), startTime, endTime);
-                event.setColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
-                events.add(event);
-
-
-                return events;
+                return composedEvents;
             }
 
         });
+        mWeekView.notifyDatasetChanged();
         mWeekView.setEmptyViewClickListener(new WeekView.EmptyViewClickListener() {
             @Override
             public void onEmptyViewClicked(Calendar time) {
@@ -193,7 +190,7 @@ public class ComposeScheduleActivity extends AppCompatActivity{
                     currentDayBtn = (Button) daysPicker.getChildAt(newDayIndex - 1);
                     imposeDayBtnAppearance(currentDayBtn);
                     if (oldMonth != newMonth) {
-                        switchMonthWhenScroll(newMonth, newYearIndex);
+                        scrollSwitchMonth(newMonth, newYearIndex);
 
                     }
 
@@ -236,24 +233,29 @@ public class ComposeScheduleActivity extends AppCompatActivity{
         actionBar.show();
     }
 
-
+    /**
+     * Populates the {@link #daysPicker} and the {@link #monthsPicker}
+     * @param month The central month button to be considered. If is equal to -1 today's month is considered
+     */
     private void createCalendarPickersView(int month) {
         Button monthBtn, dayBtn;
+        Calendar currentCompositeMonth;
+        int currentMonth, currentYear, currentDay;
         Calendar calendar = Calendar.getInstance();
         CalendarPickers calendarPickers = CalendarPickers.getInstance();
-        List<Integer> days = calendarPickers.computeDays(calendar);
-        //Gets days and months labels to be inserted in the activity view
-        List<Calendar> monthsCompositeList = calendarPickers.buildMonths(month);
+        //Gets the days in the current month
+        List<Integer> daysList = calendarPickers.computeDays(calendar);
+        //Gets the months that can be selected by the user from a given central month
+        List<Calendar> monthsList = calendarPickers.buildMonths(month);
         LayoutInflater inflater = getLayoutInflater();
         int todayMonth = calendar.get(Calendar.MONTH);
         int todayYear = calendar.get(Calendar.YEAR);
         int todayDay = calendar.get(Calendar.DAY_OF_MONTH);
-        Calendar currentCompositeMonth;
-        int currentMonth, currentYear, currentDay;
 
 
-        for (int i = 0; i < monthsCompositeList.size(); i++) {
-            currentCompositeMonth = monthsCompositeList.get(i);
+        //Inflates month buttons and highlights the button that corresponds to today's month
+        for (int i = 0; i < monthsList.size(); i++) {
+            currentCompositeMonth = monthsList.get(i);
             currentMonth = currentCompositeMonth.get(Calendar.MONTH);
             currentYear = currentCompositeMonth.get(Calendar.YEAR);
             monthBtn = (Button) inflater.inflate(R.layout.month_button, monthsPicker, false);
@@ -265,8 +267,9 @@ public class ComposeScheduleActivity extends AppCompatActivity{
             monthsPicker.addView(monthBtn);
             monthsBtnCalendarMap.put(monthBtn, currentCompositeMonth);
         }
-        for (int i = 0; i < days.size(); i++) {
-            currentDay = days.get(i);
+        //Inflates days buttons and highlights the button that corresponds to today's day
+        for (int i = 0; i < daysList.size(); i++) {
+            currentDay = daysList.get(i);
             dayBtn = (Button) inflater.inflate(R.layout.day_button, daysPicker, false);
             dayBtn.setText(Integer.toString(currentDay));
             if (currentDay == todayDay) {
@@ -277,7 +280,11 @@ public class ComposeScheduleActivity extends AppCompatActivity{
         }
 
     }
-
+    /**
+     * Changes the current day in the {@link #daysPicker}, updating also the {@link #mWeekView}
+     * @param v The pressed dayBtn
+     * @see #currentMonthBtn
+     */
     public void changeDay(View v) {
         scheduleNameInput.clearFocus();
         Calendar calendar = Calendar.getInstance();
@@ -292,7 +299,15 @@ public class ComposeScheduleActivity extends AppCompatActivity{
         mWeekView.goToDate(calendar);
     }
 
-    public void changeMonth(View v) throws ParseException {
+    /**
+     * Changes the current month in the monthPicker, recomputing also the days associated to it in the daysPicker
+     * @param v The pressed monthButton
+     * @see #daysPicker
+     * @see #monthsPicker
+     * @see #currentMonthBtn
+     * @see #mWeekView
+     */
+    public void changeMonth(View v) {
         scheduleNameInput.clearFocus();
         Button pressedMonthBtn = (Button) v;
         Calendar associatedDate = monthsBtnCalendarMap.get(v);
@@ -307,7 +322,12 @@ public class ComposeScheduleActivity extends AppCompatActivity{
         mWeekView.goToDate(associatedDate);
     }
 
-    private void switchMonthWhenScroll(int newMonth, int newYearIndex) {
+    /**
+     * Highlights the button in the {@link #monthsPicker} that corresponds to the given month and year
+     * @param month The month whose corresponding button in the {@link #monthsPicker} must be highlighted
+     * @param year  The year of the month whose corresponding button in the {@link #monthsPicker} must be highlighted
+     */
+    private void scrollSwitchMonth(int month, int year) {
         Button currentButton;
         int currentMonth, currentYear;
         Calendar currentDate;
@@ -316,26 +336,30 @@ public class ComposeScheduleActivity extends AppCompatActivity{
             currentDate = monthsBtnCalendarMap.get(currentButton);
             currentMonth = currentDate.get(Calendar.MONTH);
             currentYear = currentDate.get(Calendar.YEAR);
-            if (currentMonth == newMonth && currentYear == newYearIndex) {
-                try {
-                    changeMonth(currentButton);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+            if (currentMonth == month && currentYear == year) {
+                changeMonth(currentButton);
             }
         }
     }
 
-    private void drawDaysBtns(List<Integer> days, int daySelected) {
-        LayoutInflater inflater = getLayoutInflater();
+    /**
+     * Adds to the daysPicker as much dayButtons as the integers specified in the days parameter. The text of these dayButtons
+     * is equal to the integer values contained in the days parameter
+     * @param days A list of integer that represent the days numbers to be rendered as buttons
+     * @param selectedDay The day to be highlighted
+     * @see #daysPicker
+     * @see #currentDayBtn
+     */
+    private void drawDaysBtns(List<Integer> days, int selectedDay) {
         Button dayBtn;
         int currentDay;
+        LayoutInflater inflater = getLayoutInflater();
         daysPicker.removeAllViews();
         for (int i = 0; i < days.size(); i++) {
             currentDay = days.get(i);
             dayBtn = (Button) inflater.inflate(R.layout.day_button, daysPicker, false);
             dayBtn.setText(Integer.toString(currentDay));
-            if (currentDay == daySelected) {
+            if (currentDay == selectedDay) {
                 imposeDayBtnAppearance(dayBtn);
                 currentDayBtn = dayBtn;
             }
@@ -343,21 +367,50 @@ public class ComposeScheduleActivity extends AppCompatActivity{
         }
     }
 
-    private void imposeDayBtnAppearance(Button button) {
-        button.setBackgroundResource(R.drawable.day_button_bkgnd);
-        button.setTextColor(ContextCompat.getColor(this, R.color.white));
+    /**
+     * Changes the text near the enabledSwitch according to the status of the switch
+     * @param isChecked The status of the switch
+     */
+    private void onEnabledSwitchStatusChange(boolean isChecked) {
+        //Resets the focus on the editext relative to the name of the schedule
+        scheduleNameInput.clearFocus();
+        if (isChecked) {
+            scheduleStatus.setText(getResources().getText(R.string.enabled));
+            scheduleStatus.setTextColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
+        } else {
+            scheduleStatus.setText(getResources().getText(R.string.disabled));
+            scheduleStatus.setTextColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.light_gray));
+        }
+    }
+    /**
+     * Applies a style typical of day buttons to a given button
+     * @param btn The button to be styled
+     */
+    private void imposeDayBtnAppearance(Button btn) {
+        btn.setBackgroundResource(R.drawable.day_button_bkgnd);
+        btn.setTextColor(ContextCompat.getColor(this, R.color.white));
+    }
+    /**
+     * Applies a style typical of month buttons to a given button
+     * @param btn The button to be styled
+     */
+    private void imposeMonthBtnAppearance(Button btn) {
+        btn.setTextColor(ContextCompat.getColor(this, R.color.red));
     }
 
-    private void imposeMonthBtnAppearance(Button button) {
-        button.setTextColor(ContextCompat.getColor(this, R.color.red));
-    }
-
+    /**
+     * Removes the day button style to the given button
+     * @param btn The button whose whose style must be reset
+     */
     private void cancelDayBtnAppearance(Button btn) {
         btn.setTextColor(ContextCompat.getColor(this, R.color.light_gray));
         btn.setBackgroundResource(0);
         btn.setBackgroundColor(Color.TRANSPARENT);
     }
-
+    /**
+     * Removes the month button style to the given button
+     * @param btn The button whose whose style must be reset
+     */
     private void resetMonthBtnAppearance(Button btn) {
         btn.setTextColor(ContextCompat.getColor(this, R.color.light_gray));
     }
@@ -380,7 +433,12 @@ public class ComposeScheduleActivity extends AppCompatActivity{
     }
 
     public void saveEvent(View v) {
-        addEventFragment.save();
+        List<Calendar> event = addEventFragment.save();
+        if(event != null){
+            hideFragment(null);
+            composedEvents.add(new WeekViewEvent(1, "", event.get(0), event.get(1)));
+            mWeekView.notifyDatasetChanged();
+        }
     }
 }
 

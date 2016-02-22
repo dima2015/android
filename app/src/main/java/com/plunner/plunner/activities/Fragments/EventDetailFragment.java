@@ -277,7 +277,7 @@ public class EventDetailFragment extends Fragment {
         }
     }
 
-    public void save() {
+    public List<Calendar> save() {
         List<Calendar> dates = new ArrayList<>();
         Snackbar snackbar;
         dates.add(textViewCalendarMap.get(startDate));
@@ -292,9 +292,11 @@ public class EventDetailFragment extends Fragment {
         if (startDay == endDay) {
             if(endHour < startHour || startHour == endHour && startMinutes > endMinutes){
                 snackbar = Snackbar.make(getActivity().findViewById(R.id.add_event_fragment), "You must insert a valid end time", Snackbar.LENGTH_LONG);
-                snackbar.getView().setBackgroundColor(ContextCompat.getColor(getContext(),R.color.red));
+                snackbar.getView().setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
                 snackbar.show();
+                return null;
             }
         }
+        return dates;
     }
 }
