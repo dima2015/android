@@ -25,7 +25,9 @@ import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,6 +51,7 @@ public class EventDetailFragment extends Fragment {
     private TextView startTime;
     private TextView endDate;
     private TextView endTime;
+    private Map<TextView, Calendar> textViewCalendarMap;
     private Calendar initialDate;
 
 
@@ -73,7 +76,8 @@ public class EventDetailFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-    public void setInitialDate(Calendar calendar){
+
+    public void setInitialDate(Calendar calendar) {
         initialDate = calendar;
     }
 
@@ -94,127 +98,149 @@ public class EventDetailFragment extends Fragment {
     }
 
 
-    public void showDatePicker(int type){
+    public void showDatePicker(int type) {
         DatePickerDialog.OnDateSetListener dateListener;
-        if(type == 1){
-            if(datePickerStarts == null){
-                dateListener = new DatePickerDialog.OnDateSetListener() {
-
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                          int dayOfMonth) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, monthOfYear);
-                        eventStarts(calendar, true);
-
-                    }
-
-                };
-                Calendar calendar = Calendar.getInstance();
-                datePickerStarts = new DatePickerDialog(getContext(), dateListener, calendar
-                        .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH));
-            }
-            datePickerStarts.show();
+        Calendar calendar_start_date, calendar_end_date;
+        if (textViewCalendarMap.get(startDate) == null) {
+            calendar_start_date = Calendar.getInstance();
+        } else {
+            calendar_start_date = textViewCalendarMap.get(startDate);
         }
-        else if(type==2){
-            if(datePickerEnds == null){
-                dateListener = new DatePickerDialog.OnDateSetListener() {
+        if (textViewCalendarMap.get(endDate) == null) {
+            calendar_end_date = Calendar.getInstance();
+        } else {
+            calendar_end_date = textViewCalendarMap.get(endDate);
+        }
+        if (type == 1) {
 
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                          int dayOfMonth) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, monthOfYear);
-                        eventEnds(calendar, true);
+            dateListener = new DatePickerDialog.OnDateSetListener() {
 
-                    }
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                      int dayOfMonth) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    calendar.set(Calendar.YEAR, year);
+                    calendar.set(Calendar.MONTH, monthOfYear);
+                    eventStarts(calendar, true);
 
-                };
-                Calendar calendar = Calendar.getInstance();
-                datePickerEnds = new DatePickerDialog(getContext(), dateListener, calendar
-                        .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH));
-            }
+                }
+
+            };
+
+            datePickerStarts = new DatePickerDialog(getContext(), dateListener, calendar_start_date
+                    .get(Calendar.YEAR), calendar_start_date.get(Calendar.MONTH),
+                    calendar_start_date.get(Calendar.DAY_OF_MONTH));
+
+            datePickerStarts.show();
+        } else if (type == 2) {
+
+            dateListener = new DatePickerDialog.OnDateSetListener() {
+
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                      int dayOfMonth) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    calendar.set(Calendar.YEAR, year);
+                    calendar.set(Calendar.MONTH, monthOfYear);
+                    eventEnds(calendar, true);
+
+                }
+
+            };
+            datePickerEnds = new DatePickerDialog(getContext(), dateListener, calendar_end_date
+                    .get(Calendar.YEAR), calendar_end_date.get(Calendar.MONTH),
+                    calendar_end_date.get(Calendar.DAY_OF_MONTH));
+            datePickerEnds.getDatePicker().setMinDate(textViewCalendarMap.get(startDate).getTimeInMillis());
+            datePickerEnds.setTitle("");
+
+
             datePickerEnds.show();
         }
     }
-    public void showTimePicker(int type){
+
+    public void showTimePicker(int type) {
         TimePickerDialog.OnTimeSetListener timeListener;
-        if(type == 1){
-            if(timePickerStarts == null){
-                timeListener = new TimePickerDialog.OnTimeSetListener() {
-
-                    @Override
-                    public void onTimeSet(TimePicker view, int hour, int minute) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.HOUR_OF_DAY, hour);
-                        calendar.set(Calendar.MINUTE, minute);
-                        eventStarts(calendar, false);
-
-                    }
-
-                };
-                Calendar calendar = Calendar.getInstance();
-                timePickerStarts = new TimePickerDialog(getContext(), timeListener, calendar
-                        .get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
-            }
-            timePickerStarts.show();
+        Calendar calendar_start_time, calendar_end_time;
+        if (textViewCalendarMap.get(startDate) == null) {
+            calendar_start_time = Calendar.getInstance();
+        } else {
+            calendar_start_time = textViewCalendarMap.get(startDate);
         }
-        else if(type==2){
-            if(timePickerEnds == null){
-                timeListener = new TimePickerDialog.OnTimeSetListener() {
+        if (textViewCalendarMap.get(endDate) == null) {
+            calendar_end_time = Calendar.getInstance();
+        } else {
+            calendar_end_time = textViewCalendarMap.get(endDate);
+        }
+        if (type == 1) {
 
-                    @Override
-                    public void onTimeSet(TimePicker view, int hour, int minute) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.HOUR_OF_DAY, hour);
-                        calendar.set(Calendar.MINUTE, minute);
-                        eventEnds(calendar, false);
+            timeListener = new TimePickerDialog.OnTimeSetListener() {
 
-                    }
+                @Override
+                public void onTimeSet(TimePicker view, int hour, int minute) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.HOUR_OF_DAY, hour);
+                    calendar.set(Calendar.MINUTE, minute);
+                    eventStarts(calendar, false);
 
-                };
-                Calendar calendar = Calendar.getInstance();
-                timePickerEnds = new TimePickerDialog(getContext(), timeListener, calendar
-                        .get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
-            }
+                }
+
+            };
+
+            timePickerStarts = new TimePickerDialog(getContext(), timeListener, calendar_start_time
+                    .get(Calendar.HOUR_OF_DAY), calendar_start_time.get(Calendar.MINUTE), true);
+            timePickerStarts.show();
+        } else if (type == 2) {
+
+            timeListener = new TimePickerDialog.OnTimeSetListener() {
+
+                @Override
+                public void onTimeSet(TimePicker view, int hour, int minute) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.HOUR_OF_DAY, hour);
+                    calendar.set(Calendar.MINUTE, minute);
+                    eventEnds(calendar, false);
+
+                }
+
+            };
+
+            timePickerEnds = new TimePickerDialog(getContext(), timeListener, calendar_end_time
+                    .get(Calendar.HOUR_OF_DAY), calendar_end_time.get(Calendar.MINUTE), true);
+
             timePickerEnds.show();
         }
     }
 
-
-    public void eventStarts(Calendar calendar, boolean switchValue){
+    public void eventStarts(Calendar calendar, boolean switchValue) {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMMM dd, yyyy", Locale.UK);
-        if(switchValue){
+        textViewCalendarMap.put(startDate, calendar);
+        if (switchValue) {
             startDate.setText(formatter.format(calendar.getTime()));
-        }
-        else{
+        } else {
             formatter.applyPattern("kk:mm");
             startTime.setText(formatter.format(calendar.getTime()));
         }
 
     }
-    public void eventEnds(Calendar calendar, boolean switchValue){
+
+    public void eventEnds(Calendar calendar, boolean switchValue) {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMMM dd, yyyy", Locale.UK);
-        if(switchValue){
+        textViewCalendarMap.put(endDate, calendar);
+        if (switchValue) {
             endDate.setText(formatter.format(calendar.getTime()));
-        }
-        else{
+        } else {
             formatter.applyPattern("kk:mm");
             endTime.setText(formatter.format(calendar.getTime()));
         }
     }
 
 
-
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
+        textViewCalendarMap = new HashMap<>();
         ComposeScheduleActivity activity = (ComposeScheduleActivity) getActivity();
         startDate = (TextView) activity.findViewById(R.id.add_event_starts_date);
         startDate.setTag(1);
@@ -229,8 +255,9 @@ public class EventDetailFragment extends Fragment {
         eventStarts(initialDate, false);
         eventEnds(initialDate, true);
         initialDate.set(Calendar.HOUR_OF_DAY, 12);
-        eventEnds(initialDate,false);
+        eventEnds(initialDate, false);
     }
+
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);

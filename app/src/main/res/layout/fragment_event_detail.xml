@@ -4,7 +4,8 @@
     android:layout_height="fill_parent"
     tools:context=".activities.Fragments.EventDetailFragment"
     android:orientation="vertical"
-    android:background="#ffffff">
+    android:background="@color/white"
+    >
 
     <LinearLayout android:orientation="horizontal"
         android:layout_height="wrap_content"
@@ -42,8 +43,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:padding="15dp">
+        android:padding="30dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -59,28 +59,40 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="5dp">
+            android:layout_marginTop="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="01/10/13"
                 android:id="@+id/add_event_starts_date"
-                android:layout_weight="1"
+                android:layout_weight="4"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:onClick="addEventDateChange"
                 android:textSize="@dimen/abc_text_size_medium_material" />
 
-            <TextView
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="18:30"
-                android:id="@+id/add_event_starts_time"
-                android:layout_weight="1"
-                android:textSize="@dimen/abc_text_size_medium_material"
-                android:clickable="true"
-                android:onClick="addEventTimeChange"/>
+                android:layout_weight="1">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clock_icon"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="3dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="18:30"
+                    android:id="@+id/add_event_starts_time"
+                    android:textSize="@dimen/abc_text_size_medium_material"
+                    android:clickable="true"
+                    android:onClick="addEventTimeChange"/>
+            </LinearLayout>
+
 
         </LinearLayout>
 
@@ -92,32 +104,46 @@
             android:id="@+id/textView6"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="40dp"
             android:textAllCaps="true"/>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="5dp">
+            android:layout_marginTop="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="01/10/13"
                 android:id="@+id/add_event_ends_date"
-                android:layout_weight="1"
+                android:layout_weight="4"
                 android:textSize="@dimen/abc_text_size_medium_material"
                 android:onClick="addEventDateChange"/>
 
-            <TextView
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="18:30"
-                android:id="@+id/add_event_ends_time"
-                android:layout_weight="1"
-                android:textSize="@dimen/abc_text_size_medium_material"
-                android:onClick="addEventTimeChange"/>
+                android:layout_weight="1">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clock_icon"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="3dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="18:30"
+                    android:id="@+id/add_event_ends_time"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/abc_text_size_medium_material"
+                    android:onClick="addEventTimeChange"/>
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
