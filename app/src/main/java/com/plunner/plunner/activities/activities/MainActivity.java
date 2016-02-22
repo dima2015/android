@@ -18,8 +18,8 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.ModelList;
-import com.plunner.plunner.models.models.employee.Employee;
 import com.plunner.plunner.models.models.employee.Group;
+import com.plunner.plunner.models.models.general.Employee;
 
 
 
@@ -55,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(final View view) {
                 if (employee != null) {
                     employee.fresh();
-                    employee.loadGroups(new GroupsCallback()); //TEST in the logger
-                    employee.loadCalendars(); //TEST in the logger
-                    employee.loadMeetings(); //TEST in the logger
+                    employee.getGroups().load(new GroupsCallback()); //TEST in the logger
+                    // employee.loadCalendars(); //TEST in the logger
+                    //employee.loadMeetings(); //TEST in the logger
                     Snackbar.make(view, "Already loaded name " + employee.getName(),
                             Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 } else {

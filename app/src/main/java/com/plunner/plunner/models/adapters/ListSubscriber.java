@@ -1,5 +1,6 @@
 package com.plunner.plunner.models.adapters;
 
+import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelList;
 
@@ -8,7 +9,7 @@ import java.util.List;
 /**
  * Created by claudio on 22/12/15.
  */
-public class ListSubscriber<T extends Model> extends rx.Subscriber<List<T>> {
+public class ListSubscriber<T extends Model & Listable> extends rx.Subscriber<List<T>> {
     private Subscriber subscriber;
 
     public ListSubscriber(Subscriber subscriber) {

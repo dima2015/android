@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.plunner.plunner.models.login.LoginManager;
+import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -60,7 +61,7 @@ public class Retrofit {
         return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
     }
 
-    static public <T extends Model> rx.Subscription subscribeList(Observable<List<T>> call, ListSubscriber<T> subscriber) {
+    static public <T extends Model & Listable> rx.Subscription subscribeList(Observable<List<T>> call, ListSubscriber<T> subscriber) {
         return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
     }
 

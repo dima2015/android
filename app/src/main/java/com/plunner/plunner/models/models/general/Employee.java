@@ -3,7 +3,12 @@ package com.plunner.plunner.models.models.general;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.plunner.plunner.models.adapters.Retrofit;
+import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Model;
+import com.plunner.plunner.models.models.ModelException;
+import com.plunner.plunner.models.models.ModelList;
+import com.plunner.plunner.models.models.general.utility.LoadResource;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -11,8 +16,12 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.annotation.Generated;
 
+import retrofit.http.GET;
+import rx.Observable;
+import rx.Subscription;
+
 @Generated("org.jsonschema2pojo")
-abstract public class Employee<S extends Employee> extends Model<S> {
+public class Employee<S extends Employee> extends Model<S> {
 
     @SerializedName("id")
     @Expose
@@ -37,7 +46,15 @@ abstract public class Employee<S extends Employee> extends Model<S> {
     protected Boolean planner;
 
 
+    private LoadResource<ModelList<com.plunner.plunner.models.models.employee.Group>> groups = new LoadResource<ModelList<com.plunner.plunner.models.models.employee.Group>>(new ModelList<com.plunner.plunner.models.models.employee.Group>(new com.plunner.plunner.models.models.employee.Group()));
+    //private ModelList<Calendar> calendars = new ModelList<>();
+    //private ModelList<com.plunner.plunner.models.models.employee.Meeting> meetings = new ModelList<>();
+
     //TODO serialization?
+
+
+    //TODO syncronized??
+    //TODO clone
 
     /**
      * No args constructor for use in serialization
@@ -56,8 +73,92 @@ abstract public class Employee<S extends Employee> extends Model<S> {
         this.email = email;
     }
 
+    //TODO check if the the old execution is still in waiting status
+    //TODO delete, create and so on
+
     static public void getFactory() {
         //TODO implement getFactory that gives the right model planner or employee
+    }
+
+    @Override
+    public rx.Subscription fresh(FreshSubscriber subscriber) {
+        return get(subscriber);
+    }
+
+    /**
+     * Get meetings if they are <strong>already loaded</strong> via loadMeetings
+     *
+     * @return list of groups
+     */
+    // public ModelList<com.plunner.plunner.models.models.employee.Meeting> getMeetings() throws CloneNotSupportedException {
+//        return meetings.clone();
+//    }
+    @Override
+    public rx.Subscription save(Subscriber subscriber) {
+//TODO implement
+        return null;
+    }
+
+
+    /**
+     * LoadCalendarsSubscriber that insert the calendars list in employee model
+     */
+  /*  public class LoadCalendarsSubscriber extends Subscriber<ModelList<Calendar>> {
+        public LoadCalendarsSubscriber(Callable callable) {
+            super(callable);
+        }
+
+        public LoadCalendarsSubscriber() {
+        }
+
+        @Override
+        public void onNext(ModelList<Calendar> calendars) {
+            Employee.this.calendars = calendars;
+            super.onNext(calendars);
+        }
+    }*/
+
+    /**
+     * LoadCalendarsSubscriber that insert the calendars list in employee model
+     */
+    /*public class LoadMeetingsSubscriber extends Subscriber<ModelList<com.plunner.plunner.models.models.employee.Meeting>> {
+        public LoadMeetingsSubscriber(Callable callable) {
+            super(callable);
+        }
+
+        public LoadMeetingsSubscriber() {
+            //TODO super in every methods like this???
+        }
+
+        @Override
+        public void onNext(ModelList<Meeting> meetings) {
+            Employee.this.meetings = meetings;
+            super.onNext(meetings);
+        }
+    }*/
+
+    /**
+     * <strong>CAUTION:</strong> this give a new object
+     *
+     * @param subscriber
+     * @param parameters the parameters to perform the get unequivocally
+     * @return
+     */
+    @Override
+    public Subscription get(Subscriber subscriber, String... parameters) {
+        if (parameters.length != 0)
+            subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
+
+        return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).get(), subscriber);
+    }
+
+    /**
+     * Get groups if they are <strong>already loaded</strong> via loadGroups
+     *
+     * @return laoder of groups
+     */
+    public LoadResource<ModelList<com.plunner.plunner.models.models.employee.Group>> getGroups() {
+        return groups;
     }
 
     /**
@@ -174,5 +275,44 @@ abstract public class Employee<S extends Employee> extends Model<S> {
         return new EqualsBuilder().append(id, rhs.id).append(name, rhs.name).
                 append(email, rhs.email).append(companyId, rhs.companyId).
                 append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
+    }
+
+    /**
+     * Get calendars if they are <strong>already loaded</strong> via loadCalendars
+     *
+     * @return list of calendars
+     */
+    //  public ModelList<Calendar> getCalendars() throws CloneNotSupportedException {
+    //    return calendars.clone();
+    //}
+
+
+   /* public rx.Subscription loadCalendars(LoadCalendarsSubscriber subscriber) {
+        return new Calendar().get(subscriber);
+    }
+
+    public rx.Subscription loadCalendars(Callable<ModelList<Calendar>> callable) {
+        return loadCalendars(new LoadCalendarsSubscriber(callable));
+    }
+
+    public rx.Subscription loadCalendars() {
+        return loadCalendars(new LoadCalendarsSubscriber());
+    }
+
+    public rx.Subscription loadMeetings(LoadMeetingsSubscriber subscriber) {
+        return new com.plunner.plunner.models.models.employee.Meeting().get(subscriber);
+    }*/
+
+    //public rx.Subscription loadMeetings(Callable<ModelList<com.plunner.plunner.models.models.employee.Meeting>> callable) {
+//        return loadMeetings(new LoadMeetingsSubscriber(callable));
+    //  }
+
+   /* public rx.Subscription loadMeetings() {
+        return loadMeetings(new LoadMeetingsSubscriber());
+    }*/
+
+    static private interface RestInterface {
+        @GET("/employees/employee/")
+        Observable<Employee> get();
     }
 }

@@ -4,6 +4,7 @@ package com.plunner.plunner.models.models.employee;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -15,7 +16,7 @@ import javax.annotation.Generated;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
-public class Timeslot extends Model<Timeslot> {
+public class Timeslot extends Model<Timeslot> implements Listable {
 
     @SerializedName("id")
     @Expose
@@ -166,6 +167,11 @@ public class Timeslot extends Model<Timeslot> {
 
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
+        return null;
+    }
+
+    @Override
+    public Subscription getList(Subscriber subscriber, String... parameters) {
         return null;
     }
 }

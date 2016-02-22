@@ -3,6 +3,7 @@ package com.plunner.plunner.models.models.general;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelList;
 
@@ -13,7 +14,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
-abstract public class Meeting<S extends Meeting> extends Model<S> {
+abstract public class Meeting<S extends Meeting> extends Model<S> implements Listable {
 
     @SerializedName("id")
     @Expose

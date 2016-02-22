@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.adapters.ListSubscriber;
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelException;
 import com.plunner.plunner.models.models.ModelList;
@@ -24,7 +25,7 @@ import rx.Observable;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
-public class Calendar extends Model<Calendar> {
+public class Calendar extends Model<Calendar> implements Listable {
 
     @SerializedName("id")
     @Expose
@@ -48,7 +49,7 @@ public class Calendar extends Model<Calendar> {
     @Expose
     @Valid
     private Caldav caldav;
-    private ModelList<Timeslot> timeslots = new ModelList<>();
+    private ModelList<Timeslot> timeslots = new ModelList<>(new Timeslot());
 
     /**
      * No args constructor for use in serialization
@@ -220,6 +221,11 @@ public class Calendar extends Model<Calendar> {
 
         return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(),
                 new ListSubscriber<Calendar>(subscriber));
+    }
+
+    @Override
+    public Subscription getList(Subscriber subscriber, String... parameters) {
+        return null;
     }
 
     static private interface RestInterface {

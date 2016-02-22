@@ -44,11 +44,12 @@ public class Group extends com.plunner.plunner.models.models.general.Group<Group
 
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
-        if (parameters.length != 0)
+        return null;
+        /*if (parameters.length != 0)
             subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
 
         return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(),
-                new ListSubscriber<Group>(subscriber));
+                new ListSubscriber<Group>(subscriber));*/
     }
 
     /**
@@ -56,6 +57,15 @@ public class Group extends com.plunner.plunner.models.models.general.Group<Group
      */
     public List<Meeting> getMeetings() {
         return new ArrayList<Meeting>(meetings); //new object
+    }
+
+    @Override
+    public Subscription getList(Subscriber subscriber, String... parameters) {
+        if (parameters.length != 0)
+            subscriber.onError(new ModelException("Get parameters number is not correct (!= 0)"));
+
+        return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(),
+                new ListSubscriber<Group>(subscriber));
     }
 
     static private interface RestInterface {

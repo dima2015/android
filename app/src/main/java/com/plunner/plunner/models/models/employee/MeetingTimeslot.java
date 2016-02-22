@@ -23,4 +23,9 @@ public class MeetingTimeslot extends com.plunner.plunner.models.models.general.M
     public Subscription get(Subscriber subscriber, String... parameters) {
         return null;
     }
+
+    @Override
+    public Subscription getList(Subscriber subscriber, String... parameters) {
+        return null;
+    }
 }

@@ -17,12 +17,12 @@ import rx.Subscription;
  */
 public class Meeting extends com.plunner.plunner.models.models.general.Meeting<Meeting> {
     public Meeting() {
-        timeslots = new ModelList<MeetingTimeslot>();
+        timeslots = new ModelList<MeetingTimeslot>(new MeetingTimeslot());
     }
 
     public Meeting(String id, String title, String description, Object startTime, String duration) {
         super(id, title, description, startTime, duration);
-        timeslots = new ModelList<MeetingTimeslot>();
+        timeslots = new ModelList<MeetingTimeslot>(new MeetingTimeslot());
     }
 
     @Override
@@ -42,6 +42,11 @@ public class Meeting extends com.plunner.plunner.models.models.general.Meeting<M
 
         return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(),
                 new ListSubscriber<Meeting>(subscriber));
+    }
+
+    @Override
+    public Subscription getList(Subscriber subscriber, String... parameters) {
+        return null;
     }
 
     static private interface RestInterface {

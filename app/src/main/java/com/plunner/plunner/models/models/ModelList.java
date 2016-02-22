@@ -14,14 +14,18 @@ import rx.Subscription;
 /**
  * Created by claudio on 22/12/15.
  */
-public class ModelList<T extends Model> extends Model<T> implements Cloneable {
+public class ModelList<T extends Model & Listable> extends Model<T> implements Cloneable {
+    //TODO exteds Model<T>  Is <T> needed?
     private List<T> models = new ArrayList<T>();
+    private T instance = null;
 
     public ModelList(List<T> models) {
         this.models = models;
+        //TODO set an instance
     }
 
-    public ModelList() {
+    public ModelList(T instance) {
+        this.instance = instance;
     }
 
     @Override
@@ -62,7 +66,7 @@ public class ModelList<T extends Model> extends Model<T> implements Cloneable {
 
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
-        return null; //TODO implement
+        return instance.getList(subscriber, parameters);
     }
 
     @Override
