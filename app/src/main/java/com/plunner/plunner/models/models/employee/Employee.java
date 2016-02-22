@@ -250,40 +250,6 @@ public class Employee<S extends Employee> extends Model<S> {
                 append(createdAt, rhs.createdAt).append(updatedAt, rhs.updatedAt).isEquals();
     }
 
-    /**
-     * Get calendars if they are <strong>already loaded</strong> via loadCalendars
-     *
-     * @return list of calendars
-     */
-    //  public ModelList<Calendar> getCalendars() throws CloneNotSupportedException {
-    //    return calendars.clone();
-    //}
-
-
-   /* public rx.Subscription loadCalendars(LoadCalendarsSubscriber subscriber) {
-        return new Calendar().get(subscriber);
-    }
-
-    public rx.Subscription loadCalendars(Callable<ModelList<Calendar>> callable) {
-        return loadCalendars(new LoadCalendarsSubscriber(callable));
-    }
-
-    public rx.Subscription loadCalendars() {
-        return loadCalendars(new LoadCalendarsSubscriber());
-    }
-
-    public rx.Subscription loadMeetings(LoadMeetingsSubscriber subscriber) {
-        return new com.plunner.plunner.models.models.employee.Meeting().get(subscriber);
-    }*/
-
-    //public rx.Subscription loadMeetings(Callable<ModelList<com.plunner.plunner.models.models.employee.Meeting>> callable) {
-//        return loadMeetings(new LoadMeetingsSubscriber(callable));
-    //  }
-
-   /* public rx.Subscription loadMeetings() {
-        return loadMeetings(new LoadMeetingsSubscriber());
-    }*/
-
     static private interface RestInterface {
         @GET("/employees/employee/")
         Observable<Employee> get();
