@@ -12,9 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.TextView;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.activities.ComposeScheduleActivity;
+
+import org.w3c.dom.Text;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +33,7 @@ public class EventDetailFragment extends DialogFragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private TextView startDate;
 
 
     public EventDetailFragment() {
@@ -78,6 +82,7 @@ public class EventDetailFragment extends DialogFragment {
         return dialog;
     }
 
+
     @Override
     public void onPause() {
         super.onPause();
@@ -85,5 +90,11 @@ public class EventDetailFragment extends DialogFragment {
         activity.showToolbar();
 
     }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+
+    }
+
 
 }

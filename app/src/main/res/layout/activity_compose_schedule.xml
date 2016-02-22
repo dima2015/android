@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:id="@+id/compose_schedule_root"
     tools:context=".activities.activities.ComposeScheduleActivity">
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -25,6 +26,14 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <include layout="@layout/content_compose_schedule"/>
     </android.support.v4.widget.NestedScrollView>
-
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/compose_schedule_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_input_add"
+        android:tint="#ffffff"
+        app:backgroundTint="@color/red" />
 
 </android.support.design.widget.CoordinatorLayout>

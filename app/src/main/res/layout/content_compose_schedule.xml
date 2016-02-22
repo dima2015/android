@@ -77,7 +77,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="20dp"
         android:background="@color/light_gray" />
 
     <LinearLayout
@@ -87,7 +87,8 @@
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:nestedScrollingEnabled="false">
 
         <TextView
             android:layout_width="wrap_content"
@@ -137,7 +138,7 @@
             android:id="@+id/weekView"
             android:layout_width="match_parent"
             android:layout_height="1500dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             app:columnGap="8dp"
 
             app:dayBackgroundColor="#05000000"
@@ -149,8 +150,9 @@
             app:headerRowPadding="12dp"
             app:hourHeight="60dp"
             app:noOfVisibleDays="1"
-            app:textSize="12sp"
-            app:todayBackgroundColor="#1848adff" />
+            app:textSize="13sp"
+            app:todayBackgroundColor="#1848adff"
+            />
     </LinearLayout>
     <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
