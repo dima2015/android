@@ -29,8 +29,15 @@ public class Retrofit {
 
     static final protected String BASE_URL = "http://api.plunner.com";
     static final private int TIMEOUT = 30;
-    static public List<Interceptor> additionalInterceptors = new ArrayList<>();
-    //TODO use singleton
+    private static Retrofit ourInstance = new Retrofit();
+    private List<Interceptor> additionalInterceptors = new ArrayList<>();
+
+    private Retrofit() {
+    }
+
+    public static Retrofit getInstance() {
+        return ourInstance;
+    }
 
     /**
      * @param interfaceClass
@@ -42,10 +49,8 @@ public class Retrofit {
         OkHttpClient client = new OkHttpClient();
         client.setReadTimeout(TIMEOUT, TimeUnit.SECONDS);
         client.setConnectTimeout(TIMEOUT, TimeUnit.SECONDS);
-        client.interceptors().add(new InterceptorClass());
-        for (Interceptor interceptor : additionalInterceptors) {
-            client.interceptors().add(interceptor);
-        }
+        client.interceptors().add(new InterceptorClass()); //TODO keep it in memory?
+        client.interceptors().addAll(ourInstance.additionalInterceptors);
         client.networkInterceptors().add(new StethoInterceptor());//TODO remove
 
         return new retrofit.Retrofit.Builder()
@@ -69,6 +74,10 @@ public class Retrofit {
 
     static public <T extends Model & Listable> rx.Subscription subscribeList(Observable<List<T>> call, ListSubscriber<T> subscriber) {
         return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
+    }
+
+    public List<Interceptor> additionalInterceptors() {
+        return additionalInterceptors;
     }
 
     static private class InterceptorClass implements Interceptor {

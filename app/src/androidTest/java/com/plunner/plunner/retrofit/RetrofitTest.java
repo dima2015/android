@@ -33,7 +33,7 @@ public class RetrofitTest extends ApplicationTestCase<Application> {
 
     protected InterceptorClient initialise(String response) {
         InterceptorClient interceptorClient = new InterceptorClient(response);
-        Retrofit.additionalInterceptors.add(interceptorClient);
+        Retrofit.getInstance().additionalInterceptors().add(interceptorClient); //TODO new object each time??
         LoginManager login = LoginManager.getInstance();
         login.setOnlyInternal(true);
         return interceptorClient;
