@@ -6,7 +6,6 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.Callable;
-import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.models.Model;
 
 import java.io.IOException;
@@ -80,8 +79,6 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
     @Override
     public void onNext(T t) {
         Log.v("data", t.toString());
-        if (callable != null && callable instanceof SetModel)
-            ((SetModel<T>) callable).setModel(t);
         if(callable != null && callable instanceof CallOnNext)
             ((CallOnNext<T>) callable).onNext(t);
     }

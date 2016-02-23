@@ -12,10 +12,11 @@ import android.view.View;
 import com.facebook.stetho.Stetho;
 import com.plunner.plunner.R;
 import com.plunner.plunner.models.adapters.HttpException;
+import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
-import com.plunner.plunner.models.callbacks.interfaces.SetModel;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Employee;
@@ -105,13 +106,9 @@ public class MainActivity extends AppCompatActivity {
         //TODO automatically try to get token by long token
     }
 
-    private class EmployeeCallback implements SetModel<Employee>,
-            CallOnHttpError<Employee>, CallOnNext<Employee> {
+    private class EmployeeCallback implements
+            CallOnHttpError<Employee>, CallOnNext<Employee>, CallOnNoHttpError<Employee> {
 
-        @Override
-        public void setModel(Employee employee) {
-            MainActivity.this.employee = employee;
-        }
 
         @Override
         public void onHttpError(HttpException e) {
@@ -120,12 +117,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onNext(Employee employee) {
-            ;
-            //TODO implement or remove
+            MainActivity.this.employee = employee;
+        }
+
+        @Override
+        public void onNoHttpError(NoHttpException e) {
+            //TODO manage
         }
     }
 
-    private class GroupsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>> {
+    private class GroupsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
         @Override
         public void onHttpError(HttpException e) {
             MainActivity.this.onHttpError(e);
@@ -135,6 +136,12 @@ public class MainActivity extends AppCompatActivity {
         public void onNext(ModelList<Group> groups) {
             ;
             //TODO implement or remove
+        }
+
+
+        @Override
+        public void onNoHttpError(NoHttpException e) {
+            //TODO manage
         }
     }
 }

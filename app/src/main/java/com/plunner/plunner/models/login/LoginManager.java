@@ -43,6 +43,7 @@ public class LoginManager {
     private String token = null;
     private Context mContext;
     private String accountName = null;
+    private boolean onlyInternal = false;
 
     private LoginManager() {
         mContext = Plunner.getAppContext();
@@ -51,6 +52,14 @@ public class LoginManager {
 
     public static LoginManager getInstance() {
         return ourInstance;
+    }
+
+    public boolean isOnlyInternal() {
+        return onlyInternal;
+    }
+
+    public void setOnlyInternal(boolean onlyInternal) {
+        this.onlyInternal = onlyInternal;
     }
 
     /**
@@ -100,14 +109,20 @@ public class LoginManager {
         return token;
     }
 
-    //TODO according to setAuthToken this shoudl be called by the main thread
+
+    /**
+     * Stiore token, if onlyInternal is true the token is not stored into accountManager
+     *
+     * @param token
+     */
     public void setToken(final String token) {
+        //TODO according to setAuthToken this shoudl be called by the main thread
         this.token = token;
         //TODO better way for auth type
         //TODO use the same way used for the toast notification
         //TODO correct use new Account?
         //update the token stored using the main thread as suggested by javadoc
-        if (accountName != null)
+        if (accountName != null && !onlyInternal)
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
@@ -122,11 +137,6 @@ public class LoginManager {
         //TODO tmp method
         AccountManager.get(mContext).invalidateAuthToken(mContext.getString(R.string.account_type),
                 token);
-    }
-
-    public LoginManager withToken(String token) {
-        this.token = token;
-        return this;
     }
 
     private LoginManager loginSync(String company, String email, String password) throws LoginException {

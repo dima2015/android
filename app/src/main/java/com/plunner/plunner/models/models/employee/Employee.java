@@ -165,7 +165,8 @@ public class Employee<S extends Employee> extends Model<S> {
     /**
      * @return The email
      */
-    public void getEmail() {
+    public String getEmail() {
+        return email;
     }
 
     /**

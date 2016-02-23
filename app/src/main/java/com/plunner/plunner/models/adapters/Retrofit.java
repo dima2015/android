@@ -12,6 +12,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +29,8 @@ public class Retrofit {
 
     static final protected String BASE_URL = "http://api.plunner.com";
     static final private int TIMEOUT = 30;
+    static public List<Interceptor> additionalInterceptors = new ArrayList<>();
+    //TODO use singleton
 
     /**
      * @param interfaceClass
@@ -40,6 +43,9 @@ public class Retrofit {
         client.setReadTimeout(TIMEOUT, TimeUnit.SECONDS);
         client.setConnectTimeout(TIMEOUT, TimeUnit.SECONDS);
         client.interceptors().add(new InterceptorClass());
+        for (Interceptor interceptor : additionalInterceptors) {
+            client.interceptors().add(interceptor);
+        }
         client.networkInterceptors().add(new StethoInterceptor());//TODO remove
 
         return new retrofit.Retrofit.Builder()
@@ -73,6 +79,7 @@ public class Retrofit {
             Request newRequest = chain.request();
             //add authorization token
             if (loginManager.getToken() != null) {
+                //TODO check if token exists and it looks correct (length check), throw exception
                 token = loginManager.getToken();
                 //for security reason show only the start of the token
                 Log.v("Interceptor", "Token set in connection" + token.substring(token.length() - 20));
