@@ -15,7 +15,7 @@ import javax.annotation.Generated;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
-public class Caldav extends Model<Caldav> {
+final public class Caldav extends Model<Caldav> {
 
     @SerializedName("calendar_id")
     @Expose
