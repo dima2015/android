@@ -55,6 +55,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
      */
     private EventDetailFragment addEventFragment;
     private List<CustomWeekEvent> composedEvents;
+    private List<CustomWeekEvent> deletedEvents;
 
 
     @Override
@@ -90,6 +91,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
             }
         });
         composedEvents = new ArrayList<>();
+        deletedEvents = new ArrayList<>();
 
     }
 
@@ -215,7 +217,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         int position;
         if (event != null) {
             hideFragment(null);
-            if (event.isNew()) {
+            if (event.isNew() && !event.isEdited()) {
                 composedEvents.add(event);
             } else if (event.isEdited()) {
                 position = findEventById(event.getId());
@@ -240,7 +242,9 @@ public class ComposeScheduleActivity extends AppCompatActivity {
 
     public void deleteEvent(View v) {
         long eventId = addEventFragment.getCurrentEventId();
-        composedEvents.remove(findEventById(eventId));
+        int position = findEventById(eventId);
+        deletedEvents.add(composedEvents.get(position));
+        composedEvents.remove(position);
         mWeekView.notifyDatasetChanged();
         hideFragment(null);
 
@@ -251,7 +255,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         if (addEventFragment == null) {
             addEventFragment = new EventDetailFragment();
             addEventFragment.setCurrentEventId(event.getId());
-            addEventFragment.setEditEventContent(event.getStartTime(), event.getEndTime());
+            //addEventFragment.setEditEventContent(event.getStartTime(), event.getEndTime());
             actionBar.hide();
             transaction.add(R.id.compose_schedule_root, addEventFragment)
                     .addToBackStack(null).commit();
@@ -266,18 +270,18 @@ public class ComposeScheduleActivity extends AppCompatActivity {
 
     private void onEmptySpaceClick(Calendar time) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        actionBar.hide();
         if (addEventFragment == null) {
             addEventFragment = new EventDetailFragment();
-            addEventFragment.setNewEventContent(time);
-            actionBar.hide();
+            addEventFragment.setInitialDate(time);
             transaction.add(R.id.compose_schedule_root, addEventFragment)
                     .addToBackStack(null).commit();
+
         } else {
-            actionBar.hide();
             addEventFragment.setNewEventContent(time);
             transaction.show(addEventFragment).commit();
-
         }
+
     }
 
     private String interpretDateM(Calendar date) {

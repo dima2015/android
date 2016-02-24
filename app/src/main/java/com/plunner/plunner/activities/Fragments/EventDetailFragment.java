@@ -39,6 +39,7 @@ public class EventDetailFragment extends Fragment {
     private boolean isNewEvent;
     private boolean isEditedEvent;
     private long currentEventId;
+    private Calendar initialDate;
 
 
     public EventDetailFragment() {
@@ -195,7 +196,7 @@ public class EventDetailFragment extends Fragment {
             deleteView.setVisibility(View.VISIBLE);
 
         }
-
+        setNewEventContent(initialDate);
     }
 
     @Override
@@ -246,10 +247,14 @@ public class EventDetailFragment extends Fragment {
     public void setCurrentEventId(long currentEventId) {
         this.currentEventId = currentEventId;
     }
-
+    public void setInitialDate(Calendar time){
+        initialDate = time;
+        isEditedEvent = false;
+    }
     public void setNewEventContent(Calendar time) {
         Calendar calendar;
         isNewEvent = true;
+        isEditedEvent = false;
         currentEventId = idFactory.generate();
         eventStarts(time, 2);
         calendar = (Calendar) time.clone();
