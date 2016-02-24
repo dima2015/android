@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.plunner.plunner.models.login.LoginManager;
+import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -11,6 +12,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.GsonConverterFactory;
@@ -26,6 +29,15 @@ public class Retrofit {
 
     static final protected String BASE_URL = "http://api.plunner.com";
     static final private int TIMEOUT = 30;
+    private static Retrofit ourInstance = new Retrofit();
+    private List<Interceptor> additionalInterceptors = new ArrayList<>();
+
+    private Retrofit() {
+    }
+
+    public static Retrofit getInstance() {
+        return ourInstance;
+    }
 
     /**
      * @param interfaceClass
@@ -37,7 +49,8 @@ public class Retrofit {
         OkHttpClient client = new OkHttpClient();
         client.setReadTimeout(TIMEOUT, TimeUnit.SECONDS);
         client.setConnectTimeout(TIMEOUT, TimeUnit.SECONDS);
-        client.interceptors().add(new InterceptorClass());
+        client.interceptors().add(new InterceptorClass()); //TODO keep it in memory?
+        client.interceptors().addAll(ourInstance.additionalInterceptors);
         client.networkInterceptors().add(new StethoInterceptor());//TODO remove
 
         return new retrofit.Retrofit.Builder()
@@ -55,8 +68,16 @@ public class Retrofit {
      * @param <T>
      * @return
      */
-    static public <T extends Model> rx.Subscription subscribe(Observable<T> call, rx.Subscriber<T> subscriber) {
+    static public <T extends Model> rx.Subscription subscribe(Observable<T> call, Subscriber<T> subscriber) {
         return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
+    }
+
+    static public <T extends Model & Listable> rx.Subscription subscribeList(Observable<List<T>> call, ListSubscriber<T> subscriber) {
+        return call.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(subscriber);
+    }
+
+    public List<Interceptor> additionalInterceptors() {
+        return additionalInterceptors;
     }
 
     static private class InterceptorClass implements Interceptor {
@@ -67,6 +88,7 @@ public class Retrofit {
             Request newRequest = chain.request();
             //add authorization token
             if (loginManager.getToken() != null) {
+                //TODO check if token exists and it looks correct (length check), throw exception
                 token = loginManager.getToken();
                 //for security reason show only the start of the token
                 Log.v("Interceptor", "Token set in connection" + token.substring(token.length() - 20));

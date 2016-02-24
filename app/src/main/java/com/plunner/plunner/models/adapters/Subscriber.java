@@ -6,7 +6,6 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.Callable;
-import com.plunner.plunner.models.callbacks.interfaces.SetModel;
 import com.plunner.plunner.models.models.Model;
 
 import java.io.IOException;
@@ -17,14 +16,14 @@ import retrofit.HttpException;
  * Created by claudio on 19/12/15.
  */
 public class Subscriber<T extends Model> extends rx.Subscriber<T> {
-    Callable callable = null;
+    Callable<T> callable = null;
 
     /**
      * constructor called if we want to set the model get if wwe don't have errors on the the object
      * given
      * @param callable
      */
-    public Subscriber(Callable callable)
+    public Subscriber(Callable<T> callable)
     {
         super();
         this.callable = callable;
@@ -63,8 +62,9 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
     public void onError(NoHttpException e) {
         Log.e("Net error", e.getMessage(), e.getCause());
         if (callable != null && callable instanceof CallOnNoHttpError) {
-            ((CallOnNoHttpError) callable).onNoHttpError(e);
+            ((CallOnNoHttpError<T>) callable).onNoHttpError(e);
         }
+        //TODO maybe thsi is thrown even when there are json problems
     }
 
     public void onError(com.plunner.plunner.models.adapters.HttpException e) {
@@ -72,7 +72,7 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
         Log.w("Net error", Integer.toString(response.code()) + " " + response.message() + " " +
                 e.getErrorBody());
         if (callable != null && callable instanceof CallOnHttpError) {
-            ((CallOnHttpError) callable).onHttpError(e);
+            ((CallOnHttpError<T>) callable).onHttpError(e);
         }
         //TODO automatically fresh token if 401???
     }
@@ -80,9 +80,7 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
     @Override
     public void onNext(T t) {
         Log.v("data", t.toString());
-        if(callable != null && callable instanceof SetModel)
-            ((SetModel) callable).setModel(t);
         if(callable != null && callable instanceof CallOnNext)
-            ((CallOnNext) callable).onNext(t);
+            ((CallOnNext<T>) callable).onNext(t);
     }
 }

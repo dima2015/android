@@ -1,5 +1,7 @@
 package com.plunner.plunner.models.login;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Model;
@@ -10,8 +12,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Generated;
 
@@ -26,8 +26,9 @@ import rx.Subscription;
 @Generated("org.jsonschema2pojo")
 class Token extends Model {
 
+    @SerializedName("token")
+    @Expose
     private String token;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * No args constructor for use in serialization
@@ -42,6 +43,15 @@ class Token extends Model {
         this.token = token;
     }
 
+    /**
+     * <strong>CAUTION:</strong> this give a new object
+     *
+     * @param company
+     * @param email
+     * @param password
+     * @param subscriber
+     * @return
+     */
     public Subscription get(String company, String email, String password, Subscriber subscriber) {
         return get(subscriber, company, email, password);
     }
@@ -68,26 +78,13 @@ class Token extends Model {
     @Override
     public String toString() {
         //for security reason show only the start of the token
-        return new ToStringBuilder(this).append("additionalProperties", additionalProperties).
+        return new ToStringBuilder(this).
                 append("token", token.substring(token.length() - 20)).toString();
-    }
-
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
-    public Token withAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-        return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(token).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(token).toHashCode();
     }
 
     @Override
@@ -99,13 +96,12 @@ class Token extends Model {
             return false;
         }
         Token rhs = ((Token) other);
-        return new EqualsBuilder().append(token, rhs.token).append(additionalProperties, rhs.
-                additionalProperties).isEquals();
+        return new EqualsBuilder().append(token, rhs.token).isEquals();
     }
 
 
     @Override
-    public Subscription fresh(Subscriber subscriber) {
+    public Subscription fresh(FreshSubscriber subscriber) {
         return null; //TODO implement, we need route for refresh
     }
 
@@ -114,6 +110,12 @@ class Token extends Model {
         return null; //TODO implement
     }
 
+    /**
+     * <strong>CAUTION:</strong> this give a new object
+     * @param subscriber
+     * @param parameters the parameters to perform the get unequivocally
+     * @return
+     */
     @Override
     public Subscription get(Subscriber subscriber, String... parameters) {
         if (parameters.length != 3)

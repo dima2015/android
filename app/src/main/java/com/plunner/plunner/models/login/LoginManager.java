@@ -41,9 +41,9 @@ public class LoginManager {
     private static LoginManager ourInstance = new LoginManager();
     private AccountManager mAccountManager;
     private String token = null;
-    private boolean tokenCanBeSet = true;
     private Context mContext;
     private String accountName = null;
+    private boolean onlyInternal = false;
 
     private LoginManager() {
         mContext = Plunner.getAppContext();
@@ -52,6 +52,14 @@ public class LoginManager {
 
     public static LoginManager getInstance() {
         return ourInstance;
+    }
+
+    public boolean isOnlyInternal() {
+        return onlyInternal;
+    }
+
+    public void setOnlyInternal(boolean onlyInternal) {
+        this.onlyInternal = onlyInternal;
     }
 
     /**
@@ -101,37 +109,34 @@ public class LoginManager {
         return token;
     }
 
-    //TODO according to setAuthToken this shoudl be called by the main thread
+
+    /**
+     * Stiore token, if onlyInternal is true the token is not stored into accountManager
+     *
+     * @param token
+     */
     public void setToken(final String token) {
-        if (tokenCanBeSet) {
-            this.token = token;
-            //TODO better way for auth type
-            //TODO use the same way used for the toast notification
-            //TODO correct use new Account?
-            //update the token stored using the main thread as suggested by javadoc
-            if (accountName != null)
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAccountManager.setAuthToken(new Account(accountName,
-                                        mContext.getString(R.string.account_type)), "Full access token",
-                                token);
-                    }
-                });
-        }
+        //TODO according to setAuthToken this shoudl be called by the main thread
+        this.token = token;
+        //TODO better way for auth type
+        //TODO use the same way used for the toast notification
+        //TODO correct use new Account?
+        //update the token stored using the main thread as suggested by javadoc
+        if (accountName != null && !onlyInternal)
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    mAccountManager.setAuthToken(new Account(accountName,
+                                    mContext.getString(R.string.account_type)), "Full access token",
+                            token);
+                }
+            });
     }
 
     public void invalidateToken() {
         //TODO tmp method
         AccountManager.get(mContext).invalidateAuthToken(mContext.getString(R.string.account_type),
                 token);
-    }
-
-    public LoginManager withToken(String token) {
-        if (tokenCanBeSet) {
-            this.token = token;
-        }
-        return this;
     }
 
     private LoginManager loginSync(String company, String email, String password) throws LoginException {
@@ -145,7 +150,6 @@ public class LoginManager {
         }
         if (response.isSuccess()) {
             Token token = response.body();
-            this.tokenCanBeSet = true;
             this.token = "Bearer " + token.getToken();
             return this;
         }
@@ -233,8 +237,8 @@ public class LoginManager {
      *
      * @param e        httpException need to get code of error
      * @param activity needed to show the login view
-     * @param callback login callback, if login is not need thsi is not called
-     * @return true if the reLogin was perofrmn (not if it successful since it's async)
+     * @param callback login callback, if login is not need this is not called
+     * @return true if the reLogin was perform (not if it successful since it's async)
      */
     public boolean reLogin(HttpException e, Activity activity, storeTokenCallback callback) {
         //invalidate token
