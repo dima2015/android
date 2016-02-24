@@ -10,6 +10,7 @@ import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelException;
 import com.plunner.plunner.models.models.ModelList;
+import com.plunner.plunner.models.models.employee.utility.LoadResource;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -49,7 +50,7 @@ final public class Calendar extends Model<Calendar> implements Listable {
     @Expose
     @Valid
     private Caldav caldav;
-    private ModelList<Timeslot> timeslots = new ModelList<>(new Timeslot());
+    private LoadResource<ModelList<Timeslot>> timeslots = new LoadResource<ModelList<Timeslot>>(new ModelList<Timeslot>(new Timeslot()));
 
     /**
      * No args constructor for use in serialization
@@ -170,12 +171,14 @@ final public class Calendar extends Model<Calendar> implements Listable {
         this.caldav = caldav;
         return this;
     }
-
     /**
-     * @return The timeslots
+     * Get timeslots, you should load them via the laod call
+     *
+     * @return laoder of timeslots
      */
-    public ModelList<Timeslot> getTimeslots() throws CloneNotSupportedException {
-        return timeslots.clone();
+    public LoadResource<ModelList<Timeslot>> getTimeslots() {
+        timeslots.setParameters(id);
+        return timeslots;
     }
 
     @Override

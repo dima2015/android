@@ -1,9 +1,9 @@
 package com.plunner.plunner.retrofit;
 
 import com.plunner.plunner.models.models.ModelList;
-import com.plunner.plunner.models.models.employee.Caldav;
 import com.plunner.plunner.models.models.employee.Calendar;
 import com.plunner.plunner.models.models.employee.Employee;
+import com.plunner.plunner.models.models.employee.Timeslot;
 import com.plunner.plunner.models.models.employee.utility.LoadResource;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by claudio on 22/02/16.
  */
-public class CalendarsTest extends RetrofitTest {
+public class TimeslotTest extends RetrofitTest {
     public void testGet() throws InterruptedException {
         setResponse("{\"id\":\"34\",\"name\":\"testEmp\",\"email\":\"testEmp@test.com\",\"company_id\":\"11\",\"created_at\":\"2015-12-30 21:31:43\",\"updated_at\":\"2015-12-30 21:31:43\",\"is_planner\":true}");
         Execution<Employee> executionE = new Execution<>();
@@ -26,12 +26,17 @@ public class CalendarsTest extends RetrofitTest {
         assertOK();
         assertUrl("/employees/calendars/");
         List<Calendar> calendarsList = calendars.getInstance().getModels();
-        assertEquals(6, calendarsList.size()); //number of groups
-        assertNull(calendarsList.get(0).getCaldav()); //caldav check
-        assertNotNull(calendarsList.get(1).getCaldav()); //caldav check
-        Calendar calendar = calendarsList.get(1);
-        Caldav caldav = calendar.getCaldav();
-        assertEquals("106", calendar.getId()); //just to verify if calendar is loaded
-        assertEquals("106", caldav.getCalendarId()); //just to verify if caldav is loaded
+        Calendar calendar = calendarsList.get(0);
+        setResponse("[{\"id\":\"304\",\"time_start\":\"1972-11-30 04:13:00\",\"time_end\":\"1972-03-18 07:23:42\",\"calendar_id\":\"102\",\"created_at\":\"2015-12-30 21:31:43\",\"updated_at\":\"2015-12-30 21:31:43\"},{\"id\":\"305\",\"time_start\":\"2005-09-02 02:24:19\",\"time_end\":\"1998-10-26 06:53:40\",\"calendar_id\":\"102\",\"created_at\":\"2015-12-30 21:31:43\",\"updated_at\":\"2015-12-30 21:31:43\"},{\"id\":\"306\",\"time_start\":\"1995-06-30 16:57:37\",\"time_end\":\"1971-07-03 23:57:34\",\"calendar_id\":\"102\",\"created_at\":\"2015-12-30 21:31:43\",\"updated_at\":\"2015-12-30 21:31:43\"}]");
+        Execution<ModelList<Timeslot>> execution2 = new Execution<>();
+        LoadResource<ModelList<Timeslot>> timeslots = calendar.getTimeslots();
+        timeslots.load(execution2.getCallback());
+        lock();
+        assertOK();
+        assertUrl("/employees/calendars/102/timeslots/");
+        List<Timeslot> timeslotsList = timeslots.getInstance().getModels();
+        assertEquals(3, timeslotsList.size()); //number of groups
+        Timeslot timeslot = timeslotsList.get(0);
+        assertEquals("304", timeslot.getId()); //just to verify if timeslot is loaded
     }
 }

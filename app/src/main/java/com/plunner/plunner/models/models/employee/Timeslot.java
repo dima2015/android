@@ -3,16 +3,24 @@ package com.plunner.plunner.models.models.employee;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.plunner.plunner.models.adapters.ListSubscriber;
+import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
+import com.plunner.plunner.models.models.ModelException;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.List;
+
 import javax.annotation.Generated;
 
+import retrofit.http.GET;
+import retrofit.http.Path;
+import rx.Observable;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
@@ -172,6 +180,15 @@ final public class Timeslot extends Model<Timeslot> implements Listable {
 
     @Override
     public Subscription getList(Subscriber subscriber, String... parameters) {
-        return null;
+        if (parameters.length != 1)
+            subscriber.onError(new ModelException("Get parameters number is not correct (!= 1)"));
+
+        return Retrofit.subscribeList(Retrofit.createRetrofit(RestInterface.class).index(parameters[0]),
+                new ListSubscriber<Timeslot>(subscriber, this));
+    }
+
+    static private interface RestInterface {
+        @GET("/employees/calendars/{calendar}/timeslots/?current=1")
+        Observable<List<Timeslot>> index(@Path("calendar") String calendarId);
     }
 }

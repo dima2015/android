@@ -26,6 +26,14 @@ public class LoadResource<S extends Model> {
         return instance;
     }
 
+    public String[] getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(String... parameters) {
+        this.parameters = parameters;
+    }
+
     public rx.Subscription load(LoadSubscriber subscriber) {
         //TODO check parameters
         return instance.get(subscriber, parameters);
