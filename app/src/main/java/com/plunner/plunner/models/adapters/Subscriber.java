@@ -64,6 +64,7 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
         if (callable != null && callable instanceof CallOnNoHttpError) {
             ((CallOnNoHttpError<T>) callable).onNoHttpError(e);
         }
+        //TODO maybe thsi is thrown even when there are json problems
     }
 
     public void onError(com.plunner.plunner.models.adapters.HttpException e) {
