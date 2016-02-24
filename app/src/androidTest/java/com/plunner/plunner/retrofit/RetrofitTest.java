@@ -25,9 +25,11 @@ import java.net.URI;
  * Created by claudio on 22/02/16.
  */
 public class RetrofitTest extends ApplicationTestCase<Application> {
-    final protected LockClass lockClass = new LockClass();
+    final private LockClass lockClass = new LockClass();
     private InterceptorClient interceptorClient = null;
     private Execution execution;
+
+    //TODO improve calling one method that perform all checks
 
     public RetrofitTest() {
         super(Application.class);
@@ -37,6 +39,10 @@ public class RetrofitTest extends ApplicationTestCase<Application> {
     protected void setUp() throws Exception {
         super.setUp();
         initialise();
+    }
+
+    protected void lock() throws InterruptedException {
+        lockClass.lock();
     }
 
     private void initialise() {
