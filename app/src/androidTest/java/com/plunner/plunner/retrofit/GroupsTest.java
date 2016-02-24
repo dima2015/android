@@ -3,7 +3,10 @@ package com.plunner.plunner.retrofit;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Employee;
 import com.plunner.plunner.models.models.employee.Group;
+import com.plunner.plunner.models.models.employee.Meeting;
 import com.plunner.plunner.models.models.employee.utility.LoadResource;
+
+import java.util.List;
 
 /**
  * Created by claudio on 22/02/16.
@@ -22,5 +25,13 @@ public class GroupsTest extends RetrofitTest {
         lock();
         assertOK();
         assertUrl("/employees/groups/");
+        List<Group> groupsList = groups.getInstance().getModels();
+        assertEquals(2, groupsList.size()); //number of groups
+        assertEquals(0, groupsList.get(0).getMeetings().size()); //number of meetings for group 1
+        assertEquals(1, groupsList.get(1).getMeetings().size()); //number of meetings for group 2
+        Group group = groupsList.get(1);
+        List<Meeting> meetings = group.getMeetings();
+        Meeting meeting = meetings.get(0);
+        assertEquals("345", meeting.getId()); //just to verify if meeting is loaded
     }
 }

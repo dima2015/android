@@ -74,6 +74,7 @@ public class ModelList<T extends Model & Listable> extends Model<T> implements C
     @Override
     public ModelList<T> clone() throws CloneNotSupportedException {
         ModelList<T> ret = (ModelList<T>) super.clone();
+        //TODO clone each model
         ret.models = new ArrayList<T>(models);
         return ret;
     }

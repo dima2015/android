@@ -93,6 +93,7 @@ public class Group<S extends Group> extends Model<S> implements Listable {
      * @return The meetings
      */
     public List<Meeting> getMeetings() {
+        //TODO clone?
         return new ArrayList<Meeting>(meetings); //new object
     }
 

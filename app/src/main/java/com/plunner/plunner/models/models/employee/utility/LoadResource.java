@@ -17,6 +17,11 @@ public class LoadResource<S extends Model> {
         this.parameters = parameters;
     }
 
+    /**
+     * Get the instance of th resource, before the load it is an empty object of the same type of the resource requested then it is the instance of the resource received
+     *
+     * @return
+     */
     public S getInstance() {
         return instance;
     }
