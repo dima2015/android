@@ -118,6 +118,7 @@ public class Employee<S extends Employee> extends Model<S> {
 
     /**
      * Get meetings, you should load them via the laod call
+     * This is the list of meetings that the employee has to attend
      *
      * @return laoder of meetings
      */

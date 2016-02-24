@@ -89,6 +89,13 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
         return null;
     }
 
+    /**
+     * this gives the list of meetigns that the employee has to attend
+     *
+     * @param subscriber
+     * @param parameters
+     * @return
+     */
     @Override
     public Subscription getList(Subscriber subscriber, String... parameters) {
         if (parameters.length != 0)
@@ -251,7 +258,8 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
     }
 
     static private interface RestInterface {
-        @GET("/employees/meetings/")
+        //TODO check if current is keep in consideration
+        @GET("/employees/meetings/?current=1")
         Observable<List<Meeting>> index();
     }
 

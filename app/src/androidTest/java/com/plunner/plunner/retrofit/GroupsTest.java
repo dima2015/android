@@ -32,6 +32,7 @@ public class GroupsTest extends RetrofitTest {
         Group group = groupsList.get(1);
         List<Meeting> meetings = group.getMeetings();
         Meeting meeting = meetings.get(0);
+        assertEquals("45", group.getId()); //just to verify if group is loaded
         assertEquals("345", meeting.getId()); //just to verify if meeting is loaded
     }
 }
