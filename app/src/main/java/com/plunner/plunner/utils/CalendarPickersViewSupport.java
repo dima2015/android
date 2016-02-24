@@ -5,7 +5,9 @@ import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import com.plunner.plunner.R;
@@ -27,6 +29,9 @@ public class CalendarPickersViewSupport {
     private LinearLayout daysPicker;
     private Button currentMonthBtn;
     private Button currentDayBtn;
+    private HorizontalScrollView monthScrollView;
+    private HorizontalScrollView dayScrollView;
+    private boolean needScroll;
 
     private Map<Button, Calendar> monthsBtnCalendarMap;
 
@@ -49,10 +54,31 @@ public class CalendarPickersViewSupport {
 
     public void setDaysPicker(LinearLayout daysPicker) {
         this.daysPicker = daysPicker;
+        dayScrollView = (HorizontalScrollView) daysPicker.getParent();
+        dayScrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if(needScroll){
+                    dayScrollView.scrollTo(currentDayBtn.getLeft(),0);
+                }
+
+            }
+        });
+
     }
 
-    public void setMonthsPicker(LinearLayout monthsPicker) {
+    public void setMonthsPicker(final LinearLayout monthsPicker) {
         this.monthsPicker = monthsPicker;
+        this.monthScrollView = (HorizontalScrollView) monthsPicker.getParent();
+        dayScrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (needScroll) {
+                    monthScrollView.scrollTo(currentMonthBtn.getLeft(), 0);
+                }
+
+            }
+        });
     }
 
     /**
@@ -141,6 +167,7 @@ public class CalendarPickersViewSupport {
             }
             daysPicker.addView(dayBtn);
         }
+        needScroll = true;
     }
 
     /**
@@ -170,6 +197,9 @@ public class CalendarPickersViewSupport {
     }
 
     public Calendar changeMonth(View v) {
+        if(needScroll){
+            needScroll = !needScroll;
+        }
         //scheduleNameInput.clearFocus();
         Button pressedMonthBtn = (Button) v;
         Calendar associatedDate = monthsBtnCalendarMap.get(v);
@@ -186,6 +216,9 @@ public class CalendarPickersViewSupport {
     }
 
     public Calendar changeDay(View v) {
+        if(needScroll){
+            needScroll = !needScroll;
+        }
         //scheduleNameInput.clearFocus();
         Calendar calendar = Calendar.getInstance();
         Button pressedDayBtn = (Button) v;
@@ -224,6 +257,9 @@ public class CalendarPickersViewSupport {
     }
 
     public void scrollDayScroll(Calendar newFirstVisibleDay, Calendar oldFirstVisibleDay) {
+        if(needScroll){
+            needScroll = !needScroll;
+        }
         int oldMonth = monthsBtnCalendarMap.get(currentMonthBtn).get(Calendar.MONTH);
         int newDayIndex, newYearIndex, newMonth;
         if (oldFirstVisibleDay != null) {

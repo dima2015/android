@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -56,6 +57,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
     private EventDetailFragment addEventFragment;
     private List<CustomWeekEvent> composedEvents;
     private List<CustomWeekEvent> deletedEvents;
+
 
 
     @Override
