@@ -33,4 +33,7 @@
     <string name="meeting_c">CREATED</string>
     <string name="enabled">ENABLED</string>
     <string name="disabled">DISABLED</string>
+    <string name="edit_event">Edit event</string>
+    <string name="add_event">Add event</string>
+    <string name="delete_event">Delete event</string>
 </resources>

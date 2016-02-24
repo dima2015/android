@@ -31,7 +31,8 @@
             android:text="Add event"
             android:textColor="@color/white"
             android:layout_weight="1"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:id="@+id/add_event_title" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,6 +47,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="30dp">
+
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:id="@+id/add_event_delete"
+            android:visibility="gone">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delete_event"
+                android:textAllCaps="true"
+                android:id="@+id/button"
+                android:background="@null"
+                android:textColor="@color/red"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="0dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="0dp"
+                android:layout_alignParentEnd="true"
+                android:onClick="deleteEvent"/>
+        </RelativeLayout>
 
         <TextView
             android:layout_width="wrap_content"
