@@ -44,7 +44,7 @@ abstract public class Model<S extends Model> {
      * @param subscriber
      * @return
      */
-    abstract public rx.Subscription fresh(FreshSubscriber subscriber);
+    abstract public rx.Subscription fresh(FreshSubscriber<S> subscriber);
 
     public rx.Subscription save() {
         return save(new Subscriber(callable));
@@ -69,6 +69,7 @@ abstract public class Model<S extends Model> {
      * @return
      */
     abstract public rx.Subscription get(Subscriber subscriber, String... parameters);
+    //TODO use generic in Subscriber
 
     /**
      * <strong>CAUTION:</strong> this give a new object
@@ -77,6 +78,7 @@ abstract public class Model<S extends Model> {
      */
     public rx.Subscription get(String... parameters) {
         return get(new Subscriber(callable), parameters);
+        //TODO set generic
     }
 
     /**
@@ -97,8 +99,8 @@ abstract public class Model<S extends Model> {
      * @return this
      * @throws ModelException on errors due to incorrect access to proprieties
      */
-    protected Model<S> copy(Model<S> model) throws ModelException {
-        if (this.getClass().getName() != model.getClass().getName())
+    protected Model<S> copy(Model<S> model, boolean classCheck) throws ModelException {
+        if (classCheck && this.getClass().getName() != model.getClass().getName())
             throw new ModelException("this and the class given are different");
 
         Field[] fields = this.getClass().getDeclaredFields();
@@ -112,6 +114,11 @@ abstract public class Model<S extends Model> {
         }
         return this;
     }
+
+    protected Model<S> copy(Model<S> model) throws ModelException {
+        return copy(model, true);
+    }
+
 
     /**
      * FreshSubscriber that perform the proprieties fresh and manage errors

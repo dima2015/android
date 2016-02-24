@@ -3,11 +3,15 @@ package com.plunner.plunner.models.models.employee;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.plunner.plunner.models.adapters.HttpException;
+import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.callbacks.interfaces.Callable;
 import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelException;
 import com.plunner.plunner.models.models.ModelList;
+import com.plunner.plunner.models.models.employee.planner.Planner;
 import com.plunner.plunner.models.models.employee.utility.LoadResource;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -76,9 +80,42 @@ public class Employee<S extends Employee> extends Model<S> {
     //TODO check if the the old execution is still in waiting status
     //TODO delete, create and so on
 
-    static public void getFactory() {
+    public Subscription getFactory(final Subscriber<Employee> subscriber) {
         //TODO implement getFactory that gives the right model planner or employee
+        class FactorySubscriber extends Subscriber<Employee> {
+            @Override
+            public void onError(NoHttpException e) {
+                subscriber.onError(e);
+            }
+
+            @Override
+            public void onError(HttpException e) {
+                subscriber.onError(e);
+            }
+
+            @Override
+            public void onNext(Employee employee) {
+                if (employee.isPlanner())
+                    try {
+                        subscriber.onNext(new Planner(employee));
+                    } catch (ModelException e) {
+                        subscriber.onNext(employee);
+                    }
+                else
+                    subscriber.onNext(employee);
+            }
+        }
+        return get(new FactorySubscriber());
     }
+
+    public Subscription getFactory(Callable<Employee> callable) {
+        return getFactory(new Subscriber<Employee>(callable));
+    }
+
+    public Subscription getFactory() {
+        return getFactory(new Subscriber<Employee>((Callable<Employee>) callable));
+    }
+
 
     @Override
     public rx.Subscription fresh(FreshSubscriber subscriber) {
