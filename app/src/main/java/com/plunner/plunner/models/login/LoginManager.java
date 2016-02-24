@@ -237,8 +237,8 @@ public class LoginManager {
      *
      * @param e        httpException need to get code of error
      * @param activity needed to show the login view
-     * @param callback login callback, if login is not need thsi is not called
-     * @return true if the reLogin was perofrmn (not if it successful since it's async)
+     * @param callback login callback, if login is not need this is not called
+     * @return true if the reLogin was perform (not if it successful since it's async)
      */
     public boolean reLogin(HttpException e, Activity activity, storeTokenCallback callback) {
         //invalidate token
