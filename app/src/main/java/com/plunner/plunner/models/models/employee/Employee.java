@@ -127,6 +127,11 @@ public class Employee<S extends Employee> extends Model<S> {
     }
 
     @Override
+    public Subscription delete(Subscriber subscriber) {
+        return null;
+    }
+
+    @Override
     public rx.Subscription save(Subscriber subscriber) {
 //TODO implement
         return null;

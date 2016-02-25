@@ -60,7 +60,25 @@ abstract public class Model<S extends Model> {
         return save(new Subscriber(callable));
     }
 
+    abstract public rx.Subscription delete(Subscriber subscriber);
+
+
+    public rx.Subscription delete() {
+        return delete(new Subscriber(callable));
+    }
+
+    /**
+     * @param callable the callable instance to call callback
+     * @return
+     */
+
+    public <T extends S> rx.Subscription delete(Callable<T> callable) {
+        this.callable = callable;
+        return delete(new Subscriber(callable));
+    }
+
     abstract public rx.Subscription save(Subscriber subscriber);
+
 
     /**
      * <strong>CAUTION:</strong> this give a new object

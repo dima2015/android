@@ -169,6 +169,11 @@ final public class Timeslot extends Model<Timeslot> implements Listable {
     }
 
     @Override
+    public Subscription delete(Subscriber subscriber) {
+        return null;
+    }
+
+    @Override
     public Subscription save(Subscriber subscriber) {
         return null;
     }

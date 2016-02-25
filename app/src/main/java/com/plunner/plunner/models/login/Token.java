@@ -106,6 +106,11 @@ class Token extends Model {
     }
 
     @Override
+    public Subscription delete(Subscriber subscriber) {
+        return null;
+    }
+
+    @Override
     public Subscription save(Subscriber subscriber) {
         return null; //TODO implement
     }

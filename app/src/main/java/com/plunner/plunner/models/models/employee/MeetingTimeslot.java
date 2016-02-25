@@ -162,6 +162,11 @@ public class MeetingTimeslot<S extends MeetingTimeslot> extends Model<S> impleme
     }
 
     @Override
+    public Subscription delete(Subscriber subscriber) {
+        return null;
+    }
+
+    @Override
     public Subscription save(Subscriber subscriber) {
         return null;
     }
