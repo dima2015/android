@@ -1,7 +1,13 @@
 package com.plunner.plunner.models.adapters;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.plunner.plunner.general.Plunner;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
@@ -60,11 +66,33 @@ public class Subscriber<T extends Model> extends rx.Subscriber<T> {
     }
 
     public void onError(NoHttpException e) {
-        Log.e("Net error", e.getMessage(), e.getCause());
+        e.setNetworkError(networkProblem());
+        if (e.getNetworkError()) {
+            Log.e("Net error", e.getMessage(), e.getCause());
+            showToast("Network problem");
+        } else
+            Log.e("Unknown error", e.getMessage(), e.getCause());
         if (callable != null && callable instanceof CallOnNoHttpError) {
             ((CallOnNoHttpError<T>) callable).onNoHttpError(e);
         }
         //TODO maybe thsi is thrown even when there are json problems
+    }
+
+    private void showToast(final String message) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(Plunner.getAppContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private boolean networkProblem() {
+        ConnectivityManager cm =
+                (ConnectivityManager) Plunner.getAppContext().getSystemService(Plunner.getAppContext().CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return !(activeNetwork != null && activeNetwork.isConnectedOrConnecting());
     }
 
     public void onError(com.plunner.plunner.models.adapters.HttpException e) {
