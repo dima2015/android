@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit.http.DELETE;
 import retrofit.http.FieldMap;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
@@ -63,6 +64,12 @@ final public class Meeting extends com.plunner.plunner.models.models.employee.Me
     }
 
     @Override
+    public Subscription delete(Subscriber subscriber) {
+        return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).delete(fatherParameters[0], id),
+                subscriber);
+    }
+
+    @Override
     public Subscription save(Subscriber subscriber) {
         Map<String, String> data = new HashMap<>();
         data.put("title", title);
@@ -90,5 +97,8 @@ final public class Meeting extends com.plunner.plunner.models.models.employee.Me
         @PUT("/employees/planners/groups/{group}/meetings/{meeting}/")
         Observable<Meeting> update(@Path("group") String groupId, @Path("meeting") String meetingId,
                                    @FieldMap Map<String, String> data);
+
+        @DELETE("/employees/planners/groups/{group}/meetings/{meeting}/")
+        Observable<Meeting> delete(@Path("group") String groupId, @Path("meeting") String meetingId);
     }
 }
