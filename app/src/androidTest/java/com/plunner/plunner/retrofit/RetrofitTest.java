@@ -21,6 +21,8 @@ import com.squareup.okhttp.ResponseBody;
 import java.io.IOException;
 import java.net.URI;
 
+import okio.Buffer;
+
 /**
  * Created by claudio on 22/02/16.
  */
@@ -55,6 +57,14 @@ public class RetrofitTest extends ApplicationTestCase<Application> {
 
     protected void assertUrl(String URL) {
         assertEquals(URL, interceptorClient.getUri().getPath());
+    }
+
+    protected void assertMethod(String method) {
+        assertEquals(method, interceptorClient.getMethod());
+    }
+
+    protected void assertRequestBody(String requestBody) {
+        assertEquals(requestBody, interceptorClient.getRequestBody());
     }
 
     protected void assertOK() {
@@ -98,6 +108,8 @@ public class RetrofitTest extends ApplicationTestCase<Application> {
         private String responseString = "";
         private URI uri;
         private int status = 200;
+        private String method;
+        private String requestBody;
 
         public InterceptorClient() {
         }
@@ -108,6 +120,14 @@ public class RetrofitTest extends ApplicationTestCase<Application> {
 
         public void setResponseString(String responseString) {
             this.responseString = responseString;
+        }
+
+        public String getMethod() {
+            return method;
+        }
+
+        public String getRequestBody() {
+            return requestBody;
         }
 
         public int getStatus() {
@@ -127,8 +147,13 @@ public class RetrofitTest extends ApplicationTestCase<Application> {
 
             Response response = null;
             if (BuildConfig.DEBUG) {
-
+                method = chain.request().method();
                 uri = chain.request().uri();
+                if (chain.request().body() != null) {
+                    Buffer buffer = new Buffer();
+                    chain.request().body().writeTo(buffer);
+                    requestBody = buffer.readUtf8();
+                }
                 response = new Response.Builder()
                         .code(status)
                         .message(responseString)

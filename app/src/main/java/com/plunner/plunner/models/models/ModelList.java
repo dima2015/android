@@ -25,22 +25,15 @@ public class ModelList<T extends Model & Listable> extends Model<T> implements C
         this.instance = instance;
     }
 
-    @Override
-    public void setFatherParameters(String... parameters) {
-        for (T model : models)
-            if (model instanceof FatherParameters)
-                ((FatherParameters) model).setFatherParameters(parameters);
-    }
-
-    @Override
-    public void setFatherParameters(String... parameters) {
-        for (T model : models)
-            if (model instanceof FatherParameters)
-                ((FatherParameters) model).setFatherParameters(parameters);
-    }
-
     public ModelList(T instance) {
         this.instance = instance;
+    }
+
+    @Override
+    public void setFatherParameters(String... parameters) {
+        for (T model : models)
+            if (model instanceof FatherParameters)
+                ((FatherParameters) model).setFatherParameters(parameters);
     }
 
     @Override
