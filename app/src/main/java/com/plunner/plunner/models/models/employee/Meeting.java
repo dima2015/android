@@ -40,7 +40,7 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
     protected String groupId;
     @SerializedName("start_time")
     @Expose
-    protected Object startTime;
+    protected String startTime;
     @SerializedName("duration")
     @Expose
     protected String duration;
@@ -66,11 +66,10 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
      * @param title
      * @param description
      */
-    public Meeting(String id, String title, String description, Object startTime, String duration) {
+    public Meeting(String id, String title, String description, String duration) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.startTime = startTime;
         this.duration = duration;
     }
 
@@ -167,14 +166,14 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
     /**
      * @return The startTime
      */
-    public Object getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
     /**
      * @param startTime The start_time
      */
-    public void setStartTime(Object startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
@@ -221,7 +220,7 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
         return this;
     }
 
-    public Meeting withStartTime(Object startTime) {
+    public Meeting withStartTime(String startTime) {
         this.startTime = startTime;
         return this;
     }
