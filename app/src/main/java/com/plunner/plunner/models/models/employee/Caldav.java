@@ -183,6 +183,11 @@ final public class Caldav extends Model<Caldav> {
     }
 
     @Override
+    public Subscription delete(Subscriber subscriber) {
+        return null;
+    }
+
+    @Override
     public Subscription save(Subscriber subscriber) {
         return null;
     }

@@ -213,6 +213,11 @@ final public class Calendar extends Model<Calendar> implements Listable {
     }
 
     @Override
+    public Subscription delete(Subscriber subscriber) {
+        return null;
+    }
+
+    @Override
     public Subscription save(Subscriber subscriber) {
         return null; //TODO save also the caldav, if != null
     }

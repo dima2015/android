@@ -69,6 +69,11 @@ public class ModelList<T extends Model & Listable> extends Model<T> implements C
     }
 
     @Override
+    public Subscription delete(Subscriber subscriber) {
+        return null;
+    }
+
+    @Override
     public Subscription save(Subscriber subscriber) {
         return null; //TODO implement
     }

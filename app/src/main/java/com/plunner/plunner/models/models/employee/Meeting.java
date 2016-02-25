@@ -79,6 +79,11 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
     }
 
     @Override
+    public Subscription delete(Subscriber subscriber) {
+        return null;
+    }
+
+    @Override
     public Subscription save(Subscriber subscriber) {
         return null; //TODO implement
     }
