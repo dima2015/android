@@ -14,7 +14,7 @@ import rx.Subscription;
 /**
  * Created by claudio on 22/12/15.
  */
-public class ModelList<T extends Model & Listable> extends Model<T> implements Cloneable {
+public class ModelList<T extends Model & Listable> extends Model<T> implements Cloneable, FatherParameters {
     //TODO exteds Model<T>  Is <T> needed?
     private List<T> models = new ArrayList<T>();
     private T instance = null;
@@ -23,6 +23,20 @@ public class ModelList<T extends Model & Listable> extends Model<T> implements C
         this.models = models;
         //TODO set an instance
         this.instance = instance;
+    }
+
+    @Override
+    public void setFatherParameters(String... parameters) {
+        for (T model : models)
+            if (model instanceof FatherParameters)
+                ((FatherParameters) model).setFatherParameters(parameters);
+    }
+
+    @Override
+    public void setFatherParameters(String... parameters) {
+        for (T model : models)
+            if (model instanceof FatherParameters)
+                ((FatherParameters) model).setFatherParameters(parameters);
     }
 
     public ModelList(T instance) {

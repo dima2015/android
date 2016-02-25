@@ -2,8 +2,9 @@ package com.plunner.plunner.retrofit.Employee.planner;
 
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Employee;
-import com.plunner.plunner.models.models.employee.Meeting;
 import com.plunner.plunner.models.models.employee.planner.Group;
+import com.plunner.plunner.models.models.employee.planner.Meeting;
+import com.plunner.plunner.models.models.employee.planner.MeetingTimeslot;
 import com.plunner.plunner.models.models.employee.planner.Planner;
 import com.plunner.plunner.models.models.employee.utility.LoadResource;
 import com.plunner.plunner.retrofit.RetrofitTest;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Created by claudio on 25/02/16.
  */
-public class Groups extends RetrofitTest {
+public class Timeslots extends RetrofitTest {
     public void testGet() throws Exception {
         setResponse("{\"id\":\"34\",\"name\":\"testEmp\",\"email\":\"testEmp@test.com\",\"company_id\":\"11\",\"created_at\":\"2015-12-30 21:31:43\",\"updated_at\":\"2015-12-30 21:31:43\",\"is_planner\":true}");
         Execution<Planner> executionE = new Execution<>();
@@ -26,15 +27,27 @@ public class Groups extends RetrofitTest {
         groups.load(executionG.getCallback());
         lock();
         assertOK();
-        assertUrl("/employees/planners/groups/");
         List<Group> groupsList = groups.getInstance().getModels();
-        assertEquals(1, groupsList.size()); //number of groups
-        assertEquals(6, groupsList.get(0).getMeetings().size()); //number of meetings for group 1
         Group group = groupsList.get(0);
-        List<Meeting> meetings = group.getMeetings();
-        Meeting meeting = meetings.get(0);
-        assertEquals(executionE.getModel().getId(), group.getPlannerId()); //just to verify if the planner id is correct
-        assertEquals("45", group.getId()); //just to verify if group is loaded
-        assertEquals("134", meeting.getId()); //just to verify if meeting is loaded
+        setResponse("[{\"id\":\"134\",\"title\":\"NewMeeting\",\"description\":\"dsdasdas\",\"group_id\":\"45\",\"start_time\":null,\"duration\":\"900\",\"created_at\":\"2016-01-11 16:30:45\",\"updated_at\":\"2016-01-11 16:30:45\"}]");
+        Execution<ModelList<Meeting>> execution2 = new Execution<>();
+        LoadResource<ModelList<Meeting>> meetings = group.getMeetingsManaged();
+        meetings.load(execution2.getCallback());
+        lock();
+        assertOK();
+        List<Meeting> meetingsList = meetings.getInstance().getModels();
+        Meeting meeting = meetingsList.get(0);
+        setResponse("[{\"id\":\"398\",\"time_start\":\"2016-01-15 06:00:00\",\"time_end\":\"2016-01-15 09:00:00\",\"meeting_id\":\"134\",\"created_at\":\"2015-12-31 15:17:18\",\"updated_at\":\"2015-12-31 15:17:40\"},{\"id\":\"399\",\"time_start\":\"2016-01-16 08:00:00\",\"time_end\":\"2016-01-16 10:15:00\",\"meeting_id\":\"134\",\"created_at\":\"2015-12-31 15:17:55\",\"updated_at\":\"2015-12-31 15:17:55\"}]");
+        Execution<ModelList<MeetingTimeslot>> execution3 = new Execution<>();
+        LoadResource<ModelList<MeetingTimeslot>> timeslots = meeting.getMeetingsTimeslotManaged();
+        timeslots.load(execution3.getCallback());
+        lock();
+        assertOK();
+        assertUrl("/employees/planners/groups/45/meetings/134/timeslots/");
+        List<MeetingTimeslot> timeslotsList = timeslots.getInstance().getModels();
+        MeetingTimeslot timeslot = timeslotsList.get(0);
+        assertEquals(2, timeslotsList.size()); //number of timeslots
+        assertEquals("134", timeslot.getMeetingId()); //just to verify if timeslot is loaded
+        assertEquals("398", timeslot.getId()); //just to verify if timeslot is loaded
     }
 }

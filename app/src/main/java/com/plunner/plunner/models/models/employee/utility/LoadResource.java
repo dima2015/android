@@ -2,6 +2,7 @@ package com.plunner.plunner.models.models.employee.utility;
 
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.Callable;
+import com.plunner.plunner.models.models.FatherParameters;
 import com.plunner.plunner.models.models.Model;
 
 /**
@@ -59,6 +60,8 @@ public class LoadResource<S extends Model> {
         @Override
         public void onNext(S resource) {
             LoadResource.this.instance = resource;
+            if (resource instanceof FatherParameters)
+                ((FatherParameters) resource).setFatherParameters(parameters);
             super.onNext(resource);
         }
     }

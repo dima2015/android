@@ -13,7 +13,7 @@ import rx.Subscription;
 /**
  * Created by claudio on 22/12/15.
  */
-public class Planner extends Employee<Planner> {
+final public class Planner extends Employee<Planner> {
 
     private LoadResource<ModelList<Group>> groupsManaged = new LoadResource<ModelList<Group>>(new ModelList<Group>(new Group()));
 

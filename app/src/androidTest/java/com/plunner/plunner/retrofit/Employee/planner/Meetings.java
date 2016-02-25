@@ -2,8 +2,8 @@ package com.plunner.plunner.retrofit.Employee.planner;
 
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Employee;
-import com.plunner.plunner.models.models.employee.Meeting;
 import com.plunner.plunner.models.models.employee.planner.Group;
+import com.plunner.plunner.models.models.employee.planner.Meeting;
 import com.plunner.plunner.models.models.employee.planner.Planner;
 import com.plunner.plunner.models.models.employee.utility.LoadResource;
 import com.plunner.plunner.retrofit.RetrofitTest;
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by claudio on 25/02/16.
  */
-public class Groups extends RetrofitTest {
+public class Meetings extends RetrofitTest {
     public void testGet() throws Exception {
         setResponse("{\"id\":\"34\",\"name\":\"testEmp\",\"email\":\"testEmp@test.com\",\"company_id\":\"11\",\"created_at\":\"2015-12-30 21:31:43\",\"updated_at\":\"2015-12-30 21:31:43\",\"is_planner\":true}");
         Execution<Planner> executionE = new Execution<>();
@@ -26,15 +26,17 @@ public class Groups extends RetrofitTest {
         groups.load(executionG.getCallback());
         lock();
         assertOK();
-        assertUrl("/employees/planners/groups/");
         List<Group> groupsList = groups.getInstance().getModels();
-        assertEquals(1, groupsList.size()); //number of groups
-        assertEquals(6, groupsList.get(0).getMeetings().size()); //number of meetings for group 1
         Group group = groupsList.get(0);
-        List<Meeting> meetings = group.getMeetings();
-        Meeting meeting = meetings.get(0);
-        assertEquals(executionE.getModel().getId(), group.getPlannerId()); //just to verify if the planner id is correct
-        assertEquals("45", group.getId()); //just to verify if group is loaded
-        assertEquals("134", meeting.getId()); //just to verify if meeting is loaded
+        setResponse("[{\"id\":\"345\",\"title\":\"NewMeeting\",\"description\":\"dsdasdas\",\"group_id\":\"45\",\"start_time\":null,\"duration\":\"900\",\"created_at\":\"2016-01-11 16:30:45\",\"updated_at\":\"2016-01-11 16:30:45\"}]");
+        Execution<ModelList<Meeting>> execution2 = new Execution<>();
+        LoadResource<ModelList<Meeting>> meetings = group.getMeetingsManaged();
+        meetings.load(execution2.getCallback());
+        lock();
+        assertOK();
+        assertUrl("/employees/planners/groups/45/meetings/");
+        List<Meeting> meetingsList = meetings.getInstance().getModels();
+        assertEquals(1, meetingsList.size()); //number of meetings
+        assertEquals("345", meetingsList.get(0).getId()); //just to verify if meeting is loaded
     }
 }
