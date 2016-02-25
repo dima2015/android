@@ -16,12 +16,20 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Generated;
 import javax.validation.Valid;
 
+import retrofit.http.DELETE;
+import retrofit.http.FieldMap;
+import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.POST;
+import retrofit.http.PUT;
+import retrofit.http.Path;
 import rx.Observable;
 import rx.Subscription;
 
@@ -214,12 +222,23 @@ final public class Calendar extends Model<Calendar> implements Listable {
 
     @Override
     public Subscription delete(Subscriber subscriber) {
-        return null;
+        return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).delete(id),
+                subscriber);
     }
 
     @Override
     public Subscription save(Subscriber subscriber) {
-        return null; //TODO save also the caldav, if != null
+        //TODO save also the caldav, if != null. Resolve the problem of the password for new caldavs?
+        Map<String, String> data = new HashMap<>();
+        data.put("name", name);
+        data.put("enabled", enabled);
+        if (id == null) {
+            return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).create(data),
+                    subscriber);
+        } else {
+            return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).update(id, data),
+                    subscriber);
+        }
     }
 
     @Override
@@ -239,5 +258,21 @@ final public class Calendar extends Model<Calendar> implements Listable {
     static private interface RestInterface {
         @GET("/employees/calendars/")
         Observable<List<Calendar>> index();
+
+        @FormUrlEncoded
+        @POST("/employees/calendars/")
+        Observable<Calendar> create(@FieldMap Map<String, String> data);
+
+        @FormUrlEncoded
+        @POST("/employees/calendars/caldav/")
+        Observable<Calendar> createCaldav(@FieldMap Map<String, String> data);
+
+        @FormUrlEncoded
+        @PUT("/employees/calendars/{calendar}/")
+        Observable<Calendar> update(@Path("calendar") String calendarId,
+                                    @FieldMap Map<String, String> data);
+
+        @DELETE("/employees/calendars/{calendar}/")
+        Observable<Calendar> delete(@Path("calendar") String calendarId);
     }
 }

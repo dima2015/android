@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.plunner.plunner.models.adapters.ListSubscriber;
 import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
+import com.plunner.plunner.models.models.FatherParameters;
 import com.plunner.plunner.models.models.Listable;
 import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelException;
@@ -14,17 +15,26 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Generated;
 
+import retrofit.http.DELETE;
+import retrofit.http.FieldMap;
+import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import rx.Observable;
 import rx.Subscription;
 
 @Generated("org.jsonschema2pojo")
-final public class Timeslot extends Model<Timeslot> implements Listable {
+final public class Timeslot extends Model<Timeslot> implements Listable, FatherParameters {
+
+    private String[] fatherParameters = null;
 
     @SerializedName("id")
     @Expose
@@ -170,12 +180,22 @@ final public class Timeslot extends Model<Timeslot> implements Listable {
 
     @Override
     public Subscription delete(Subscriber subscriber) {
-        return null;
+        return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).delete(fatherParameters[0], id),
+                subscriber);
     }
 
     @Override
     public Subscription save(Subscriber subscriber) {
-        return null;
+        Map<String, String> data = new HashMap<>();
+        data.put("time_start", timeStart);
+        data.put("time_end", timeEnd);
+        if (id == null) {
+            return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).create(fatherParameters[0], data),
+                    subscriber);
+        } else {
+            return Retrofit.subscribe(Retrofit.createRetrofit(RestInterface.class).update(fatherParameters[0], id, data),
+                    subscriber);
+        }
     }
 
     @Override
@@ -192,8 +212,26 @@ final public class Timeslot extends Model<Timeslot> implements Listable {
                 new ListSubscriber<Timeslot>(subscriber, this));
     }
 
+    @Override
+    public void setFatherParameters(String... fatherParameters) {
+        this.fatherParameters = fatherParameters;
+    }
+
+
     static private interface RestInterface {
         @GET("/employees/calendars/{calendar}/timeslots/?current=1")
         Observable<List<Timeslot>> index(@Path("calendar") String calendarId);
+
+        @FormUrlEncoded
+        @POST("/employees/calendars/{calendar}/timeslots/")
+        Observable<Timeslot> create(@Path("calendar") String calendarId, @FieldMap Map<String, String> data);
+
+        @FormUrlEncoded
+        @PUT("/employees/calendars/{calendar}/timeslots/{timeslot}/")
+        Observable<Timeslot> update(@Path("calendar") String calendarId, @Path("timeslot") String timeslotId,
+                                    @FieldMap Map<String, String> data);
+
+        @DELETE("/employees/calendars/{calendar}/timeslots/{timeslot}/")
+        Observable<Timeslot> delete(@Path("calendar") String calendarId, @Path("timeslot") String timeslotId);
     }
 }
