@@ -225,7 +225,7 @@ public class Group<S extends Group> extends Model<S> implements Listable {
                 append(plannerId, rhs.plannerId).append(plannerName, rhs.plannerName).isEquals();
     }
 
-    static private interface RestInterface {
+    static protected interface RestInterface {
         @GET("/employees/groups/")
         Observable<List<Group>> index();
     }

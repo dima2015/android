@@ -99,8 +99,8 @@ abstract public class Model<S extends Model> {
      * @return this
      * @throws ModelException on errors due to incorrect access to proprieties
      */
-    protected Model<S> copy(Model<S> model, boolean classCheck) throws ModelException {
-        if (classCheck && this.getClass().getName() != model.getClass().getName())
+    protected Model<S> copy(Model<S> model) throws ModelException {
+        if (this.getClass().getName() != model.getClass().getName())
             throw new ModelException("this and the class given are different");
 
         Field[] fields = this.getClass().getDeclaredFields();
@@ -113,10 +113,6 @@ abstract public class Model<S extends Model> {
             }
         }
         return this;
-    }
-
-    protected Model<S> copy(Model<S> model) throws ModelException {
-        return copy(model, true);
     }
 
 

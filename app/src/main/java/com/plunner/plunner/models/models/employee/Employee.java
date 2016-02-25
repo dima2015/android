@@ -66,6 +66,10 @@ public class Employee<S extends Employee> extends Model<S> {
     public Employee() {
     }
 
+    public Employee(Employee employee) throws ModelException {
+        copy(employee);
+    }
+
     /**
      * @param id
      * @param email
