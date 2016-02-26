@@ -59,7 +59,10 @@
         <activity
             android:name=".activities.activities.LoginActivity"
             android:label="@string/title_activity_login" />
-        <activity android:name=".activities.activities.MeetingDetailActivity" />
+        <activity
+            android:name=".activities.activities.MeetingDetailActivity"
+            android:parentActivityName=".activities.activities.DashboardActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

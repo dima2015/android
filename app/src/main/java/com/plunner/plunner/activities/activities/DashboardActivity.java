@@ -179,6 +179,8 @@ public class DashboardActivity extends AppCompatActivity
         schedulesFragment.switchSchedulesType(v);
     }
 
+
+
     private class retrieveUserCallaback implements CallOnHttpError<Employee>, CallOnNext<Employee>, CallOnNoHttpError<Employee> {
         @Override
         public void onHttpError(HttpException e) {

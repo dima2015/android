@@ -1,6 +1,7 @@
 package com.plunner.plunner.activities.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,12 +9,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Adapters.MeetingsListAdapter;
+import com.plunner.plunner.activities.activities.MeetingDetailActivity;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
@@ -65,6 +68,15 @@ public class MeetingsFragment extends Fragment {
     public void onStart(){
         super.onStart();
         ListView listView = (ListView) getActivity().findViewById(R.id.meetingsList);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedMeeting = tbpMeetings.get(position).toString();
+                Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
+                intent.putExtra("data",selectedMeeting);
+                startActivity(intent);
+            }
+        });
         scrollView = (LinearLayout) getActivity().findViewById(R.id.fragment_meetings_top_menu);
         loadingSpinner = (ProgressBar) getActivity().findViewById(R.id.fragment_meetings_loading_spinner);
         scrollView.getChildAt(0).setBackgroundResource(R.drawable.categorybutton_c);

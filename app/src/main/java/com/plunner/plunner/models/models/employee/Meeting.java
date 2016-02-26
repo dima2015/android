@@ -266,6 +266,9 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
         @GET("/employees/meetings/?current=1")
         Observable<List<Meeting>> index();
     }
+    public String sToString(){
+        return "id="+id+",title="+title+",description="+description+",duration="+duration+",starts="+startTime;
+    }
 
     //TODO abstract load timeslots
 }
