@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.plunner.plunner.R;
@@ -27,6 +28,7 @@ import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
+import com.plunner.plunner.models.callbacks.interfaces.Callable;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Calendar;
@@ -47,7 +49,6 @@ public class DashboardActivity extends AppCompatActivity
     private MeetingsFragment meetingsFragment;
     private SchedulesFragment schedulesFragment;
     private ProgressBar loadBar;
-    private LoginManager loginManager;
     private Employee userModel;
     private ComManager comManager;
     private boolean loadingFlag;
@@ -195,6 +196,10 @@ public class DashboardActivity extends AppCompatActivity
 
     }
 
+    public void switchSchedulesType(View v) {
+        schedulesFragment.switchSchedulesType(v);
+    }
+
     private class userPlannedMeetingsCallback implements CallOnHttpError<ModelList<Meeting>>, CallOnNext<ModelList<Meeting>>, CallOnNoHttpError<ModelList<Meeting>> {
 
         @Override
@@ -281,24 +286,7 @@ public class DashboardActivity extends AppCompatActivity
     }
 
     public void switchMeetingsType(View v) {
-        v.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
-        String tag = (String) v.getTag();
-        switch (tag) {
-            case "meetings_tbp":
-                retrieveTBPlannedMeetings();
-
-                break;
-            case "meetings_p":
-
-                retrievePlannedMeetings();
-
-                break;
-            case "meetings_m":
-
-                retrieveManagedMeetings();
-
-                break;
-        }
+        meetingsFragment.switchMeetingsType(v);
     }
 
     private class retrieveUserCallaback implements CallOnHttpError<Employee>, CallOnNext<Employee>, CallOnNoHttpError<Employee>{
@@ -311,6 +299,7 @@ public class DashboardActivity extends AppCompatActivity
         public void onNext(Employee employee) {
             comManager.setUser(employee);
             comManager.retrieveGroups(new tbpMeetingsCallback());
+            comManager.retrievePlannedMeetings(new pMeetingsCallback());
             comManager.retrieveSchedules(new schedulesCallback());
         }
 
@@ -380,6 +369,47 @@ public class DashboardActivity extends AppCompatActivity
         @Override
         public void onNoHttpError(NoHttpException e) {
             //TODO manage
+        }
+    }
+
+    private class pMeetingsCallback implements CallOnHttpError<ModelList<Meeting>>, CallOnNext<ModelList<Meeting>>, CallOnNoHttpError<ModelList<Meeting>> {
+        @Override
+        public void onHttpError(HttpException e) {
+
+        }
+
+        @Override
+        public void onNext(ModelList<Meeting> meetingModelList) {
+            List<Meeting> meetingList = meetingModelList.getModels();
+            meetingsFragment.setpMeetings(meetingList);
+        }
+
+        @Override
+        public void onNoHttpError(NoHttpException e) {
+
+        }
+    }
+    private class mGroupsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
+        @Override
+        public void onHttpError(HttpException e) {
+
+        }
+
+        @Override
+        public void onNext(ModelList<Group> groups) {
+            List<Group> groupList = groups.getModels();
+            List<Meeting> meetingList = new ArrayList<>();
+            for (int i = 0; i < groupList.size(); i++) {
+                meetingList.addAll(groupList.get(i).getMeetings());
+            }
+            meetingsFragment.setTbpMeetings(meetingList);
+            meetingsFragment.notifyContentChange(1);
+            meetingsFragment.setpMeetings(meetingList);
+        }
+
+        @Override
+        public void onNoHttpError(NoHttpException e) {
+
         }
     }
 }

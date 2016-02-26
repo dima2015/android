@@ -1,6 +1,7 @@
 package com.plunner.plunner.activities.Adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +56,15 @@ public class SchedulesListAdapter extends ArrayAdapter<Calendar> {
 
         this.listItem.title.setText(schedule.getName());
         this.listItem.updatedAt.setText(schedule.getUpdatedAt());
-        this.listItem.status.setText(schedule.getEnabled());
+        if(schedule.getEnabled().equals("1")){
+            this.listItem.status.setText(getContext().getText(R.string.enabled));
+            this.listItem.status.setTextColor(ContextCompat.getColor(getContext(),R.color.colorPrimary));
+        }
+        else{
+            this.listItem.status.setText(getContext().getText(R.string.disabled));
+            this.listItem.status.setTextColor(ContextCompat.getColor(getContext(), R.color.light_gray));
+        }
+
 
         return convertView;
 

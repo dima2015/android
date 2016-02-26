@@ -32,7 +32,7 @@ public class MeetingsFragment extends Fragment {
     private List<Meeting> mMetings;
     private List<Meeting> content;
     private MeetingsListAdapter adapter;
-    private int lastEditType;
+    private int mode;
 
 
     @Override
@@ -139,5 +139,19 @@ public class MeetingsFragment extends Fragment {
         //This method should be defined in the activity
         //and allows the communication between the fragment and the activity
         void onFragmentInteraction(Uri uri);
+    }
+
+
+    public void switchMeetingsType(View v){
+        int tag =  Integer.parseInt((String) v.getTag());
+        ViewGroup viewGroup = (ViewGroup) v.getParent();
+        if(tag != mode ){
+            for(int i=0; i<viewGroup.getChildCount(); i++){
+                viewGroup.getChildAt(i).setBackgroundResource(R.drawable.categorybutton);
+            }
+            v.setBackgroundResource(R.drawable.categorybutton_c);
+            mode = tag;
+            notifyContentChange(tag);
+        }
     }
 }

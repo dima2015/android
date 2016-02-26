@@ -20,12 +20,12 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="categoryButton" parent="@android:style/Widget.Button">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">20dp</item>
+        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_height">30dp</item>
+        <item name="android:layout_marginRight">10dp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/categorybutton</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:onClick">switchMeetingsType</item>
     </style>
 
 

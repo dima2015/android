@@ -36,6 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAllCaps="true"
+            android:textStyle="bold"
             android:id="@+id/schedules_row_status" />
 
     </LinearLayout>

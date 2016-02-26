@@ -32,6 +32,7 @@ public class SchedulesFragment extends Fragment {
     private List<Calendar> importedSchedules;
     private List<Calendar> content;
     private SchedulesListAdapter adapter;
+    int mode;
 
 
     @Override
@@ -78,8 +79,7 @@ public class SchedulesFragment extends Fragment {
         content = new ArrayList<>();
         adapter = new SchedulesListAdapter(getActivity(), content);
         listView.setAdapter(adapter);
-
-
+        mode = 1;
 
     }
 
@@ -104,6 +104,20 @@ public class SchedulesFragment extends Fragment {
         }
         adapter.notifyDataSetChanged();
     }
+
+    public void switchSchedulesType(View v) {
+        int tag =  Integer.parseInt((String) v.getTag());
+        ViewGroup viewGroup = (ViewGroup) v.getParent();
+        if(tag != mode ){
+            for(int i=0; i<viewGroup.getChildCount(); i++){
+                viewGroup.getChildAt(i).setBackgroundResource(R.drawable.categorybutton);
+            }
+            v.setBackgroundResource(R.drawable.categorybutton_c);
+            mode = tag;
+            notifyContentChange(tag);
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

@@ -1,9 +1,33 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.Fragments.SchedulesFragment">
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="15dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+            <Button
+                style="@style/categoryButton"
+                android:text="@string/schedules_composed"
+                android:tag="1"
+                android:onClick="switchSchedulesType"/>
+            <Button
+                style="@style/categoryButton"
+                android:text="@string/schedules_imported"
+                android:tag="2"
+                android:onClick="switchSchedulesType"/>
+        </LinearLayout>
 
+    </HorizontalScrollView>
     <android.widget.ListView
         android:id="@+id/schedulesList"
         android:layout_width="match_parent"
@@ -12,4 +36,4 @@
     </android.widget.ListView>
 
 
-</FrameLayout>
+</LinearLayout>
