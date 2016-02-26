@@ -8,17 +8,18 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.plunner.plunner.R;
+import com.plunner.plunner.models.models.employee.Meeting;
 
 import java.util.List;
 
 /**
  * Created by giorgiopea on 04/01/16.
  */
-public class MeetingsListAdapter extends ArrayAdapter<String> {
+public class MeetingsListAdapter extends ArrayAdapter<Meeting> {
 
     private ListItem listItem;
 
-    public MeetingsListAdapter(Context context, List<String> objects) {
+    public MeetingsListAdapter(Context context, List<Meeting> objects) {
         super(context, 0, objects);
     }
 
@@ -27,7 +28,7 @@ public class MeetingsListAdapter extends ArrayAdapter<String> {
 
         // View Holder pattern
 
-        String text = getItem(position);
+        Meeting meeting = getItem(position);
 
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) getContext()
@@ -50,8 +51,8 @@ public class MeetingsListAdapter extends ArrayAdapter<String> {
         }
 
 
-        this.listItem.title.setText(text+"meetings");
-        this.listItem.description.setText(text + " subtitle");
+        this.listItem.title.setText(meeting.getTitle());
+        this.listItem.description.setText(meeting.getDescription());
 
         return convertView;
 

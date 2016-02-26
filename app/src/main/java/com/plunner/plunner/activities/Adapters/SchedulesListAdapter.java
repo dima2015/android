@@ -8,17 +8,18 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.plunner.plunner.R;
+import com.plunner.plunner.models.models.employee.Calendar;
 
 import java.util.List;
 
 /**
  * Created by giorgiopea on 04/01/16.
  */
-public class SchedulesListAdapter extends ArrayAdapter<String> {
+public class SchedulesListAdapter extends ArrayAdapter<Calendar> {
 
     private ListItem listItem;
 
-    public SchedulesListAdapter(Context context, List<String> objects) {
+    public SchedulesListAdapter(Context context, List<Calendar> objects) {
         super(context, 0, objects);
 
     }
@@ -28,7 +29,7 @@ public class SchedulesListAdapter extends ArrayAdapter<String> {
 
         // View Holder pattern
 
-        String text = getItem(position);
+        Calendar schedule = getItem(position);
 
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) getContext()
@@ -39,9 +40,10 @@ public class SchedulesListAdapter extends ArrayAdapter<String> {
             this.listItem  = new ListItem();
 
             this.listItem.title = (TextView) convertView.
-                    findViewById(R.id.scheduleTitle);
-            this.listItem.description = (TextView) convertView
-                    .findViewById(R.id.scheduleDescription);
+                    findViewById(R.id.schedules_row_title);
+            this.listItem.updatedAt = (TextView) convertView
+                    .findViewById(R.id.schedules_row_updated_at);
+            this.listItem.status = (TextView) convertView.findViewById(R.id.schedules_row_status);
 
 
             convertView.setTag(listItem);
@@ -51,8 +53,9 @@ public class SchedulesListAdapter extends ArrayAdapter<String> {
         }
 
 
-        this.listItem.title.setText(text+"schedule");
-        this.listItem.description.setText(text + " subtitle");
+        this.listItem.title.setText(schedule.getName());
+        this.listItem.updatedAt.setText(schedule.getUpdatedAt());
+        this.listItem.status.setText(schedule.getEnabled());
 
         return convertView;
 
@@ -60,7 +63,8 @@ public class SchedulesListAdapter extends ArrayAdapter<String> {
 
     static class ListItem {
         TextView title;
-        TextView description;
+        TextView updatedAt;
+        TextView status;
 
     }
 }

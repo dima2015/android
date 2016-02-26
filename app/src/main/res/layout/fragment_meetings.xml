@@ -5,7 +5,30 @@
     android:layout_height="match_parent"
     tools:context=".activities.Fragments.MeetingsFragment">
 
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                style="@style/categoryButton"
+                android:text="@string/meetings_tbp"
+                android:tag="meetings_tbp"/>
+            <Button
+                style="@style/categoryButton"
+                android:text="@string/meetings_p"
+                android:tag="meetings_p"/>
+            <Button
+                style="@style/categoryButton"
+                android:text="@string/meeting_mg"
+                android:id="@+id/fragment_meetings_planned_meetings"
+                android:tag="meetings_managed"/>
+        </LinearLayout>
 
+    </HorizontalScrollView>
     <android.widget.ListView
         android:id="@+id/meetingsList"
         android:layout_width="match_parent"

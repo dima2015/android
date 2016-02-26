@@ -11,6 +11,7 @@ import android.widget.ListView;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Adapters.SchedulesListAdapter;
+import com.plunner.plunner.models.models.employee.Calendar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,10 @@ public class SchedulesFragment extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
-
+    private List<Calendar> composedSchedules;
+    private List<Calendar> importedSchedules;
+    private List<Calendar> content;
+    private SchedulesListAdapter adapter;
 
 
     @Override
@@ -68,20 +72,38 @@ public class SchedulesFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-        List<String> strings = new ArrayList<>();
+    public void onStart(){
+        super.onStart();
         ListView listView = (ListView) getActivity().findViewById(R.id.schedulesList);
-        for(int i=0; i<5; i++){
-            strings.add("String "+i);
-        }
-        SchedulesListAdapter listAdapter = new SchedulesListAdapter(getActivity(), strings);
-        listView.setAdapter(listAdapter);
+        content = new ArrayList<>();
+        adapter = new SchedulesListAdapter(getActivity(), content);
+        listView.setAdapter(adapter);
 
 
 
     }
 
+    public void setComposedSchedules(List<Calendar> composedSchedules) {
+        this.composedSchedules = composedSchedules;
+    }
+
+    public void setImportedSchedules(List<Calendar> importedSchedules) {
+        this.importedSchedules = importedSchedules;
+    }
+
+    public void notifyContentChange(int type){
+        switch (type){
+            case 1:
+                content.clear();
+                content.addAll(composedSchedules);
+                break;
+            case 2:
+                content.clear();
+                content.addAll(importedSchedules);
+                break;
+        }
+        adapter.notifyDataSetChanged();
+    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
