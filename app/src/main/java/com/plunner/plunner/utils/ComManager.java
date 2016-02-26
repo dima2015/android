@@ -70,6 +70,6 @@ public class ComManager {
     }
 
     public boolean isUserPlanner(){
-        return (user instanceof Planner);
+        return user.isPlanner();
     }
 }

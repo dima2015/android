@@ -48,7 +48,6 @@ public class DashboardActivity extends AppCompatActivity
 
     private MeetingsFragment meetingsFragment;
     private SchedulesFragment schedulesFragment;
-    private ProgressBar loadBar;
     private Employee userModel;
     private ComManager comManager;
     private boolean loadingFlag;
@@ -80,7 +79,6 @@ public class DashboardActivity extends AppCompatActivity
         //Tab layout setting
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
-        loadBar = (ProgressBar) findViewById(R.id.dashboard_loadbar);
         comManager = ComManager.getInstance();
         comManager.login(this, new LoginManager.storeTokenCallback() {
             //TODO of cours eit is possible override onOk
@@ -103,30 +101,6 @@ public class DashboardActivity extends AppCompatActivity
         fragmentsTabViewAdapter.addFragment(schedulesFragment, "Schedules");
         viewPager.setAdapter(fragmentsTabViewAdapter);
         tabLayout.setupWithViewPager(viewPager);
-    }
-
-    private void retrieveUserModel() {
-        (new Employee<>()).get(new userModelCallback());
-    }
-
-    private void retrieveTBPlannedMeetings() {
-        if(meetingsFragment.isContentEmpty(1)){
-            userModel.getGroups().load(new userGroupsCallaback());
-        }
-        else{
-            meetingsFragment.notifyContentChange(1);
-        }
-
-    }
-
-    private void retrievePlannedMeetings() {
-        if(meetingsFragment.isContentEmpty(2)){
-            userModel.getMeetings().load(new userPlannedMeetingsCallback());
-        }
-    }
-
-    private void retrieveManagedMeetings() {
-
     }
 
     private void switchToScopedAddActivity() {
@@ -196,100 +170,16 @@ public class DashboardActivity extends AppCompatActivity
 
     }
 
-    public void switchSchedulesType(View v) {
-        schedulesFragment.switchSchedulesType(v);
-    }
-
-    private class userPlannedMeetingsCallback implements CallOnHttpError<ModelList<Meeting>>, CallOnNext<ModelList<Meeting>>, CallOnNoHttpError<ModelList<Meeting>> {
-
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<Meeting> meetings) {
-            List<Meeting> meetingList = meetings.getModels();
-            meetingsFragment.setTbpMeetings(meetingList);
-        }
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-
-        }
-    }
-
-    private class userSchedulesCallback implements CallOnHttpError<ModelList<Calendar>>, CallOnNext<ModelList<Calendar>>, CallOnNoHttpError<ModelList<Calendar>> {
-
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<Calendar> calendarModelList) {
-
-        }
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-
-        }
-    }
-
-    private class userGroupsCallaback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<Group> groups) {
-            List<Group> groupList = groups.getModels();
-            List<Meeting> meetingList = new ArrayList<>();
-            for (int i = 0; i < groupList.size(); i++) {
-                meetingList.addAll(groupList.get(i).getMeetings());
-            }
-            meetingsFragment.setTbpMeetings(meetingList);
-            meetingsFragment.notifyContentChange(1);
-        }
-
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-            //TODO manage
-        }
-    }
-
-    private class userModelCallback implements
-            CallOnHttpError<Employee>, CallOnNext<Employee>, CallOnNoHttpError<Employee> {
-
-
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(Employee employee) {
-            DashboardActivity.this.userModel = employee;
-            if (employee instanceof Planner) {
-                //DashboardActivity.this.isPlanner = true;
-                //globalData.setUserModel(employee);
-            }
-        }
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-            //TODO manage
-        }
-    }
 
     public void switchMeetingsType(View v) {
         meetingsFragment.switchMeetingsType(v);
     }
 
-    private class retrieveUserCallaback implements CallOnHttpError<Employee>, CallOnNext<Employee>, CallOnNoHttpError<Employee>{
+    public void switchSchedulesType(View v) {
+        schedulesFragment.switchSchedulesType(v);
+    }
+
+    private class retrieveUserCallaback implements CallOnHttpError<Employee>, CallOnNext<Employee>, CallOnNoHttpError<Employee> {
         @Override
         public void onHttpError(HttpException e) {
 
@@ -298,9 +188,8 @@ public class DashboardActivity extends AppCompatActivity
         @Override
         public void onNext(Employee employee) {
             comManager.setUser(employee);
-            comManager.retrieveGroups(new tbpMeetingsCallback());
-            comManager.retrievePlannedMeetings(new pMeetingsCallback());
-            comManager.retrieveSchedules(new schedulesCallback());
+            meetingsFragment.initSequence();
+            schedulesFragment.initSequence();
         }
 
         @Override
@@ -308,108 +197,6 @@ public class DashboardActivity extends AppCompatActivity
 
         }
     }
-    private class tbpMeetingsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<Group> groups) {
-            List<Group> groupList = groups.getModels();
-            List<Meeting> meetingList = new ArrayList<>();
-            for (int i = 0; i < groupList.size(); i++) {
-                meetingList.addAll(groupList.get(i).getMeetings());
-            }
-            meetingsFragment.setTbpMeetings(meetingList);
-            if(!loadingFlag){
-                loadingFlag = true;
-                loadBar.setVisibility(View.GONE);
-            }
-            meetingsFragment.notifyContentChange(1);
-        }
 
 
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-            //TODO manage
-        }
-    }
-    private class schedulesCallback implements CallOnHttpError<ModelList<Calendar>>, CallOnNext<ModelList<Calendar>>, CallOnNoHttpError<ModelList<Calendar>> {
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<Calendar> schedules) {
-            List<Calendar> schedulesList = schedules.getModels();
-            List<Calendar> importedSchedules = new ArrayList<>();
-            List<Calendar> composedSchedules = new ArrayList<>();
-            Calendar currentSchedule;
-            for (int i = 0; i < schedulesList.size(); i++) {
-                currentSchedule = schedulesList.get(i);
-                if(currentSchedule.getCaldav() == null){
-                    composedSchedules.add(currentSchedule);
-                }
-                else{
-                    importedSchedules.add(currentSchedule);
-                }
-            }
-            if(!loadingFlag){
-                loadingFlag = true;
-                loadBar.setVisibility(View.GONE);
-            }
-            schedulesFragment.setComposedSchedules(composedSchedules);
-            schedulesFragment.setImportedSchedules(importedSchedules);
-            schedulesFragment.notifyContentChange(1);
-        }
-
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-            //TODO manage
-        }
-    }
-
-    private class pMeetingsCallback implements CallOnHttpError<ModelList<Meeting>>, CallOnNext<ModelList<Meeting>>, CallOnNoHttpError<ModelList<Meeting>> {
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<Meeting> meetingModelList) {
-            List<Meeting> meetingList = meetingModelList.getModels();
-            meetingsFragment.setpMeetings(meetingList);
-        }
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-
-        }
-    }
-    private class mGroupsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<Group> groups) {
-            List<Group> groupList = groups.getModels();
-            List<Meeting> meetingList = new ArrayList<>();
-            for (int i = 0; i < groupList.size(); i++) {
-                meetingList.addAll(groupList.get(i).getMeetings());
-            }
-            meetingsFragment.setTbpMeetings(meetingList);
-            meetingsFragment.notifyContentChange(1);
-            meetingsFragment.setpMeetings(meetingList);
-        }
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-
-        }
-    }
 }

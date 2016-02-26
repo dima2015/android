@@ -15,7 +15,8 @@
             android:orientation="horizontal"
             android:paddingLeft="15dp"
             android:paddingTop="20dp"
-            android:paddingBottom="20dp">
+            android:paddingBottom="20dp"
+            android:id="@+id/fragment_meetings_top_menu">
             <Button
                 style="@style/categoryButton"
                 android:text="@string/meetings_tbp"
@@ -31,17 +32,31 @@
                 android:text="@string/meeting_mg"
                 android:id="@+id/fragment_meetings_planned_meetings"
                 android:tag="3"
+                android:visibility="gone"
                 android:onClick="switchMeetingsType"/>
         </LinearLayout>
 
     </HorizontalScrollView>
-    <android.widget.ListView
-        android:id="@+id/meetingsList"
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_meetings_loading_spinner"
+        android:layout_gravity="center_horizontal"
+        android:theme="@style/CustomTheme" />
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="none">
+        android:id="@+id/fragment_meetings_refresh_layout">
+        <android.widget.ListView
+            android:id="@+id/meetingsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
 
-    </android.widget.ListView>
+        </android.widget.ListView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 
 </LinearLayout>

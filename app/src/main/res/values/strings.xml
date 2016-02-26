@@ -41,4 +41,5 @@
     <string name="meeting_mg">managed</string>
     <string name="schedules_composed">Composed </string>
     <string name="schedules_imported">imported </string>
+    <string name="menu_refresh">Refresh meetings</string>
 </resources>

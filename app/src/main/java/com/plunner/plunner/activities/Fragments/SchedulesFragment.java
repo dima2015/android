@@ -4,14 +4,24 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Adapters.SchedulesListAdapter;
+import com.plunner.plunner.models.adapters.HttpException;
+import com.plunner.plunner.models.adapters.NoHttpException;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
+import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Calendar;
+import com.plunner.plunner.utils.ComManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +31,17 @@ import java.util.List;
  * Activities that contain this fragment must implement the
  * {@link SchedulesFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
-
  */
 public class SchedulesFragment extends Fragment {
-
 
 
     private OnFragmentInteractionListener mListener;
     private List<Calendar> composedSchedules;
     private List<Calendar> importedSchedules;
     private List<Calendar> content;
+    private ProgressBar loadingSpinner;
     private SchedulesListAdapter adapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
     int mode;
 
 
@@ -73,14 +83,30 @@ public class SchedulesFragment extends Fragment {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         ListView listView = (ListView) getActivity().findViewById(R.id.schedulesList);
+        LinearLayout horizontalScrollView = (LinearLayout) getActivity().findViewById(R.id.fragment_schedules_top_menu);
+        horizontalScrollView.getChildAt(0).setBackgroundResource(R.drawable.categorybutton_c);
+        swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.fragment_schedules_swipe_refresh);
         content = new ArrayList<>();
         adapter = new SchedulesListAdapter(getActivity(), content);
+        loadingSpinner = (ProgressBar) getActivity().findViewById(R.id.fragment_schedules_laoding_spinner);
         listView.setAdapter(adapter);
         mode = 1;
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        onRefreshCallback();
+                    }
+                }
+        );
 
+    }
+
+    private void onRefreshCallback() {
+        retrieveSchedules();
     }
 
     public void setComposedSchedules(List<Calendar> composedSchedules) {
@@ -91,8 +117,8 @@ public class SchedulesFragment extends Fragment {
         this.importedSchedules = importedSchedules;
     }
 
-    public void notifyContentChange(int type){
-        switch (type){
+    public void notifyContentChange() {
+        switch (mode) {
             case 1:
                 content.clear();
                 content.addAll(composedSchedules);
@@ -106,15 +132,15 @@ public class SchedulesFragment extends Fragment {
     }
 
     public void switchSchedulesType(View v) {
-        int tag =  Integer.parseInt((String) v.getTag());
+        int tag = Integer.parseInt((String) v.getTag());
         ViewGroup viewGroup = (ViewGroup) v.getParent();
-        if(tag != mode ){
-            for(int i=0; i<viewGroup.getChildCount(); i++){
+        if (tag != mode) {
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 viewGroup.getChildAt(i).setBackgroundResource(R.drawable.categorybutton);
             }
             v.setBackgroundResource(R.drawable.categorybutton_c);
-            mode = tag;
-            notifyContentChange(tag);
+            setMode(tag);
+            notifyContentChange();
         }
     }
 
@@ -131,5 +157,57 @@ public class SchedulesFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void setMode(int mode) throws IllegalArgumentException {
+        if (mode == 1 || mode == 2) {
+            this.mode = mode;
+        } else {
+            throw new IllegalArgumentException("mode must be either 1 or 2");
+        }
+    }
+
+    public void initSequence() {
+        mode = 1;
+        retrieveSchedules();
+    }
+
+    private void retrieveSchedules() {
+        ComManager.getInstance().retrieveSchedules(new SchedulesCallback());
+    }
+
+    private class SchedulesCallback implements CallOnHttpError<ModelList<Calendar>>, CallOnNext<ModelList<Calendar>>, CallOnNoHttpError<ModelList<Calendar>> {
+        @Override
+        public void onHttpError(HttpException e) {
+
+        }
+
+        @Override
+        public void onNext(ModelList<Calendar> calendarModelList) {
+            List<Calendar> schedulesList = calendarModelList.getModels();
+            List<Calendar> lImportedSchedules = new ArrayList<>();
+            List<Calendar> lComposedSchedules = new ArrayList<>();
+            Calendar currentSchedule;
+            for (int i = 0; i < schedulesList.size(); i++) {
+                currentSchedule = schedulesList.get(i);
+                if (currentSchedule.getCaldav() == null) {
+                    lComposedSchedules.add(currentSchedule);
+                } else {
+                    lImportedSchedules.add(currentSchedule);
+                }
+            }
+            importedSchedules = lImportedSchedules;
+            composedSchedules = lComposedSchedules;
+            if (swipeRefreshLayout.isRefreshing()) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+            loadingSpinner.setVisibility(View.GONE);
+            notifyContentChange();
+        }
+
+        @Override
+        public void onNoHttpError(NoHttpException e) {
+
+        }
     }
 }
