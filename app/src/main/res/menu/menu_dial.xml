@@ -5,7 +5,7 @@
         android:icon="@drawable/meetingsdetail"
         android:title="Meeting" />
     <item
-        android:id="@+id/action_text"
+        android:id="@+id/dashboard_add_schedule"
         android:icon="@drawable/pencil_icon"
         android:title="Schedule" />
     <item

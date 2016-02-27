@@ -4,10 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.internal.NavigationMenu;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -17,8 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Adapters.FragmentsTabViewAdapter;
@@ -29,19 +25,9 @@ import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
-import com.plunner.plunner.models.callbacks.interfaces.Callable;
 import com.plunner.plunner.models.login.LoginManager;
-import com.plunner.plunner.models.models.ModelList;
-import com.plunner.plunner.models.models.employee.Calendar;
 import com.plunner.plunner.models.models.employee.Employee;
-import com.plunner.plunner.models.models.employee.Group;
-import com.plunner.plunner.models.models.employee.Meeting;
-import com.plunner.plunner.models.models.employee.planner.Planner;
 import com.plunner.plunner.utils.ComManager;
-import com.plunner.plunner.utils.GlobalData;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
@@ -79,10 +65,13 @@ public class DashboardActivity extends AppCompatActivity
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()){
                     case R.id.dashboard_add_meeting:
+                        switchToAddMeeting();
+                        return true;
+                    case R.id.dashboard_add_schedule:
                         switchToScopedAddActivity();
                         return true;
                     default:
-                        return true;
+                        return super.onMenuItemSelected(menuItem);
                 }
             }
             @Override
@@ -127,7 +116,10 @@ public class DashboardActivity extends AppCompatActivity
         viewPager.setAdapter(fragmentsTabViewAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }
-
+    private void switchToAddMeeting(){
+        Intent intent = new Intent(this, AddActivity.class);
+        startActivity(intent);
+    }
     private void switchToScopedAddActivity() {
         Intent intent = new Intent(this, ComposeScheduleActivity.class);
         startActivity(intent);

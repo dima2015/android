@@ -1,6 +1,7 @@
 package com.plunner.plunner.activities.Fragments;
 
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -176,7 +177,7 @@ public class EventDetailFragment extends Fragment {
     public void onStart() {
         super.onStart();
         textViewCalendarMap = new HashMap<>();
-        ComposeScheduleActivity activity = (ComposeScheduleActivity) getActivity();
+        Activity activity =  getActivity();
         fragmentTitle = (TextView) activity.findViewById(R.id.add_event_title);
         deleteView = (RelativeLayout) activity.findViewById(R.id.add_event_delete);
         startDate = (TextView) activity.findViewById(R.id.add_event_starts_date);

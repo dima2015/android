@@ -46,4 +46,9 @@
     <string name="title_activity_meeting_detail">meeting_detail</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title">Title</string>
+    <string name="desc">Description</string>
+    <string name="duration">Duration</string>
+    <string name="meeting_title">Meeting title</string>
+    <string name="meeting_desc">Meeting description</string>
 </resources>
