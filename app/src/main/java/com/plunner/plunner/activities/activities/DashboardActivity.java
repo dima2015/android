@@ -3,6 +3,7 @@ package com.plunner.plunner.activities.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -42,6 +43,9 @@ import com.plunner.plunner.utils.GlobalData;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
+
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MeetingsFragment.OnFragmentInteractionListener, SchedulesFragment.OnFragmentInteractionListener {
 
@@ -69,13 +73,34 @@ public class DashboardActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         //Fab setting
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.meetingsFab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.dashboard_add_fab);
+        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                switch (menuItem.getItemId()){
+                    case R.id.dashboard_add_meeting:
+                        switchToScopedAddActivity();
+                        return true;
+                    default:
+                        return true;
+                }
+            }
+            @Override
+            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+                if(!comManager.isUserPlanner()){
+                    navigationMenu.removeItem(R.id.dashboard_add_meeting);
+                }
+                return true;
+            }
+        });
+
+
+        /*fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 switchToScopedAddActivity();
             }
-        });
+        });*/
         //Tab layout setting
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);

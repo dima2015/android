@@ -9,6 +9,8 @@
     <color name="red">#EF5350</color>
     <color name="washed_red">#EF9A9A</color>
     <color name="light_gray">#CCCCCC</color>
+    <color name="secondary_text">#727272</color>
+    <color name="primary_text">#212121</color>
 
     <color name="black_overlay">#66000000</color>
 </resources>

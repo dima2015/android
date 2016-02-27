@@ -63,6 +63,7 @@
             android:name=".activities.activities.MeetingDetailActivity"
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activities.activities.addActivity"></activity>
     </application>
 
 </manifest>

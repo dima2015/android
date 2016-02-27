@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/compose_schedule_root"
-    tools:context=".activities.activities.MeetingDetailActivity">
+    tools:context=".activities.activities.addActivity">
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,15 +16,15 @@
             android:id="@+id/toolbar_meeting"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/red"
-             />
+            android:background="@color/colorPrimary"
+            />
 
     </android.support.design.widget.AppBarLayout>
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <include layout="@layout/content_meeting_detail"/>
+        <include layout="@layout/content_add_meeting"/>
     </android.support.v4.widget.NestedScrollView>
 
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/dashboard_add_meeting"
+        android:icon="@drawable/meetingsdetail"
+        android:title="Meeting" />
+    <item
+        android:id="@+id/action_text"
+        android:icon="@drawable/pencil_icon"
+        android:title="Schedule" />
+    <item
+        android:id="@+id/action_email"
+        android:icon="@drawable/trash_icon"
+        android:title="adasds" />
+</menu>

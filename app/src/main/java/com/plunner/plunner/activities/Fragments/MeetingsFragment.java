@@ -71,9 +71,10 @@ public class MeetingsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedMeeting = tbpMeetings.get(position).toString();
+                String selectedMeeting = tbpMeetings.get(position).sToString();
                 Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
                 intent.putExtra("data",selectedMeeting);
+                intent.putExtra("type",Integer.toString(mode));
                 startActivity(intent);
             }
         });
@@ -211,8 +212,17 @@ public class MeetingsFragment extends Fragment {
         public void onNext(ModelList<Group> groupModelList) {
             List<Group> groupList = groupModelList.getModels();
             List<Meeting> meetingList = new ArrayList<>();
+            Meeting currentMeeting;
+            Group currentGroup;
+            List<Meeting> currentMeetings;
             for (int i = 0; i < groupList.size(); i++) {
-                meetingList.addAll(groupList.get(i).getMeetings());
+                currentGroup = groupList.get(i);
+                currentMeetings = currentGroup.getMeetings();
+                for(int j=0; j<currentMeetings.size(); j++){
+                    currentMeeting = currentMeetings.get(j);
+                    currentMeeting.setGroupName(currentGroup.getName());
+                    meetingList.add(currentMeeting);
+                }
             }
             tbpMeetings = meetingList;
             if(mode == 1){
@@ -264,8 +274,17 @@ public class MeetingsFragment extends Fragment {
         public void onNext(ModelList<Group> groupModelList) {
             List<Group> groupList = groupModelList.getModels();
             List<Meeting> meetingList = new ArrayList<>();
+            Meeting currentMeeting;
+            Group currentGroup;
+            List<Meeting> currentMeetings;
             for (int i = 0; i < groupList.size(); i++) {
-                meetingList.addAll(groupList.get(i).getMeetings());
+                currentGroup = groupList.get(i);
+                currentMeetings = currentGroup.getMeetings();
+                for(int j=0; j<currentMeetings.size(); j++){
+                    currentMeeting = currentMeetings.get(j);
+                    currentMeeting.setGroupName(currentGroup.getName());
+                    meetingList.add(currentMeeting);
+                }
             }
             mMeetings = meetingList;
             if(mode == 3){

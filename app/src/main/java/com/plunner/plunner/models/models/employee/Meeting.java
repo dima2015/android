@@ -52,6 +52,7 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
     protected String updatedAt;
     //TODO use resources??? or not isnce it is already loaded?
     protected ModelList<? extends MeetingTimeslot> timeslots = new ModelList<MeetingTimeslot>(new MeetingTimeslot());
+    protected String groupName;
 
     /**
      * No args constructor for use in serialization
@@ -267,7 +268,13 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
         Observable<List<Meeting>> index();
     }
     public String sToString(){
-        return "id="+id+",title="+title+",description="+description+",duration="+duration+",starts="+startTime;
+        return "id="+id+",title="+title+",description="+description+",group="+groupName+",duration="+duration+",starts="+startTime;
+    }
+    public void setGroupName(String groupName){
+        this.groupName = groupName;
+    }
+    public String getGroupName(){
+        return this.groupName;
     }
 
     //TODO abstract load timeslots
