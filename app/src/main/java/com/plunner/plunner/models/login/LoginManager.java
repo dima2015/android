@@ -8,12 +8,15 @@ import android.accounts.AccountManagerFuture;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.ArrayMap;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.activities.LoginActivity;
@@ -139,14 +142,38 @@ public class LoginManager {
                 token);
     }
 
+    private void showToast(final String message) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private boolean networkProblem() {
+        ConnectivityManager cm =
+                (ConnectivityManager) mContext.getSystemService(mContext.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return !(activeNetwork != null && activeNetwork.isConnectedOrConnecting());
+    }
+
     private LoginManager loginSync(String company, String email, String password) throws LoginException {
         //TODO improve, do we need LoginException?
         Response<Token> response = null;
         try {
             response = new Token().getSync(company, email, password);
         } catch (IOException e) {
-            Log.w("Net login error", e.getMessage());
-            throw new LoginException("Net login error: " + e.getMessage(), e);
+            String mex;
+            if (networkProblem()) {
+                mex = "Network login error";
+                showToast(mex);
+            } else {
+                mex = "Unknown login error";
+            }
+            Log.w(mex, e.getMessage());
+            throw new LoginException(mex + ": " + e.getMessage(), e);
         }
         if (response.isSuccess()) {
             Token token = response.body();

@@ -6,6 +6,8 @@ import com.plunner.plunner.general.PlunnerException;
  * Created by claudio on 22/12/15.
  */
 public class NoHttpException extends PlunnerException {
+    private Boolean networkError = false;
+
     public NoHttpException() {
         super();
     }
@@ -20,5 +22,13 @@ public class NoHttpException extends PlunnerException {
 
     public NoHttpException(Throwable throwable) {
         super(throwable);
+    }
+
+    public Boolean getNetworkError() {
+        return networkError;
+    }
+
+    public void setNetworkError(Boolean networkError) {
+        this.networkError = networkError;
     }
 }

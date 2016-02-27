@@ -24,10 +24,10 @@ import com.plunner.plunner.models.models.employee.Group;
 
 
 public class MainActivity extends AppCompatActivity {
-/**
- * @author Claudio Cardinale <cardi@thecsea.it>
- * @version 1.0.0
- */
+    /**
+     * @author Claudio Cardinale <cardi@thecsea.it>
+     * @version 1.0.0
+     */
     Employee employee = null;
     LoginManager loginManager;
 
@@ -106,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
         //TODO automatically try to get token by long token
     }
 
+    public void onNoHttpError(NoHttpException e) {
+        Boolean networkError = e.getNetworkError();
+    }
+
     private class EmployeeCallback implements
             CallOnHttpError<Employee>, CallOnNext<Employee>, CallOnNoHttpError<Employee> {
 
@@ -118,11 +122,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onNext(Employee employee) {
             MainActivity.this.employee = employee;
+            MainActivity.this.onNoHttpError(null);
         }
 
         @Override
         public void onNoHttpError(NoHttpException e) {
-            //TODO manage
+            MainActivity.this.onNoHttpError(e);
         }
     }
 
@@ -141,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onNoHttpError(NoHttpException e) {
-            //TODO manage
+            MainActivity.this.onNoHttpError(e);
         }
     }
 }
