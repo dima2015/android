@@ -33,7 +33,7 @@ public class ComManager {
     }
 
     public void retrieveUser(Callable callback){
-        (new Employee<>()).get(callback);
+        (new Employee<>()).getFactory(callback);
     }
 
     public void retrieveGroups(Callable callback){

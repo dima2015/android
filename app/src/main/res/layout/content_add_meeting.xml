@@ -20,7 +20,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:id="@+id/add_meeting_title"
         android:hint="@string/meeting_title"
         android:layout_marginBottom="20dp" />
 
@@ -38,8 +38,23 @@
         android:inputType="textMultiLine"
         android:maxLines="3"
         android:hint="@string/meeting_desc"
-        android:id="@+id/editText3"
+        android:id="@+id/add_meeting_desc"
         android:layout_marginBottom="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/desc"
+        android:id="@+id/textView7"
+        android:layout_marginBottom="5dp" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/add_meeting_spinner"
+        android:layout_gravity="center_horizontal"
+        android:spinnerMode="dialog" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -68,7 +83,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="@color/colorPrimary"
             android:text=""
-            android:id="@+id/add_meeting_duration_display"
+            android:id="@+id/add_meeting_duration"
             android:layout_marginRight="5dp" />
     </LinearLayout>
    <!-- <include layout="@layout/calendars_pickers"></include>-->

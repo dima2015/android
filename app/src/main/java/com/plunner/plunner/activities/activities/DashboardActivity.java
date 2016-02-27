@@ -117,7 +117,7 @@ public class DashboardActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(viewPager);
     }
     private void switchToAddMeeting(){
-        Intent intent = new Intent(this, AddActivity.class);
+        Intent intent = new Intent(this, AddMeeting.class);
         startActivity(intent);
     }
     private void switchToScopedAddActivity() {
