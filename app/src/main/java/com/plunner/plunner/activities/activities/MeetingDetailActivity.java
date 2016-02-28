@@ -19,6 +19,10 @@ import java.util.List;
 public class MeetingDetailActivity extends AppCompatActivity {
 
     private String meetingType;
+    private EditText meetingTitle;
+    private EditText meetingDesc;
+    private EditText meetingGroup;
+    private EditText meetingDuration;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent = getIntent();
@@ -27,6 +31,7 @@ public class MeetingDetailActivity extends AppCompatActivity {
         Log.i("1", data);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meeting_detail);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_meeting);
         setSupportActionBar(toolbar);

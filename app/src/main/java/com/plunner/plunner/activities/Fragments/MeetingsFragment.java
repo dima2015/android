@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Adapters.MeetingsListAdapter;
+import com.plunner.plunner.activities.activities.AddMeeting;
 import com.plunner.plunner.activities.activities.MeetingDetailActivity;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
@@ -71,10 +72,33 @@ public class MeetingsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedMeeting = tbpMeetings.get(position).sToString();
-                Intent intent = new Intent(getActivity(), MeetingDetailActivity.class);
-                intent.putExtra("data",selectedMeeting);
-                intent.putExtra("type",Integer.toString(mode));
+                String selectedMeeting;
+                switch (mode){
+                    case 1:
+                        selectedMeeting = tbpMeetings.get(position).sToString();
+                        break;
+                    case 2:
+                        selectedMeeting = pMeetings.get(position).sToString();
+                        break;
+                    case 3:
+                        selectedMeeting = mMeetings.get(position).getId()+"&"+mMeetings.get(position).getGroupId();
+                        break;
+                    default:
+                        selectedMeeting = "";
+                        break;
+                }
+                Intent intent;
+                //= tbpMeetings.get(position).sToString();
+                if(selectedMeeting.indexOf("&")!=-1){
+                    intent = new Intent(getActivity(), AddMeeting.class);
+                    intent.putExtra("meeting_id",selectedMeeting.split("&")[0]);
+                    intent.putExtra("group_id",selectedMeeting.split("&")[1]);
+                }
+                else{
+                    intent = new Intent(getActivity(), MeetingDetailActivity.class);
+                    intent.putExtra("data",selectedMeeting);
+                    intent.putExtra("type",Integer.toString(mode));
+                }
                 startActivity(intent);
             }
         });
@@ -175,7 +199,7 @@ public class MeetingsFragment extends Fragment {
         ComManager.getInstance().retrievePlannedMeetings(new pMeetingsCallback());
     }
     private void retrieveMMeetings(){
-        ComManager.getInstance().retrievePlannedMeetings(new mMeetingsCallback());
+        ComManager.getInstance().retrieveManagedGroups(new mMeetingsCallback());
     }
     private void onRefreshCallback(){
         switch (mode){
@@ -263,7 +287,7 @@ public class MeetingsFragment extends Fragment {
 
         }
     }
-    private class mMeetingsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
+    private class mMeetingsCallback implements CallOnHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Group>>, CallOnNext<ModelList<com.plunner.plunner.models.models.employee.planner.Group>>, CallOnNoHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Group>> {
 
         @Override
         public void onHttpError(HttpException e) {
@@ -271,20 +295,13 @@ public class MeetingsFragment extends Fragment {
         }
 
         @Override
-        public void onNext(ModelList<Group> groupModelList) {
-            List<Group> groupList = groupModelList.getModels();
+        public void onNext(ModelList<com.plunner.plunner.models.models.employee.planner.Group> groupModelList) {
+            List<com.plunner.plunner.models.models.employee.planner.Group> groupList = groupModelList.getModels().;
             List<Meeting> meetingList = new ArrayList<>();
-            Meeting currentMeeting;
-            Group currentGroup;
-            List<Meeting> currentMeetings;
+            com.plunner.plunner.models.models.employee.planner.Group currentGroup;
             for (int i = 0; i < groupList.size(); i++) {
                 currentGroup = groupList.get(i);
-                currentMeetings = currentGroup.getMeetings();
-                for(int j=0; j<currentMeetings.size(); j++){
-                    currentMeeting = currentMeetings.get(j);
-                    currentMeeting.setGroupName(currentGroup.getName());
-                    meetingList.add(currentMeeting);
-                }
+                currentGroup.getMeetingsManaged(new MeetingsManagedCallabck());
             }
             mMeetings = meetingList;
             if(mode == 3){
@@ -298,6 +315,24 @@ public class MeetingsFragment extends Fragment {
         @Override
         public void onNoHttpError(NoHttpException e) {
 
+        }
+
+        private class MeetingsManagedCallabck implements CallOnHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNext<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNoHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>   {
+            @Override
+            public void onHttpError(HttpException e) {
+
+            }
+
+            @Override
+            public void onNext(ModelList<com.plunner.plunner.models.models.employee.planner.Meeting> meetingsList) {
+                mMeetings =  meetingsList.getModels();
+
+            }
+
+            @Override
+            public void onNoHttpError(NoHttpException e) {
+
+            }
         }
     }
 }

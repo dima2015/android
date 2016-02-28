@@ -2,16 +2,17 @@ package com.plunner.plunner.activities.activities;
 
 import android.content.Intent;
 import android.graphics.RectF;
-import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -43,32 +44,28 @@ import com.plunner.plunner.utils.CalendarPickersViewSupport;
 import com.plunner.plunner.utils.ComManager;
 import com.plunner.plunner.utils.CustomWeekEvent;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class AddMeeting extends AppCompatActivity {
+public class MeetingDetailManagedActivity extends AppCompatActivity {
+
+    private String meetingType;
+    private EditText meetingTitle;
+    private EditText meetingDesc;
+    private EditText meetingGroup;
+    private EditText meetingDuration;
     /**
      * Holds a reference to the WeekView of the activity, that is to say a calendar view that lets users
      * see events for a given day
      */
     private WeekView mWeekView;
     private ActionBar actionBar;
-    private EditText meetingTitle;
-    private EditText meetingDesc;
-    private TextView meetingDuration;
-    private Spinner groupsSpinner;
-    private SeekBar seekBar;
-    private List<Group> currentGroups;
-    private Group selectedGroup;
-    private Meeting selectedMeeting;
-    /**
+    /*
      * Maps month buttons to {@link Calendar} instancies
      */
     private CalendarPickersViewSupport calendarPickersViewSupport;
@@ -78,110 +75,83 @@ public class AddMeeting extends AppCompatActivity {
     private EventDetailFragment addEventFragment;
     private List<CustomWeekEvent> composedEvents;
     private ProgressBar pBar;
-    private String id;
-    private String groupId;
-    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add);
         Intent intent = getIntent();
-        if(intent.getExtras() != null){
-            id = intent.getExtras().getString("meeting_id");
-            groupId = intent.getExtras().getString("group_id");
-        }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.add_meeting_toolbar);
+        String data = intent.getExtras().getString("data");
+        Log.i("1", data);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_meeting_detail_managed);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_meeting);
         setSupportActionBar(toolbar);
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        meetingTitle = (EditText) findViewById(R.id.add_meeting_title);
-        findViewById(R.id.titleInput).clearFocus();
-        meetingDesc = (EditText) findViewById(R.id.add_meeting_desc);
-        meetingDuration = (TextView) findViewById(R.id.add_meeting_duration);
-        pBar = (ProgressBar) findViewById(R.id.pBar);
-        groupsSpinner = (Spinner) findViewById(R.id.add_meeting_spinner);
-        retrieveGroups();
-        seekBar = (SeekBar) findViewById(R.id.duration_seek);
-        seekBar.setMax(300);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                meetingDuration.setText(Integer.toString(progress+15));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        calendarPickersViewSupport = CalendarPickersViewSupport.getInstance();
-        calendarPickersViewSupport.setActivity(this);
-        calendarPickersViewSupport.setDaysPicker((LinearLayout) findViewById(R.id.add_meeting_days_picker));
-        calendarPickersViewSupport.setMonthsPicker((LinearLayout) findViewById(R.id.add_meeting_months_picker));
-        mWeekView = (WeekView) findViewById(R.id.add_meeting_weekView);
-        //Pickers init
-        calendarPickersViewSupport.createViews(-1);
-        //createCalendarPickersView(-1);
-        //Event view init
-        setWeekView();
-        mWeekView.goToDate(Calendar.getInstance());
-        //enabled switch
-        composedEvents = new ArrayList<>();
-
-
+        fillData(data);
     }
 
-    private void getMeeting() {
+    private void fillData(String data) {
+        String[] tokenizedString = data.split(",");
+        List<String> stringFields = new ArrayList<>();
+        String[] subSplittedString;
+        for (int i = 0; i < tokenizedString.length; i++) {
+            subSplittedString = tokenizedString[i].split("=");
+            stringFields.add(subSplittedString[1]);
 
-    }
-
-    private void retrieveGroups() {
-        Planner planner = (Planner) ComManager.getInstance().getUser();
-        planner.getGroupsManaged().load(new ManagedGroupsCallback(id));
+        }
+        ((EditText) findViewById(R.id.meeting_detail_title)).setText(stringFields.get(1));
+        ((EditText) findViewById(R.id.meeting_detail_description)).setText(stringFields.get(2));
+        ((TextView) findViewById(R.id.meeting_detail_group)).setText(stringFields.get(3));
+        ((TextView) findViewById(R.id.meeting_detail_duration)).setText(stringFields.get(4));
+        if (!stringFields.get(5).equals("null")) {
+            ((TextView) findViewById(R.id.meeting_detail_starts)).setText(stringFields.get(4));
+        }
+        Log.i("2", stringFields.toString());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_meeting_detail, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_meeting_detail, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.menu_add_meeting_send) {
-            sendData();
-            return true;
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_send:
+                //handleFragment();
+                return true;
+            case R.id.meeting_detail_edit:
+                //;
+                return true;
+            case R.id.meeting_detail_delete:
+                //;
+                return true;
+            case R.id.meeting_detail_save:
+                //;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
+
 
     private void sendData() {
         int adj_duration;
         if (validateData()) {
             pBar.setVisibility(View.VISIBLE);
             adj_duration = Integer.parseInt(meetingDuration.getText().toString());
-            adj_duration = adj_duration*60;
+            adj_duration = adj_duration * 60;
             Meeting meeting = new Meeting();
             meeting.setTitle(meetingTitle.getText().toString());
             meeting.setDescription(meetingDesc.getText().toString());
             meeting.setDuration(Integer.toString(adj_duration));
-            meeting.setFatherParameters(selectedGroup.getId());
-            meeting.save(new MeetingSaveCallback());
+            //meeting.setFatherParameters(selectedGroup.getId());
+            //meeting.save(new MeetingSaveCallback());
         }
     }
 
@@ -196,8 +166,7 @@ public class AddMeeting extends AppCompatActivity {
             tt.setErrorEnabled(false);
             toReturn = false;
             createSnackBar("Insert at least one timeslot for the meeting");
-        }
-        else{
+        } else {
             tt.setErrorEnabled(false);
             tt.setError(null);
         }
@@ -206,10 +175,10 @@ public class AddMeeting extends AppCompatActivity {
 
     }
 
-    private void createSnackBar(String message){
+    private void createSnackBar(String message) {
         Snackbar snackbar;
-        snackbar = Snackbar.make(findViewById(R.id.add_meeting_root),message,Snackbar.LENGTH_LONG);
-        snackbar.getView().setBackgroundColor(ContextCompat.getColor(this,R.color.red));
+        snackbar = Snackbar.make(findViewById(R.id.add_meeting_root), message, Snackbar.LENGTH_LONG);
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.red));
         snackbar.show();
     }
 
@@ -389,19 +358,20 @@ public class AddMeeting extends AppCompatActivity {
 
     private void sendEvents(String meetingId) {
         MeetingTimeslot timeslot;
-        Map<String,String> adaptedEvent;
-        for(int i=0; i<composedEvents.size(); i++){
+        Map<String, String> adaptedEvent;
+        for (int i = 0; i < composedEvents.size(); i++) {
             timeslot = new MeetingTimeslot();
             adaptedEvent = eventFormatAdapter(composedEvents.get(i));
             timeslot.setTimeStart(adaptedEvent.get("startTime"));
             timeslot.setTimeEnd(adaptedEvent.get("endTime"));
-            timeslot.setFatherParameters(selectedGroup.getId(), meetingId);
-            timeslot.save(new saveTimeslotsCallback(i+1, composedEvents.size()));
+            //timeslot.setFatherParameters(selectedGroup.getId(), meetingId);
+            timeslot.save(new saveTimeslotsCallback(i + 1, composedEvents.size()));
         }
     }
-    private Map<String, String> eventFormatAdapter(CustomWeekEvent event){
+
+    private Map<String, String> eventFormatAdapter(CustomWeekEvent event) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Map<String,String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         map.put("startTime", sdf.format(event.getStartTime().getTime()));
         map.put("endTime", sdf.format(event.getEndTime().getTime()));
         return map;
@@ -418,15 +388,15 @@ public class AddMeeting extends AppCompatActivity {
 
         @Override
         public void onHttpError(HttpException e) {
-            AddMeeting.this.createSnackBar(e.getErrorBody());
+            MeetingDetailManagedActivity.this.createSnackBar(e.getErrorBody());
             Log.w("1", e.getErrorBody());
         }
 
         @Override
         public void onNext(MeetingTimeslot meeting) {
-            if(index == total){
+            if (index == total) {
                 pBar.setVisibility(View.GONE);
-                AddMeeting.this.createSnackBar("Finished adding timeslots");
+                MeetingDetailManagedActivity.this.createSnackBar("Finished adding timeslots");
             }
 
         }
@@ -437,140 +407,6 @@ public class AddMeeting extends AppCompatActivity {
         }
     }
 
-    private class ManagedGroupsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
 
-        String id;
-
-        public ManagedGroupsCallback(String id) {
-            this.id = id;
-        }
-
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<Group> groups) {
-            Group currentGroup;
-            currentGroups = groups.getModels();
-            selectedGroup = currentGroups.get(0);
-            List<String> stringedGroups = new ArrayList<>();
-            for (int i=0; i<currentGroups.size();i++){
-                currentGroup = currentGroups.get(i);
-                if(groupId != null & currentGroup.getId().equals(groupId)){
-                    currentGroup.getMeetingsManaged().load(new MeetingGetCallback());
-                }
-                stringedGroups.add(currentGroups.get(i).getName());
-            }
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(AddMeeting.this, android.R.layout.simple_spinner_dropdown_item, stringedGroups);
-            groupsSpinner.setAdapter(adapter);
-            groupsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    selectedGroup = currentGroups.get(position);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-        }
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-
-        }
-    }
-
-    private class MeetingSaveCallback implements CallOnHttpError<Meeting>, CallOnNext<Meeting>, CallOnNoHttpError<Meeting>{
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(com.plunner.plunner.models.models.employee.planner.Meeting meeting) {
-            sendEvents(meeting.getId());
-        }
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-
-        }
-    }
-
-    private class MeetingGetCallback implements CallOnHttpError<ModelList<Meeting>>, CallOnNext<ModelList<Meeting>>, CallOnNoHttpError<ModelList<Meeting>>{
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<Meeting> meetingsList) {
-            List<Meeting> meetings = meetingsList.getModels();
-            Meeting currentMeeting;
-            for(int i=0; i<meetings.size(); i++){
-                currentMeeting = meetings.get(i);
-                if(currentMeeting.getId().equals(id)){
-                    selectedMeeting = currentMeeting;
-                    fillData();
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-
-        }
-    }
-
-    private void fillData() {
-        meetingTitle.setText(selectedMeeting.getTitle());
-        meetingDesc.setText(selectedMeeting.getDescription());
-        meetingDuration.setText(selectedMeeting.getDuration());
-        seekBar.setProgress(Integer.parseInt(selectedMeeting.getDuration())/60);
-        getTimeslots();
-    }
-
-    private void getTimeslots(){
-        selectedMeeting.getMeetingsTimeslotManaged().load(new TimeslotsGetCallback());
-    }
-
-    private class TimeslotsGetCallback implements CallOnHttpError<ModelList<MeetingTimeslot>>, CallOnNext<ModelList<MeetingTimeslot>>, CallOnNoHttpError<ModelList<MeetingTimeslot>> {
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<MeetingTimeslot> meetingModelList) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
-            List<MeetingTimeslot> timeslots = meetingModelList.getModels();
-            MeetingTimeslot meetingTimeslot;
-            Calendar calendar_one = Calendar.getInstance();
-            Calendar calendar_two = (Calendar) calendar_one.clone();
-            Date parsedOne, parsedTwo;
-            for(int i=0; i<timeslots.size(); i++){
-                meetingTimeslot = timeslots.get(i);
-                try {
-                    parsedOne = sdf.parse(meetingTimeslot.getTimeStart());
-                    parsedTwo = sdf.parse(meetingTimeslot.getTimeEnd());
-                    calendar_one.setTime(parsedOne);
-                    calendar_two.setTime(parsedTwo);
-                    composedEvents.add(new CustomWeekEvent(Integer.parseInt(meetingTimeslot.getId()),"", calendar_one,calendar_two ,false,false));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-            mWeekView.notifyDatasetChanged();
-        }
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-
-        }
-    }
 }
+

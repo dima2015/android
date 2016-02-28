@@ -64,12 +64,12 @@
             android:name=".activities.activities.MeetingDetailActivity"
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".activities.activities.AddMeeting"
+        <activity
+            android:name=".activities.activities.AddMeeting"
+            android:label="Add meeting"
             android:parentActivityName=".activities.activities.DashboardActivity"
-            android:label="sdasd"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
+            android:theme="@style/CustomTheme" />
+        <activity android:name=".activities.activities.MeetingDetailManagedActivity"></activity>
     </application>
 
 </manifest>

@@ -51,4 +51,6 @@
     <string name="duration">Duration</string>
     <string name="meeting_title">Meeting title</string>
     <string name="meeting_desc">Meeting description</string>
+    <string name="p_timeslots">Possible timeslots</string>
+    <string name="group">Group</string>
 </resources>
