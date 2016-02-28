@@ -44,7 +44,7 @@ public class MeetingsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private List<Meeting> tbpMeetings;
     private List<Meeting> pMeetings;
-    private List<Meeting> mMeetings;
+    private List<? extends Meeting> mMeetings;
     private List<Meeting> content;
     private ProgressBar loadingSpinner;
     private MeetingsListAdapter adapter;
@@ -296,12 +296,12 @@ public class MeetingsFragment extends Fragment {
 
         @Override
         public void onNext(ModelList<com.plunner.plunner.models.models.employee.planner.Group> groupModelList) {
-            List<com.plunner.plunner.models.models.employee.planner.Group> groupList = groupModelList.getModels().;
+            List<com.plunner.plunner.models.models.employee.planner.Group> groupList = groupModelList.getModels();
             List<Meeting> meetingList = new ArrayList<>();
             com.plunner.plunner.models.models.employee.planner.Group currentGroup;
             for (int i = 0; i < groupList.size(); i++) {
                 currentGroup = groupList.get(i);
-                currentGroup.getMeetingsManaged(new MeetingsManagedCallabck());
+                currentGroup.getMeetingsManaged().load(new MeetingsManagedCallabck());
             }
             mMeetings = meetingList;
             if(mode == 3){
@@ -326,7 +326,7 @@ public class MeetingsFragment extends Fragment {
             @Override
             public void onNext(ModelList<com.plunner.plunner.models.models.employee.planner.Meeting> meetingsList) {
                 mMeetings =  meetingsList.getModels();
-
+                notifyContentChange();
             }
 
             @Override

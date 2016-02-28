@@ -11,17 +11,18 @@
         />
     <item
         android:id="@+id/meeting_detail_delete"
-        android:icon="@drawable/ic_send"
+        android:icon="@drawable/trash_icon"
         android:orderInCategory="100"
         android:title="Delete"
         app:showAsAction="always"
         />
     <item
         android:id="@+id/meeting_detail_save"
-        android:icon="@drawable/trash_icon"
+        android:icon="@drawable/ic_send"
         android:orderInCategory="100"
         android:title="Delete"
         app:showAsAction="always"
         />
+
 
 </menu>

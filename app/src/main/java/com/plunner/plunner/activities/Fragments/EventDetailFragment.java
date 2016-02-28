@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 
 public class EventDetailFragment extends Fragment {
@@ -89,7 +90,7 @@ public class EventDetailFragment extends Fragment {
             DatePickerDialog datePickerStarts = new DatePickerDialog(getContext(), dateListenerOne, calendar_start_date
                     .get(Calendar.YEAR), calendar_start_date.get(Calendar.MONTH),
                     calendar_start_date.get(Calendar.DAY_OF_MONTH));
-
+            datePickerStarts.getDatePicker().setMinDate(minDate().getTimeInMillis());
             datePickerStarts.show();
         } else if (tag == 2) {
 
@@ -292,5 +293,18 @@ public class EventDetailFragment extends Fragment {
             eventEnds(calendar, 0);
         }
 
+    }
+    private Calendar minDate(){
+        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar target = (Calendar) today.clone();
+        if(today.get(Calendar.DAY_OF_WEEK) <= 7){
+            target.set(Calendar.DAY_OF_WEEK,2);
+            target.add(Calendar.WEEK_OF_MONTH,1);
+        }
+        else{
+            target.set(Calendar.DAY_OF_WEEK,2);
+            target.add(Calendar.WEEK_OF_MONTH,2);
+        }
+        return target;
     }
 }

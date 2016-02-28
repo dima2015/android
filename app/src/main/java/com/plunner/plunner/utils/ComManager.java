@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.plunner.plunner.models.callbacks.interfaces.Callable;
 import com.plunner.plunner.models.login.LoginManager;
+import com.plunner.plunner.models.models.employee.Calendar;
 import com.plunner.plunner.models.models.employee.Employee;
 import com.plunner.plunner.models.models.employee.planner.Planner;
 
@@ -16,6 +17,7 @@ public class ComManager {
     private LoginManager loginManager;
 
     private Employee user;
+    private Calendar exchangeSchedule;
 
     public static ComManager getInstance(){
         if(instance == null){
@@ -71,5 +73,11 @@ public class ComManager {
 
     public boolean isUserPlanner(){
         return user.isPlanner();
+    }
+    public void setExchangeSchedule(Calendar schedule){
+        exchangeSchedule = schedule;
+    }
+    public Calendar getExchangeSchedule(){
+        return exchangeSchedule;
     }
 }

@@ -1,6 +1,7 @@
 package com.plunner.plunner.activities.activities;
 
 
+import android.content.Intent;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -25,14 +26,27 @@ import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Fragments.EventDetailFragment;
+import com.plunner.plunner.models.adapters.HttpException;
+import com.plunner.plunner.models.adapters.NoHttpException;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
+import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
+import com.plunner.plunner.models.models.ModelList;
+import com.plunner.plunner.models.models.employee.Timeslot;
+import com.plunner.plunner.models.models.employee.planner.MeetingTimeslot;
 import com.plunner.plunner.utils.CalendarPickersViewSupport;
+import com.plunner.plunner.utils.ComManager;
 import com.plunner.plunner.utils.CustomWeekEvent;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * An activity that lets users compose a schedule by inserting a name for the schedule and some busy time slots
@@ -57,6 +71,9 @@ public class ComposeScheduleActivity extends AppCompatActivity {
     private EventDetailFragment addEventFragment;
     private List<CustomWeekEvent> composedEvents;
     private List<CustomWeekEvent> deletedEvents;
+    private String id;
+    private Map<String, Timeslot> idTimeslots;
+    private boolean isToEdit;
 
 
 
@@ -64,6 +81,11 @@ public class ComposeScheduleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose_schedule);
+        Intent intent = getIntent();
+        if(intent.getExtras() !=null){
+            id = intent.getExtras().getString("schedule_id");
+            isToEdit = true;
+        }
         //Tolbar setting
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarSchedule);
         setSupportActionBar(toolbar);
@@ -94,7 +116,18 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         });
         composedEvents = new ArrayList<>();
         deletedEvents = new ArrayList<>();
+        if(isToEdit){
+            scheduleNameInput.setText(ComManager.getInstance().getExchangeSchedule().getName());
+            if(ComManager.getInstance().getExchangeSchedule().getEnabled() == "0"){
+                onEnabledSwitchStatusChange(false);
+            }
+            retrieveScheduleTimslots();
+        }
 
+    }
+
+    private void retrieveScheduleTimslots() {
+        ComManager.getInstance().getExchangeSchedule().getTimeslots().load(new GetTimeslotsCallback());
     }
 
     @Override
@@ -310,5 +343,48 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         }
     }
 
+
+    private class GetTimeslotsCallback implements CallOnHttpError<ModelList<Timeslot>>, CallOnNext<ModelList<Timeslot>>, CallOnNoHttpError<ModelList<Timeslot>> {
+        @Override
+        public void onHttpError(HttpException e) {
+
+        }
+
+        @Override
+        public void onNext(ModelList<Timeslot> timeslotModelList) {
+            List<Timeslot> timeslots = timeslotModelList.getModels();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
+            Timeslot timeslot;
+            Calendar calendar_one = Calendar.getInstance();
+            Calendar calendar_two = (Calendar) calendar_one.clone();
+            Date parsedOne, parsedTwo;
+            for(int i=0; i<timeslots.size(); i++){
+                timeslot = timeslots.get(i);
+                idTimeslots.put(timeslot.getId(),timeslot);
+                try {
+                    parsedOne = sdf.parse(timeslot.getTimeStart());
+                    parsedTwo = sdf.parse(timeslot.getTimeEnd());
+                    calendar_one.setTime(parsedOne);
+                    calendar_two.setTime(parsedTwo);
+                    composedEvents.add(new CustomWeekEvent(Integer.parseInt(timeslot.getId()),"", calendar_one,calendar_two ,false,false));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            mWeekView.notifyDatasetChanged();
+        }
+
+        @Override
+        public void onNoHttpError(NoHttpException e) {
+
+        }
+    }
+    private Map<String, String> eventFormatAdapter(CustomWeekEvent event){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Map<String,String> map = new HashMap<>();
+        map.put("startTime", sdf.format(event.getStartTime().getTime()));
+        map.put("endTime", sdf.format(event.getEndTime().getTime()));
+        return map;
+    }
 }
 
