@@ -63,10 +63,16 @@ public class DashboardActivity extends AppCompatActivity{
             }
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                if(!comManager.isUserPlanner()){
+                try{
+                    if(!comManager.isUserPlanner()){
+                        navigationMenu.removeItem(R.id.dashboard_activity_fab_add_meeting);
+                    }
+                }
+                catch (NullPointerException e){
                     navigationMenu.removeItem(R.id.dashboard_activity_fab_add_meeting);
                 }
                 return true;
+
             }
         });
         //Tab layout setting

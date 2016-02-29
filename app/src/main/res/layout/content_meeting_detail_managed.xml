@@ -122,7 +122,7 @@
             android:scrollbars="none">
 
             <LinearLayout
-                android:id="@+id/add_meeting_months_picker"
+                android:id="@+id/activity_add_meeting_months_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -139,7 +139,7 @@
             android:scrollbars="none">
 
             <LinearLayout
-                android:id="@+id/add_meeting_days_picker"
+                android:id="@+id/activity_add_meeting_days_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -150,7 +150,7 @@
         </HorizontalScrollView>
 
         <com.alamkanak.weekview.WeekView
-            android:id="@+id/add_meeting_weekView"
+            android:id="@+id/activity_add_meeting_mweekview"
             android:layout_width="match_parent"
             android:layout_height="1500dp"
             android:layout_marginTop="15dp"

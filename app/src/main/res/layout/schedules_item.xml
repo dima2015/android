@@ -22,14 +22,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
-            android:id="@+id/schedules_row_title"
+            android:textColor="@color/primary_text"
+            android:id="@+id/schedules_item_title"
             android:layout_marginBottom="5dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/schedules_row_updated_at"
+            android:id="@+id/schedules_item_updated_at"
             android:layout_marginBottom="10dp" />
 
         <TextView
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:textAllCaps="true"
             android:textStyle="bold"
-            android:id="@+id/schedules_row_status" />
+            android:id="@+id/schedules_item_status" />
 
     </LinearLayout>
 

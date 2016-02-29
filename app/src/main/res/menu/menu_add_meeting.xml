@@ -5,7 +5,7 @@
     tools:context=".activities.activities.AddMeeting">
     <item
         android:id="@+id/menu_add_meeting_send"
-        android:icon="@drawable/ic_send"
+        android:icon="@drawable/send_icon"
         android:orderInCategory="100"
         android:title="Send"
         app:showAsAction="always"

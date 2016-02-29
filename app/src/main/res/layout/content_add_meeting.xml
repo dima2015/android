@@ -5,89 +5,98 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:showIn="@layout/activity_add">
+    tools:showIn="@layout/activity_add_meeting">
 
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:paddingTop="20dp">
 
 
         <ProgressBar
+            android:id="@+id/pBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/pBar"
             android:layout_marginBottom="20dp"
             android:indeterminate="true"
             android:visibility="gone" />
+
         <LinearLayout
             android:layout_width="0px"
             android:layout_height="0px"
             android:focusable="true"
             android:focusableInTouchMode="true" />
 
-        <!--<TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:text="@string/title"
-            android:textAppearance="?android:attr/textAppearanceSmall" />-->
-        <android.support.design.widget.TextInputLayout
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:id="@+id/titleInput">
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
+
             <EditText
-                android:drawableRight="@drawable/pencil_icon"
-                android:id="@+id/add_meeting_title"
+                android:id="@+id/activity_add_meeting_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="15dp"
+                android:drawableRight="@drawable/pencil_icon"
                 android:hint="@string/meeting_title"
+                android:paddingBottom="15dp"
                 android:textColorHint="@color/light_gray" />
-        </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:id="@+id/activity_add_meeting_meeting_title_err"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/error_field_required"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@color/red"
+                android:visibility="gone"/>
+        </LinearLayout>
 
 
-        <!--<TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:text="@string/desc"
-            android:textAppearance="?android:attr/textAppearanceSmall" />-->
-        <android.support.design.widget.TextInputLayout
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <EditText
+            android:id="@+id/add_meeting_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:drawableRight="@drawable/pencil_icon"
+            android:hint="@string/meeting_desc"
+            android:inputType="textMultiLine"
+            android:maxLines="3"
+            android:paddingBottom="15dp"
             android:layout_marginBottom="20dp"
-            android:id="@+id/ll">
-            <EditText
-                android:id="@+id/add_meeting_desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableRight="@drawable/pencil_icon"
-                android:paddingBottom="15dp"
-                android:hint="@string/meeting_desc"
-                android:inputType="textMultiLine"
-                android:maxLines="3"
-                android:textColorHint="@color/light_gray" />
-        </android.support.design.widget.TextInputLayout>
+            android:textColorHint="@color/light_gray" />
 
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
+                android:layout_weight="0.7"
                 android:text="@string/group"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:layout_weight="0.7" />
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <Spinner
                 android:id="@+id/add_meeting_spinner"
@@ -95,8 +104,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="20dp"
-                android:spinnerMode="dialog"
-                android:layout_weight="0.3" />
+                android:layout_weight="0.3"
+                android:spinnerMode="dialog" />
         </LinearLayout>
 
 
@@ -106,6 +115,7 @@
             android:layout_marginBottom="30dp"
             android:text="@string/duration"
             android:textAppearance="?android:attr/textAppearanceSmall" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -149,9 +159,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="40dp"
         android:paddingLeft="20dp"
-        android:paddingRight="20dp">
+        android:paddingRight="20dp"
+        android:paddingTop="40dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -168,7 +178,7 @@
             android:scrollbars="none">
 
             <LinearLayout
-                android:id="@+id/add_meeting_months_picker"
+                android:id="@+id/activity_add_meeting_months_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -185,7 +195,7 @@
             android:scrollbars="none">
 
             <LinearLayout
-                android:id="@+id/add_meeting_days_picker"
+                android:id="@+id/activity_add_meeting_days_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -196,7 +206,7 @@
         </HorizontalScrollView>
 
         <com.alamkanak.weekview.WeekView
-            android:id="@+id/add_meeting_weekView"
+            android:id="@+id/activity_add_meeting_mweekview"
             android:layout_width="match_parent"
             android:layout_height="1500dp"
             android:layout_marginTop="15dp"

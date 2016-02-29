@@ -29,18 +29,15 @@ import com.plunner.plunner.utils.ComManager;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SchedulesFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
+ * REVISED
  */
 public class SchedulesFragment extends Fragment {
 
 
-    private OnFragmentInteractionListener mListener;
     private List<Calendar> composedSchedules;
-    private List<Calendar> importedSchedules;
+    //private List<Calendar> importedSchedules;
     private List<Calendar> content;
     private ProgressBar loadingSpinner;
     private SchedulesListAdapter adapter;
@@ -61,42 +58,24 @@ public class SchedulesFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_schedules, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        /*if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     @Override
     public void onStart() {
         super.onStart();
         ListView listView = (ListView) getActivity().findViewById(R.id.schedulesList);
-        LinearLayout horizontalScrollView = (LinearLayout) getActivity().findViewById(R.id.fragment_schedules_top_menu);
-        horizontalScrollView.getChildAt(0).setBackgroundResource(R.drawable.categorybutton_c);
+        //LinearLayout horizontalScrollView = (LinearLayout) getActivity().findViewById(R.id.fragment_schedules_top_menu);
+        // horizontalScrollView.getChildAt(0).setBackgroundResource(R.drawable.categorybutton_c);
         swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.fragment_schedules_swipe_refresh);
-        content = new ArrayList<>();
-        adapter = new SchedulesListAdapter(getActivity(), content);
-        loadingSpinner = (ProgressBar) getActivity().findViewById(R.id.fragment_schedules_laoding_spinner);
-        listView.setAdapter(adapter);
-        mode = 1;
         swipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -105,6 +84,12 @@ public class SchedulesFragment extends Fragment {
                     }
                 }
         );
+        swipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.colorPrimary, R.color.colorPrimaryDark);
+        content = new ArrayList<>();
+        adapter = new SchedulesListAdapter(getActivity(), content);
+        loadingSpinner = (ProgressBar) getActivity().findViewById(R.id.fragment_schedules_laoding_spinner);
+        listView.setAdapter(adapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -121,15 +106,10 @@ public class SchedulesFragment extends Fragment {
         retrieveSchedules();
     }
 
-    public void setComposedSchedules(List<Calendar> composedSchedules) {
-        this.composedSchedules = composedSchedules;
-    }
-
-    public void setImportedSchedules(List<Calendar> importedSchedules) {
-        this.importedSchedules = importedSchedules;
-    }
-
     public void notifyContentChange() {
+        content.clear();
+        content.addAll(composedSchedules);
+        /*
         switch (mode) {
             case 1:
                 content.clear();
@@ -139,7 +119,7 @@ public class SchedulesFragment extends Fragment {
                 content.clear();
                 content.addAll(importedSchedules);
                 break;
-        }
+        }*/
         adapter.notifyDataSetChanged();
     }
 
@@ -156,21 +136,6 @@ public class SchedulesFragment extends Fragment {
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-
     public void setMode(int mode) throws IllegalArgumentException {
         if (mode == 1 || mode == 2) {
             this.mode = mode;
@@ -180,7 +145,7 @@ public class SchedulesFragment extends Fragment {
     }
 
     public void initSequence() {
-        mode = 1;
+        //mode = 1;
         retrieveSchedules();
     }
 
@@ -197,7 +162,7 @@ public class SchedulesFragment extends Fragment {
         @Override
         public void onNext(ModelList<Calendar> calendarModelList) {
             List<Calendar> schedulesList = calendarModelList.getModels();
-            List<Calendar> lImportedSchedules = new ArrayList<>();
+            //List<Calendar> lImportedSchedules = new ArrayList<>();
             List<Calendar> lComposedSchedules = new ArrayList<>();
             Calendar currentSchedule;
             for (int i = 0; i < schedulesList.size(); i++) {
@@ -205,10 +170,10 @@ public class SchedulesFragment extends Fragment {
                 if (currentSchedule.getCaldav() == null) {
                     lComposedSchedules.add(currentSchedule);
                 } else {
-                    lImportedSchedules.add(currentSchedule);
+                   // lImportedSchedules.add(currentSchedule);
                 }
             }
-            importedSchedules = lImportedSchedules;
+            //importedSchedules = lImportedSchedules;
             composedSchedules = lComposedSchedules;
             if (swipeRefreshLayout.isRefreshing()) {
                 swipeRefreshLayout.setRefreshing(false);

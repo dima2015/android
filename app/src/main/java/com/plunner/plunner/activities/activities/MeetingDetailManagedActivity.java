@@ -157,7 +157,7 @@ public class MeetingDetailManagedActivity extends AppCompatActivity {
 
     private boolean validateData() {
         boolean toReturn = true;
-        TextInputLayout tt = (TextInputLayout) findViewById(R.id.titleInput);
+        /*//TextInputLayout tt = (TextInputLayout) findViewById(R.id.titleInput);
         if (meetingTitle.getText().toString().equals("")) {
             tt.setErrorEnabled(true);
             tt.setError("Please insert a title for the meeting");
@@ -170,7 +170,7 @@ public class MeetingDetailManagedActivity extends AppCompatActivity {
             tt.setErrorEnabled(false);
             tt.setError(null);
         }
-
+            */
         return toReturn;
 
     }

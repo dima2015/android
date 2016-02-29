@@ -36,15 +36,15 @@ public class SchedulesListAdapter extends ArrayAdapter<Calendar> {
             LayoutInflater layoutInflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            convertView = layoutInflater.inflate(R.layout.schedules_row, null);
+            convertView = layoutInflater.inflate(R.layout.schedules_item, null);
 
             this.listItem  = new ListItem();
 
             this.listItem.title = (TextView) convertView.
-                    findViewById(R.id.schedules_row_title);
+                    findViewById(R.id.schedules_item_title);
             this.listItem.updatedAt = (TextView) convertView
-                    .findViewById(R.id.schedules_row_updated_at);
-            this.listItem.status = (TextView) convertView.findViewById(R.id.schedules_row_status);
+                    .findViewById(R.id.schedules_item_updated_at);
+            this.listItem.status = (TextView) convertView.findViewById(R.id.schedules_item_status);
 
 
             convertView.setTag(listItem);

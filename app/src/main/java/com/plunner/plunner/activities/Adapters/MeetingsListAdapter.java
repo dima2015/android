@@ -34,14 +34,14 @@ public class MeetingsListAdapter extends ArrayAdapter<Meeting> {
             LayoutInflater layoutInflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            convertView = layoutInflater.inflate(R.layout.meetings_row, null);
+            convertView = layoutInflater.inflate(R.layout.meeting_item, null);
 
             //Binds values to view
             this.listItem = new ListItem();
             this.listItem.title = (TextView) convertView.
-                    findViewById(R.id.meetingTitle);
+                    findViewById(R.id.meeting_item_title);
             this.listItem.description = (TextView) convertView
-                    .findViewById(R.id.meetingDescription);
+                    .findViewById(R.id.meeting_item_desc);
 
 
             convertView.setTag(listItem);

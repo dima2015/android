@@ -161,23 +161,6 @@ public class MeetingsFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        //This method should be defined in the activity
-        //and allows the communication between the fragment and the activity
-        void onFragmentInteraction(Uri uri);
-    }
-
-
     public void switchMeetingsType(View v){
         int tag =  Integer.parseInt((String) v.getTag());
         ViewGroup viewGroup = (ViewGroup) v.getParent();

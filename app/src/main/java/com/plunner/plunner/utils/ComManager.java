@@ -73,8 +73,14 @@ public class ComManager {
         this.user = user;
     }
 
-    public boolean isUserPlanner(){
-        return user.isPlanner();
+    public boolean isUserPlanner() throws NullPointerException{
+        if(user == null){
+            throw new NullPointerException("The user has not been retrieved yet");
+        }
+        else{
+            return user.isPlanner();
+        }
+
     }
     public void setExchangeSchedule(Calendar schedule){
         exchangeSchedule = schedule;

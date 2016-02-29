@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -21,7 +20,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -82,23 +80,22 @@ public class AddMeeting extends AppCompatActivity {
     private EventDetailFragment addEventFragment;
     private List<CustomWeekEvent> composedEvents;
     private List<CustomWeekEvent> deletedEvents;
-    private ProgressBar pBar;
-    private String id;
-    private String groupId;
     private Map<String, MeetingTimeslot> idTimeslots;
     private ProgressDialog progressDialog;
+    private boolean editMode;
     
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add);
+        setContentView(R.layout.activity_add_meeting);
 
         Intent intent = getIntent();
         if(intent.getExtras() != null){
-
-            id = intent.getExtras().getString("meeting_id");
-            groupId = intent.getExtras().getString("group_id");
+            editMode = true;
+        }
+        else{
+            editMode = false;
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.add_meeting_toolbar);
@@ -106,10 +103,9 @@ public class AddMeeting extends AppCompatActivity {
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        meetingTitle = (EditText) findViewById(R.id.add_meeting_title);
+        meetingTitle = (EditText) findViewById(R.id.activity_add_meeting_title);
         meetingDesc = (EditText) findViewById(R.id.add_meeting_desc);
         meetingDuration = (TextView) findViewById(R.id.add_meeting_duration);
-        pBar = (ProgressBar) findViewById(R.id.pBar);
         groupsSpinner = (Spinner) findViewById(R.id.add_meeting_spinner);
 
 
@@ -134,9 +130,9 @@ public class AddMeeting extends AppCompatActivity {
         });
         calendarPickersViewSupport = CalendarPickersViewSupport.getInstance();
         calendarPickersViewSupport.setActivity(this);
-        calendarPickersViewSupport.setDaysPicker((LinearLayout) findViewById(R.id.add_meeting_days_picker));
-        calendarPickersViewSupport.setMonthsPicker((LinearLayout) findViewById(R.id.add_meeting_months_picker));
-        mWeekView = (WeekView) findViewById(R.id.add_meeting_weekView);
+        calendarPickersViewSupport.setDaysPicker((LinearLayout) findViewById(R.id.activity_add_meeting_days_picker));
+        calendarPickersViewSupport.setMonthsPicker((LinearLayout) findViewById(R.id.activity_add_meeting_months_picker));
+        mWeekView = (WeekView) findViewById(R.id.activity_add_meeting_mweekview);
         //Pickers init
         calendarPickersViewSupport.createViews(-1);
         //createCalendarPickersView(-1);
@@ -147,6 +143,9 @@ public class AddMeeting extends AppCompatActivity {
         composedEvents = new ArrayList<>();
         deletedEvents = new ArrayList<>();
         idTimeslots = new HashMap<>();
+        if(editMode){
+            selectedMeeting = (Meeting) ComManager.getInstance().getExchangeMeeting();
+        }
         retrieveGroups();
     }
 
@@ -154,7 +153,7 @@ public class AddMeeting extends AppCompatActivity {
 
     private void retrieveGroups() {
         Planner planner = (Planner) ComManager.getInstance().getUser();
-        planner.getGroupsManaged().load(new ManagedGroupsCallback(id));
+        planner.getGroupsManaged().load(new ManagedGroupsCallback());
     }
 
     @Override
@@ -246,21 +245,18 @@ public class AddMeeting extends AppCompatActivity {
 
     private boolean validateData() {
         boolean toReturn = true;
-        TextInputLayout tt = (TextInputLayout) findViewById(R.id.titleInput);
+        TextView errorMsg = (TextView)findViewById(R.id.activity_add_meeting_meeting_title_err);
         if (meetingTitle.getText().toString().equals("")) {
-            tt.setErrorEnabled(true);
-            tt.setError("Please insert a title for the meeting");
+            errorMsg.setVisibility(View.VISIBLE);
             toReturn = false;
         } else if (composedEvents.size() == 0) {
-            tt.setErrorEnabled(false);
             toReturn = false;
             createSnackBar("Insert at least one timeslot for the meeting");
+            errorMsg.setVisibility(View.GONE);
         }
         else{
-            tt.setErrorEnabled(false);
-            tt.setError(null);
+            errorMsg.setVisibility(View.GONE);
         }
-
         return toReturn;
 
     }
@@ -282,7 +278,6 @@ public class AddMeeting extends AppCompatActivity {
         mWeekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
             @Override
             public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
-                int a = 3;
                 return composedEvents;
             }
 
@@ -520,12 +515,6 @@ public class AddMeeting extends AppCompatActivity {
 
     private class ManagedGroupsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
 
-        String id;
-
-        public ManagedGroupsCallback(String id) {
-            this.id = id;
-        }
-
         @Override
         public void onHttpError(HttpException e) {
 
@@ -534,18 +523,22 @@ public class AddMeeting extends AppCompatActivity {
         @Override
         public void onNext(ModelList<Group> groups) {
             Group currentGroup;
+            int position = 0;
             currentGroups = groups.getModels();
             selectedGroup = currentGroups.get(0);
             List<String> stringedGroups = new ArrayList<>();
             for (int i=0; i<currentGroups.size();i++){
                 currentGroup = currentGroups.get(i);
-                if(groupId != null & currentGroup.getId().equals(groupId)){
-                    currentGroup.getMeetingsManaged().load(new MeetingGetCallback());
+                if(editMode){
+                    if(currentGroup.getId().equals(selectedMeeting.getGroupId())){
+                        position = i;
+                    }
                 }
                 stringedGroups.add(currentGroups.get(i).getName());
             }
             ArrayAdapter<String> adapter = new ArrayAdapter<>(AddMeeting.this, android.R.layout.simple_spinner_dropdown_item, stringedGroups);
             groupsSpinner.setAdapter(adapter);
+            groupsSpinner.setSelection(position);
             groupsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -629,7 +622,7 @@ public class AddMeeting extends AppCompatActivity {
                 currentMeeting = meetings.get(i);
                 if(currentMeeting.getId().equals(id)){
                     selectedMeeting = currentMeeting;
-                    fillData();
+                    retrieveMeetingInformation();
                     break;
                 }
             }
@@ -641,7 +634,7 @@ public class AddMeeting extends AppCompatActivity {
         }
     }
 
-    private void fillData() {
+    private void retrieveMeetingInformation() {
         meetingTitle.setText(selectedMeeting.getTitle());
         meetingDesc.setText(selectedMeeting.getDescription());
         meetingDuration.setText(selectedMeeting.getDuration());
