@@ -12,7 +12,7 @@ import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelException;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.planner.Planner;
-import com.plunner.plunner.models.models.employee.utility.LoadResource;
+import com.plunner.plunner.models.models.employee.utils.LoadResource;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

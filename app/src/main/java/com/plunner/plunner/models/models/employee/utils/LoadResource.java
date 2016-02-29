@@ -1,4 +1,4 @@
-package com.plunner.plunner.models.models.employee.utility;
+package com.plunner.plunner.models.models.employee.utils;
 
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.Callable;

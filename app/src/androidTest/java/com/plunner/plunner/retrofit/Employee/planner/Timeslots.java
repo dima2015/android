@@ -6,7 +6,7 @@ import com.plunner.plunner.models.models.employee.planner.Group;
 import com.plunner.plunner.models.models.employee.planner.Meeting;
 import com.plunner.plunner.models.models.employee.planner.MeetingTimeslot;
 import com.plunner.plunner.models.models.employee.planner.Planner;
-import com.plunner.plunner.models.models.employee.utility.LoadResource;
+import com.plunner.plunner.models.models.employee.utils.LoadResource;
 import com.plunner.plunner.retrofit.RetrofitTest;
 
 import java.util.List;
