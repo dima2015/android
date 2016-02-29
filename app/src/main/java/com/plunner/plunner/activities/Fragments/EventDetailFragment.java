@@ -42,6 +42,7 @@ public class EventDetailFragment extends Fragment {
     private boolean isEditedEvent;
     private long currentEventId;
     private Calendar initialDate;
+    private boolean mode;
 
 
     public EventDetailFragment() {
@@ -189,16 +190,16 @@ public class EventDetailFragment extends Fragment {
         endDate.setTag(2);
         endTime = (TextView) activity.findViewById(R.id.add_event_ends_time);
         endTime.setTag(2);
-        if (isNewEvent) {
+        if (mode) {
             fragmentTitle.setText(getResources().getText(R.string.add_event));
             deleteView.setVisibility(View.GONE);
         }
-        if (isEditedEvent) {
+        if (!mode || isEditedEvent) {
             fragmentTitle.setText(getResources().getText(R.string.edit_event));
             deleteView.setVisibility(View.VISIBLE);
 
         }
-        setNewEventContent(initialDate);
+        setNewEventContent(initialDate,mode);
     }
 
     @Override
@@ -251,17 +252,24 @@ public class EventDetailFragment extends Fragment {
     }
     public void setInitialDate(Calendar time){
         initialDate = time;
-        isEditedEvent = false;
     }
-    public void setNewEventContent(Calendar time) {
+    public void setNewEventContent(Calendar time,boolean mode) {
         Calendar calendar;
-        isNewEvent = true;
-        isEditedEvent = false;
-        currentEventId = idFactory.generate();
+        if(mode == true){
+            isNewEvent = true;
+            isEditedEvent = false;
+            currentEventId = idFactory.generate();
+        }
+        else{
+            isEditedEvent = false;
+        }
         eventStarts(time, 2);
         calendar = (Calendar) time.clone();
         calendar.add(Calendar.HOUR_OF_DAY, 1);
         eventEnds(calendar, 2);
+    }
+    public void setMode(boolean mode){
+        this.mode = mode;
     }
 
     public void setEditEventContent(Calendar startTime, Calendar endTime) {

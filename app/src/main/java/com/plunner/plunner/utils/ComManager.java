@@ -6,6 +6,7 @@ import com.plunner.plunner.models.callbacks.interfaces.Callable;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.employee.Calendar;
 import com.plunner.plunner.models.models.employee.Employee;
+import com.plunner.plunner.models.models.employee.planner.Meeting;
 import com.plunner.plunner.models.models.employee.planner.Planner;
 
 /**
@@ -18,6 +19,7 @@ public class ComManager {
 
     private Employee user;
     private Calendar exchangeSchedule;
+    private Meeting exchangeMeeting;
 
     public static ComManager getInstance(){
         if(instance == null){
@@ -79,5 +81,13 @@ public class ComManager {
     }
     public Calendar getExchangeSchedule(){
         return exchangeSchedule;
+    }
+
+    public Meeting getExchangeMeeting() {
+        return exchangeMeeting;
+    }
+
+    public void setExchangeMeeting(Meeting exchangeMeeting) {
+        this.exchangeMeeting = exchangeMeeting;
     }
 }

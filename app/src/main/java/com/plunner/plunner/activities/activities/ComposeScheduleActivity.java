@@ -1,6 +1,7 @@
 package com.plunner.plunner.activities.activities;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.RectF;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -33,7 +33,6 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Timeslot;
-import com.plunner.plunner.models.models.employee.planner.MeetingTimeslot;
 import com.plunner.plunner.utils.CalendarPickersViewSupport;
 import com.plunner.plunner.utils.ComManager;
 import com.plunner.plunner.utils.CustomWeekEvent;
@@ -71,10 +70,11 @@ public class ComposeScheduleActivity extends AppCompatActivity {
     private EventDetailFragment addEventFragment;
     private List<CustomWeekEvent> composedEvents;
     private List<CustomWeekEvent> deletedEvents;
-    private String id;
-    private Map<String, Timeslot> idTimeslots;
-    private boolean isToEdit;
-
+    private Map<String, Timeslot> fromIdToTimeslot;
+    private com.plunner.plunner.models.models.employee.Calendar exchangedSchedule;
+    private boolean editMode;
+    private ProgressDialog progressDialog;
+    private Switch enabledSwitch;
 
 
     @Override
@@ -82,13 +82,18 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose_schedule);
         Intent intent = getIntent();
-        if(intent.getExtras() !=null){
-            id = intent.getExtras().getString("schedule_id");
-            isToEdit = true;
+        editMode = false;
+        if (intent.getExtras() != null) {
+            String mode = intent.getExtras().getString("mode");
+            if(mode.equals("edit")){
+                editMode = true;
+            }
         }
         //Tolbar setting
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarSchedule);
         setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
         //View elements retrieval
         scheduleStatus = (TextView) findViewById(R.id.compose_schedule_status);
         calendarPickersViewSupport = CalendarPickersViewSupport.getInstance();
@@ -97,10 +102,10 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         calendarPickersViewSupport.setMonthsPicker((LinearLayout) findViewById(R.id.months_picker));
         scheduleNameInput = (EditText) findViewById(R.id.compose_schedule_schedule_name);
         mWeekView = (WeekView) findViewById(R.id.weekView);
-        actionBar = getSupportActionBar();
-        Switch enabledSwitch = (Switch) findViewById(R.id.compose_schedule_enabled_switch);
+
+        enabledSwitch = (Switch) findViewById(R.id.compose_schedule_enabled_switch);
         //This activity can come back to the main activity
-        actionBar.setDisplayHomeAsUpEnabled(true);
+
         //Pickers init
         calendarPickersViewSupport.createViews(-1);
         //createCalendarPickersView(-1);
@@ -116,9 +121,13 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         });
         composedEvents = new ArrayList<>();
         deletedEvents = new ArrayList<>();
-        if(isToEdit){
-            scheduleNameInput.setText(ComManager.getInstance().getExchangeSchedule().getName());
-            if(ComManager.getInstance().getExchangeSchedule().getEnabled() == "0"){
+        fromIdToTimeslot = new HashMap<>();
+        if (editMode) {
+            exchangedSchedule = ComManager.getInstance().getExchangeSchedule();
+            scheduleNameInput.setText(exchangedSchedule.getName());
+            setTitle(getResources().getText(R.string.edit_schedule));
+            if (exchangedSchedule.getEnabled().equals("0")) {
+                enabledSwitch.setChecked(false);
                 onEnabledSwitchStatusChange(false);
             }
             retrieveScheduleTimslots();
@@ -127,7 +136,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
     }
 
     private void retrieveScheduleTimslots() {
-        ComManager.getInstance().getExchangeSchedule().getTimeslots().load(new GetTimeslotsCallback());
+        exchangedSchedule.getTimeslots().load(new GetTimeslotsCallback());
     }
 
     @Override
@@ -143,6 +152,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_send:
                 //handleFragment();
+                sendData();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -289,6 +299,8 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (addEventFragment == null) {
             addEventFragment = new EventDetailFragment();
+            addEventFragment.setMode(false);
+            addEventFragment.setInitialDate(event.getStartTime());
             addEventFragment.setCurrentEventId(event.getId());
             //addEventFragment.setEditEventContent(event.getStartTime(), event.getEndTime());
             actionBar.hide();
@@ -308,12 +320,13 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         actionBar.hide();
         if (addEventFragment == null) {
             addEventFragment = new EventDetailFragment();
+            addEventFragment.setMode(true);
             addEventFragment.setInitialDate(time);
             transaction.add(R.id.compose_schedule_root, addEventFragment)
                     .addToBackStack(null).commit();
 
         } else {
-            addEventFragment.setNewEventContent(time);
+            addEventFragment.setNewEventContent(time,true);
             transaction.show(addEventFragment).commit();
         }
 
@@ -357,20 +370,24 @@ public class ComposeScheduleActivity extends AppCompatActivity {
             Timeslot timeslot;
             Calendar calendar_one = Calendar.getInstance();
             Calendar calendar_two = (Calendar) calendar_one.clone();
+            List<CustomWeekEvent> provList = new ArrayList<>();
             Date parsedOne, parsedTwo;
-            for(int i=0; i<timeslots.size(); i++){
+            for (int i = 0; i < timeslots.size(); i++) {
                 timeslot = timeslots.get(i);
-                idTimeslots.put(timeslot.getId(),timeslot);
+                fromIdToTimeslot.put(timeslot.getId(), timeslot);
                 try {
                     parsedOne = sdf.parse(timeslot.getTimeStart());
                     parsedTwo = sdf.parse(timeslot.getTimeEnd());
                     calendar_one.setTime(parsedOne);
                     calendar_two.setTime(parsedTwo);
-                    composedEvents.add(new CustomWeekEvent(Integer.parseInt(timeslot.getId()),"", calendar_one,calendar_two ,false,false));
+                    provList.add(new CustomWeekEvent(Integer.parseInt(timeslot.getId()), "", calendar_one, calendar_two, false, false));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
+            composedEvents.clear();
+            composedEvents.addAll(provList);
+            mWeekView.notifyDatasetChanged();
             mWeekView.notifyDatasetChanged();
         }
 
@@ -379,12 +396,195 @@ public class ComposeScheduleActivity extends AppCompatActivity {
 
         }
     }
-    private Map<String, String> eventFormatAdapter(CustomWeekEvent event){
+
+    private Map<String, String> eventFormatAdapter(CustomWeekEvent event) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Map<String,String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         map.put("startTime", sdf.format(event.getStartTime().getTime()));
         map.put("endTime", sdf.format(event.getEndTime().getTime()));
         return map;
+    }
+
+    private void sendData() {
+        com.plunner.plunner.models.models.employee.Calendar schedule;
+        if (!editMode) {
+            progressDialog = ProgressDialog.show(this,"","Adding schedule",true);
+            schedule = new com.plunner.plunner.models.models.employee.Calendar();
+        } else {
+            schedule = exchangedSchedule;
+            progressDialog = ProgressDialog.show(this,"","Saving changes", true);
+        }
+        schedule.setName(scheduleNameInput.getText().toString());
+        if(enabledSwitch.isChecked()){
+            schedule.setEnabled("1");
+        }
+        else{
+            schedule.setEnabled("0");
+        }
+
+        schedule.save(new SaveScheduleCallback());
+    }
+
+    private class SaveScheduleCallback implements CallOnHttpError<com.plunner.plunner.models.models.employee.Calendar>, CallOnNext<com.plunner.plunner.models.models.employee.Calendar>, CallOnNoHttpError<com.plunner.plunner.models.models.employee.Calendar> {
+        @Override
+        public void onHttpError(HttpException e) {
+
+        }
+
+        @Override
+        public void onNext(com.plunner.plunner.models.models.employee.Calendar calendar) {
+            sendTimeslots(calendar.getId());
+        }
+
+        @Override
+        public void onNoHttpError(NoHttpException e) {
+
+        }
+    }
+
+    private void sendTimeslots(String id) {
+        Timeslot timeslot;
+        CustomWeekEvent currentEvent;
+        List<CustomWeekEvent> newEvents = new ArrayList<>();
+
+        Map<String, String> eventMap;
+        for (int i = 0; i < composedEvents.size(); i++) {
+            currentEvent = composedEvents.get(i);
+            if (currentEvent.isNew()) {
+                newEvents.add(currentEvent);
+            }
+        }
+        for (int i = 0; i < newEvents.size(); i++) {
+            eventMap = eventFormatAdapter(composedEvents.get(i));
+            timeslot = new Timeslot();
+            timeslot.setFatherParameters(id);
+            timeslot.setTimeStart(eventMap.get("startTime"));
+            timeslot.setTimeEnd(eventMap.get("endTime"));
+            timeslot.save(new SaveTimeslotCallback(i, composedEvents.size()));
+        }
+        if(newEvents.size() == 0){
+            progressDialog.dismiss();
+        }
+    }
+
+    private void sendUpdatedEvents() {
+        List<CustomWeekEvent> events = new ArrayList<>();
+        CustomWeekEvent currentEvent;
+        Map<String, String> eventMap;
+        Timeslot timeslot;
+        for (int i = 0; i < composedEvents.size(); i++) {
+            currentEvent = composedEvents.get(i);
+            if (currentEvent.isEdited() && !currentEvent.isNew()) {
+                events.add(currentEvent);
+            }
+        }
+        if(events.size() == 0){
+            progressDialog.dismiss();
+        }
+        for (int i = 0; i < events.size(); i++) {
+            eventMap = eventFormatAdapter(events.get(i));
+            timeslot = new Timeslot();
+            timeslot.setFatherParameters(ComManager.getInstance().getExchangeSchedule().getId());
+            timeslot.setTimeStart(eventMap.get("starTime"));
+            timeslot.setTimeEnd(eventMap.get("endTime"));
+            timeslot.save(new UpdateTimeslotsCallback(i, events.size()));
+        }
+
+
+
+    }
+
+    private class SaveTimeslotCallback implements CallOnHttpError<Timeslot>, CallOnNext<Timeslot>, CallOnNoHttpError<Timeslot> {
+        int index, tot;
+
+        public SaveTimeslotCallback(int i, int size) {
+            index = i;
+            tot = size;
+        }
+
+        @Override
+        public void onHttpError(HttpException e) {
+
+        }
+
+        @Override
+        public void onNext(Timeslot timeslot) {
+            if (index == tot) {
+                if (editMode) {
+                    sendUpdatedEvents();
+                } else {
+                    progressDialog.dismiss();
+                    Intent intent = new Intent(ComposeScheduleActivity.this, DashboardActivity.class);
+                    startActivity(intent);
+                }
+            }
+        }
+
+        @Override
+        public void onNoHttpError(NoHttpException e) {
+
+        }
+    }
+
+    private class UpdateTimeslotsCallback implements CallOnHttpError<Timeslot>, CallOnNext<Timeslot>, CallOnNoHttpError<Timeslot> {
+        private int index, tot;
+
+        public UpdateTimeslotsCallback(int i, int size) {
+            index = i;
+            tot = size;
+        }
+
+        @Override
+        public void onHttpError(HttpException e) {
+
+        }
+
+        @Override
+        public void onNext(Timeslot timeslot) {
+            if (index == tot) {
+                deleteTimeslots();
+            }
+        }
+
+        @Override
+        public void onNoHttpError(NoHttpException e) {
+
+        }
+    }
+
+    private void deleteTimeslots() {
+        for (int i = 0; i < deletedEvents.size(); i++) {
+            fromIdToTimeslot.get(deletedEvents.get(i)).delete(new DeleteTimeslotCallback(i, deletedEvents.size()));
+        }
+        if(deletedEvents.size() == 0){
+            progressDialog.dismiss();
+        }
+    }
+
+    private class DeleteTimeslotCallback implements CallOnHttpError<Timeslot>, CallOnNext<Timeslot>, CallOnNoHttpError<Timeslot> {
+        private int index, tot;
+
+        public DeleteTimeslotCallback(int i, int size) {
+            index = i;
+            tot = size;
+        }
+
+        @Override
+        public void onHttpError(HttpException e) {
+
+        }
+
+        @Override
+        public void onNext(Timeslot timeslot) {
+            if (index == tot) {
+                progressDialog.dismiss();
+            }
+        }
+
+        @Override
+        public void onNoHttpError(NoHttpException e) {
+
+        }
     }
 }
 

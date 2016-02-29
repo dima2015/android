@@ -20,7 +20,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         <android:android.support.design.widget.TabLayout
-            android:id="@+id/tabLayout"
+            android:id="@+id/dashboard_activity_tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -30,26 +30,17 @@
 
     <include layout="@layout/content_dashboard" />
 
-    <!--<android.support.design.widget.FloatingActionButton
-        android:id="@+id/meetingsFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/add_icon"
-        app:backgroundTint="@color/colorPrimary" />-->
 
     <io.github.yavski.fabspeeddial.FabSpeedDial
-        android:id="@+id/dashboard_add_fab"
+        android:id="@+id/dashboard_activity_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         app:fabGravity="bottom_end"
-        app:fabMenu="@menu/menu_dial"
-        app:theme="@style/SecondTheme"
-        app:miniFabBackgroundTint="@android:color/white"
-        app:miniFabDrawableTint="?attr/colorPrimaryDark"
-        app:miniFabTitleTextColor="?attr/colorPrimaryDark" />
+        app:fabMenu="@menu/menu_dashboard_fab"
+        app:miniFabBackgroundTint="@color/secondary_text"
+        app:miniFabDrawableTint="@color/white"
+        app:miniFabTitleTextColor="@color/secondary_text" />
 
 
 </android.support.design.widget.CoordinatorLayout>

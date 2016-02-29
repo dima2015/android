@@ -1,6 +1,7 @@
 package com.plunner.plunner.activities.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,12 +9,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.Adapters.SchedulesListAdapter;
+import com.plunner.plunner.activities.activities.ComposeScheduleActivity;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
@@ -68,12 +71,12 @@ public class SchedulesFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
+        /*if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
-        }
+        }*/
     }
 
     @Override
@@ -102,6 +105,15 @@ public class SchedulesFragment extends Fragment {
                     }
                 }
         );
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ComManager.getInstance().setExchangeSchedule(composedSchedules.get(position));
+                Intent intent = new Intent(getActivity(), ComposeScheduleActivity.class);
+                intent.putExtra("mode", "edit");
+                startActivity(intent);
+            }
+        });
 
     }
 

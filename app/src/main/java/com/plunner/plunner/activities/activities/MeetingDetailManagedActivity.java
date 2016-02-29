@@ -326,7 +326,7 @@ public class MeetingDetailManagedActivity extends AppCompatActivity {
                     .addToBackStack(null).commit();
 
         } else {
-            addEventFragment.setNewEventContent(time);
+            //addEventFragment.setNewEventContent(time);
             transaction.show(addEventFragment).commit();
         }
 

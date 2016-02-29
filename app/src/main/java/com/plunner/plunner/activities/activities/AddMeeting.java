@@ -96,6 +96,7 @@ public class AddMeeting extends AppCompatActivity {
 
         Intent intent = getIntent();
         if(intent.getExtras() != null){
+
             id = intent.getExtras().getString("meeting_id");
             groupId = intent.getExtras().getString("group_id");
         }
@@ -145,6 +146,7 @@ public class AddMeeting extends AppCompatActivity {
         //enabled switch
         composedEvents = new ArrayList<>();
         deletedEvents = new ArrayList<>();
+        idTimeslots = new HashMap<>();
         retrieveGroups();
     }
 
@@ -171,7 +173,8 @@ public class AddMeeting extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.meeting_detail_save) {
-            createLoadingDialog();
+            //createLoadingDialog();
+            sendData();
             return true;
         }
         else if(id == R.id.meeting_detail_delete){
@@ -279,6 +282,7 @@ public class AddMeeting extends AppCompatActivity {
         mWeekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
             @Override
             public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
+                int a = 3;
                 return composedEvents;
             }
 
@@ -390,6 +394,8 @@ public class AddMeeting extends AppCompatActivity {
         if (addEventFragment == null) {
             addEventFragment = new EventDetailFragment();
             addEventFragment.setCurrentEventId(event.getId());
+            addEventFragment.setInitialDate(event.getStartTime());
+            addEventFragment.setMode(false);
             //addEventFragment.setEditEventContent(event.getStartTime(), event.getEndTime());
             actionBar.hide();
             transaction.add(R.id.add_meeting_root, addEventFragment)
@@ -397,6 +403,7 @@ public class AddMeeting extends AppCompatActivity {
         } else {
             actionBar.hide();
             addEventFragment.setCurrentEventId(event.getId());
+            addEventFragment.setMode(false);
             addEventFragment.setEditEventContent(event.getStartTime(), event.getEndTime());
             transaction.show(addEventFragment).commit();
 
@@ -411,11 +418,12 @@ public class AddMeeting extends AppCompatActivity {
             if (addEventFragment == null) {
                 addEventFragment = new EventDetailFragment();
                 addEventFragment.setInitialDate(time);
+                addEventFragment.setMode(true);
                 transaction.add(R.id.add_meeting_root, addEventFragment)
                         .addToBackStack(null).commit();
 
             } else {
-                addEventFragment.setNewEventContent(time);
+                addEventFragment.setNewEventContent(time,true);
                 transaction.show(addEventFragment).commit();
             }
         }
@@ -448,11 +456,17 @@ public class AddMeeting extends AppCompatActivity {
     private void sendEvents(String meetingId) {
         MeetingTimeslot timeslot;
         Map<String,String> adaptedEvent;
-        List<CustomWeekEvent> newEvents;
+        List<CustomWeekEvent> newEvents = new ArrayList<>();
         CustomWeekEvent currentEvent;
-        for(int i=0; i<composedEvents.size(); i++){
+        for (int i=0; i<composedEvents.size(); i++){
+            currentEvent = composedEvents.get(i);
+            if(currentEvent.isNew()){
+                newEvents.add(currentEvent);
+            }
+        }
+        for(int i=0; i<newEvents.size(); i++){
             timeslot = new MeetingTimeslot();
-            adaptedEvent = eventFormatAdapter(composedEvents.get(i));
+            adaptedEvent = eventFormatAdapter(newEvents.get(i));
             timeslot.setTimeStart(adaptedEvent.get("startTime"));
             timeslot.setTimeEnd(adaptedEvent.get("endTime"));
             timeslot.setFatherParameters(selectedGroup.getId(), meetingId);
@@ -485,9 +499,15 @@ public class AddMeeting extends AppCompatActivity {
         @Override
         public void onNext(MeetingTimeslot meeting) {
             if(index == total){
-                progressDialog.dismiss();
-                Intent intent = new Intent(AddMeeting.this, DashboardActivity.class);
-                startActivity(intent);
+                if(id!=null){
+                    sendUpdatedEvents();
+                }
+                else{
+                    progressDialog.dismiss();
+                    Intent intent = new Intent(AddMeeting.this, DashboardActivity.class);
+                    startActivity(intent);
+                }
+
             }
 
         }
@@ -656,11 +676,11 @@ public class AddMeeting extends AppCompatActivity {
                     calendar_one.setTime(parsedOne);
                     calendar_two.setTime(parsedTwo);
                     composedEvents.add(new CustomWeekEvent(Integer.parseInt(meetingTimeslot.getId()),"", calendar_one,calendar_two ,false,false));
+                    mWeekView.notifyDatasetChanged();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
-            mWeekView.notifyDatasetChanged();
         }
 
         @Override
