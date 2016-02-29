@@ -31,17 +31,9 @@ import com.plunner.plunner.utils.ComManager;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MeetingsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- */
+
 public class MeetingsFragment extends Fragment {
 
-
-
-    private OnFragmentInteractionListener mListener;
     private List<Meeting> tbpMeetings;
     private List<Meeting> pMeetings;
     private List<? extends Meeting> mMeetings;
@@ -68,47 +60,21 @@ public class MeetingsFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-        ListView listView = (ListView) getActivity().findViewById(R.id.meetingsList);
+        ListView listView = (ListView) getActivity().findViewById(R.id.fragment_meetings_meetings_list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedMeeting;
-                switch (mode){
-                    case 1:
-                        selectedMeeting = tbpMeetings.get(position).sToString();
-                        break;
-                    case 2:
-                        selectedMeeting = pMeetings.get(position).sToString();
-                        break;
-                    case 3:
-                        selectedMeeting = mMeetings.get(position).getId()+"&"+mMeetings.get(position).getGroupId();
-                        break;
-                    default:
-                        selectedMeeting = "";
-                        break;
-                }
-                Intent intent;
-                //= tbpMeetings.get(position).sToString();
-                if(selectedMeeting.indexOf("&")!=-1){
-                    intent = new Intent(getActivity(), AddMeeting.class);
-                    intent.putExtra("meeting_id",selectedMeeting.split("&")[0]);
-                    intent.putExtra("group_id",selectedMeeting.split("&")[1]);
-                }
-                else{
-                    intent = new Intent(getActivity(), MeetingDetailActivity.class);
-                    intent.putExtra("data",selectedMeeting);
-                    intent.putExtra("type",Integer.toString(mode));
-                }
-                startActivity(intent);
+                meetingClickedCallback(position);
             }
         });
         scrollView = (LinearLayout) getActivity().findViewById(R.id.fragment_meetings_top_menu);
         loadingSpinner = (ProgressBar) getActivity().findViewById(R.id.fragment_meetings_loading_spinner);
         scrollView.getChildAt(0).setBackgroundResource(R.drawable.categorybutton_c);
-
+        mMeetings = new ArrayList<>();
         content = new ArrayList<>();
         adapter = new MeetingsListAdapter(getActivity(), content);
         swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.fragment_meetings_refresh_layout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.colorPrimary, R.color.colorPrimaryDark);
         swipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -118,6 +84,42 @@ public class MeetingsFragment extends Fragment {
                 }
         );
         listView.setAdapter(adapter);
+    }
+
+    private void meetingClickedCallback(int position) {
+
+        boolean isMeetingManaged;
+        Meeting selectedMeeting;
+        Intent intent;
+
+        switch (mode){
+            case 1:
+                selectedMeeting = tbpMeetings.get(position);
+                isMeetingManaged = false;
+                break;
+            case 2:
+                selectedMeeting = pMeetings.get(position);
+                isMeetingManaged = false;
+                break;
+            case 3:
+                selectedMeeting = mMeetings.get(position);
+                isMeetingManaged = true;
+                break;
+            default:
+                selectedMeeting = null;
+                isMeetingManaged = false;
+                break;
+        }
+
+        ComManager.getInstance().setExchangeMeeting(selectedMeeting);
+
+        if(isMeetingManaged){
+            intent = new Intent(getActivity(), AddMeeting.class);
+        }
+        else{
+            intent = new Intent(getActivity(), MeetingDetailActivity.class);
+        }
+        startActivity(intent);
     }
 
 
@@ -135,7 +137,7 @@ public class MeetingsFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        //mListener = null;
     }
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
@@ -144,17 +146,15 @@ public class MeetingsFragment extends Fragment {
     }
 
     public void notifyContentChange(){
+        content.clear();
         switch (mode){
             case 1:
-                content.clear();
                 content.addAll(tbpMeetings);
                 break;
             case 2:
-                content.clear();
                 content.addAll(pMeetings);
                 break;
             case 3:
-                content.clear();
                 content.addAll(mMeetings);
                 break;
         }
@@ -215,13 +215,11 @@ public class MeetingsFragment extends Fragment {
         }
     }
     public void initSequence(){
-        if(ComManager.getInstance().isUserPlanner()){
-            scrollView.getChildAt(2).setVisibility(View.VISIBLE);
-        }
         mode = 1;
         retrieveTBPMeetings();
         retrievePMeetings();
         if(ComManager.getInstance().isUserPlanner()){
+            scrollView.getChildAt(2).setVisibility(View.VISIBLE);
             retrieveMMeetings();
         }
     }
@@ -297,18 +295,10 @@ public class MeetingsFragment extends Fragment {
         @Override
         public void onNext(ModelList<com.plunner.plunner.models.models.employee.planner.Group> groupModelList) {
             List<com.plunner.plunner.models.models.employee.planner.Group> groupList = groupModelList.getModels();
-            List<Meeting> meetingList = new ArrayList<>();
             com.plunner.plunner.models.models.employee.planner.Group currentGroup;
             for (int i = 0; i < groupList.size(); i++) {
                 currentGroup = groupList.get(i);
                 currentGroup.getMeetingsManaged().load(new MeetingsManagedCallabck());
-            }
-            mMeetings = meetingList;
-            if(mode == 3){
-                notifyContentChange();
-            }
-            if(swipeRefreshLayout.isRefreshing()){
-                swipeRefreshLayout.setRefreshing(false);
             }
         }
 
@@ -325,7 +315,7 @@ public class MeetingsFragment extends Fragment {
 
             @Override
             public void onNext(ModelList<com.plunner.plunner.models.models.employee.planner.Meeting> meetingsList) {
-                mMeetings =  meetingsList.getModels();
+                ((List<com.plunner.plunner.models.models.employee.planner.Meeting>) mMeetings).addAll(meetingsList.getModels());
                 notifyContentChange();
             }
 

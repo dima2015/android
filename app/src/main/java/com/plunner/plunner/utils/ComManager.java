@@ -6,7 +6,7 @@ import com.plunner.plunner.models.callbacks.interfaces.Callable;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.employee.Calendar;
 import com.plunner.plunner.models.models.employee.Employee;
-import com.plunner.plunner.models.models.employee.planner.Meeting;
+import com.plunner.plunner.models.models.employee.Meeting;
 import com.plunner.plunner.models.models.employee.planner.Planner;
 
 /**
