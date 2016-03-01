@@ -3,8 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.activities.ComposeScheduleActivity">
     <item
-        android:id="@+id/action_send"
-        android:icon="@drawable/ic_send"
+        android:id="@+id/menu_compose_schedule_delete"
+        android:icon="@drawable/delete_icon"
+        android:orderInCategory="100"
+        android:title="Delete"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/menu_compose_schedule_send"
+        android:icon="@drawable/send_icon"
         android:orderInCategory="100"
         android:title="Send"
         app:showAsAction="always"
