@@ -17,14 +17,6 @@
         android:paddingTop="20dp">
 
 
-        <ProgressBar
-            android:id="@+id/pBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:indeterminate="true"
-            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="0px"
@@ -211,6 +203,7 @@
             android:layout_height="1500dp"
             android:layout_marginTop="15dp"
             app:columnGap="8dp"
+            android:nestedScrollingEnabled="true"
 
             app:dayBackgroundColor="#05000000"
             app:eventTextColor="@android:color/white"

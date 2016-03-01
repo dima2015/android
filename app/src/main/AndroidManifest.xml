@@ -64,6 +64,7 @@
             android:label="@string/title_activity_login" />
         <activity
             android:name=".activities.activities.MeetingDetailActivity"
+            android:label="@string/title_activity_meeting_detail"
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -71,7 +72,6 @@
             android:label="Add meeting"
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/CustomTheme" />
-        <activity android:name=".activities.activities.MeetingDetailManagedActivity"></activity>
     </application>
 
 </manifest>

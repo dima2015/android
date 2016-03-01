@@ -3,11 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activities.activities.AddMeeting">
+    <item android:id="@+id/menu_add_meeting_delete"
+        android:icon="@drawable/delete_icon"
+        android:orderInCategory="100"
+        android:title="@string/delete"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_add_meeting_send"
         android:icon="@drawable/send_icon"
         android:orderInCategory="100"
-        android:title="Send"
-        app:showAsAction="always"
+        android:title="@string/send"
+        app:showAsAction="ifRoom"
         />
 </menu>

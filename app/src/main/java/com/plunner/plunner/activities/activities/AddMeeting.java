@@ -43,6 +43,8 @@ import com.plunner.plunner.models.models.employee.planner.Planner;
 import com.plunner.plunner.utils.CalendarPickersViewSupport;
 import com.plunner.plunner.utils.ComManager;
 import com.plunner.plunner.utils.CustomWeekEvent;
+import com.plunner.plunner.utils.TimeslotBackEndAdapter;
+import com.plunner.plunner.utils.TimeslotValidator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,7 +55,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 public class AddMeeting extends AppCompatActivity {
     /**
@@ -91,24 +92,17 @@ public class AddMeeting extends AppCompatActivity {
         setContentView(R.layout.activity_add_meeting);
 
         Intent intent = getIntent();
-        if(intent.getExtras() != null){
-            editMode = true;
-        }
-        else{
-            editMode = false;
-        }
-
+        editMode = intent.getExtras() != null;
+        //Toolbar and upnav setup
         Toolbar toolbar = (Toolbar) findViewById(R.id.add_meeting_toolbar);
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+        //View elements catch
         meetingTitle = (EditText) findViewById(R.id.activity_add_meeting_title);
         meetingDesc = (EditText) findViewById(R.id.add_meeting_desc);
         meetingDuration = (TextView) findViewById(R.id.add_meeting_duration);
         groupsSpinner = (Spinner) findViewById(R.id.add_meeting_spinner);
-
-
         seekBar = (SeekBar) findViewById(R.id.duration_seek);
         seekBar.setMax(300);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -145,21 +139,15 @@ public class AddMeeting extends AppCompatActivity {
         idTimeslots = new HashMap<>();
         if(editMode){
             selectedMeeting = (Meeting) ComManager.getInstance().getExchangeMeeting();
+            retrieveMeetingInformation();
         }
         retrieveGroups();
-    }
-
-
-
-    private void retrieveGroups() {
-        Planner planner = (Planner) ComManager.getInstance().getUser();
-        planner.getGroupsManaged().load(new ManagedGroupsCallback());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_meeting_detail, menu);
+        getMenuInflater().inflate(R.menu.menu_add_meeting, menu);
         return true;
     }
 
@@ -170,54 +158,71 @@ public class AddMeeting extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.meeting_detail_save) {
+        if (id == R.id.menu_add_meeting_delete) {
             //createLoadingDialog();
-            sendData();
+            deleteMeeting();
             return true;
         }
-        else if(id == R.id.meeting_detail_delete){
-            createDialog();
+        else if(id == R.id.menu_add_meeting_send){
+            sendData();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void deleteMeeting() {
+        AlertDialog.Builder alertDialogB = new AlertDialog.Builder(this);
+        alertDialogB.setTitle("Delete Meeting");
+        alertDialogB.setMessage("Are you sure you want to delete this meeting?");
+        alertDialogB.setNegativeButton("ABORT", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertDialogB.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                progressDialog = ProgressDialog.show(AddMeeting.this,"","Deleting meeting",true);
+                selectedMeeting.delete(new DeleteMeetingCallback());
+            }
+        });
+        alertDialogB.show();
+    }
+
     @Override
     public boolean onPrepareOptionsMenu (Menu menu){
-        if(id == null && groupId == null){
-            menu.removeItem(R.id.meeting_detail_delete);
-            menu.removeItem(R.id.meeting_detail_edit);
+        if(!editMode){
+            menu.removeItem(R.id.menu_add_meeting_delete);
         }
         return true;
     }
 
+    private void retrieveGroups() {
+        Planner planner = (Planner) ComManager.getInstance().getUser();
+        planner.getGroupsManaged().load(new ManagedGroupsCallback());
+    }
+
     private void sendData() {
         int adj_duration;
+        Meeting meeting;
+        String groupId;
         if (validateData()) {
-            //pBar.setVisibility(View.VISIBLE);
             String msg;
-            if(id == null && groupId == null){
+            if(!editMode){
                 msg = "Adding meeting";
+                groupId = selectedGroup.getId();
+                meeting = new Meeting();
             }
             else{
                 msg = "Saving changes";
+                groupId = selectedMeeting.getGroupId();
+                meeting = selectedMeeting;
             }
-            progressDialog = ProgressDialog.show(this, "",
-                    msg, true);
-
+            progressDialog = ProgressDialog.show(this, "", msg, true);
             adj_duration = Integer.parseInt(meetingDuration.getText().toString());
             adj_duration = adj_duration*60;
-            Meeting meeting;
-            String groupId;
-            if(id != null && this.groupId != null){
-                meeting = selectedMeeting;
-                groupId = this.groupId;
-            }
-            else{
-                meeting = new Meeting();
-                groupId = selectedGroup.getId();
-            }
             meeting.setTitle(meetingTitle.getText().toString());
             meeting.setDescription(meetingDesc.getText().toString());
             meeting.setDuration(Integer.toString(adj_duration));
@@ -226,33 +231,18 @@ public class AddMeeting extends AppCompatActivity {
         }
     }
 
-    private boolean rulesValidator(Calendar calendar){
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
-        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        if(today.after(calendar)){
-            return false;
-        }
-        else if(today.get(Calendar.WEEK_OF_MONTH) == calendar.get(Calendar.WEEK_OF_MONTH) ){
-            return false;
-        }
-        else if(today.get(Calendar.WEEK_OF_MONTH) + 1 == calendar.get(Calendar.WEEK_OF_MONTH)){
-            if(today.get(Calendar.DAY_OF_WEEK) == 1 && calendar.get(Calendar.DAY_OF_WEEK)!=1){
-                return false;
-            }
-        }
-        return true;
-    }
 
     private boolean validateData() {
         boolean toReturn = true;
         TextView errorMsg = (TextView)findViewById(R.id.activity_add_meeting_meeting_title_err);
+
         if (meetingTitle.getText().toString().equals("")) {
             errorMsg.setVisibility(View.VISIBLE);
             toReturn = false;
         } else if (composedEvents.size() == 0) {
-            toReturn = false;
             createSnackBar("Insert at least one timeslot for the meeting");
             errorMsg.setVisibility(View.GONE);
+            toReturn = false;
         }
         else{
             errorMsg.setVisibility(View.GONE);
@@ -406,7 +396,7 @@ public class AddMeeting extends AppCompatActivity {
     }
 
     private void onEmptySpaceClick(Calendar time) {
-        if(rulesValidator(time)){
+        if(TimeslotValidator.getInstance().validate(time)){
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             actionBar.hide();
 
@@ -448,7 +438,7 @@ public class AddMeeting extends AppCompatActivity {
         }
     }
 
-    private void sendEvents(String meetingId) {
+    private void sendTimeslots(String meetingId) {
         MeetingTimeslot timeslot;
         Map<String,String> adaptedEvent;
         List<CustomWeekEvent> newEvents = new ArrayList<>();
@@ -459,21 +449,17 @@ public class AddMeeting extends AppCompatActivity {
                 newEvents.add(currentEvent);
             }
         }
+        if(newEvents.size() == 0){
+            progressDialog.dismiss();
+        }
         for(int i=0; i<newEvents.size(); i++){
             timeslot = new MeetingTimeslot();
-            adaptedEvent = eventFormatAdapter(newEvents.get(i));
+            adaptedEvent = TimeslotBackEndAdapter.getInstance().adapt(newEvents.get(i));
             timeslot.setTimeStart(adaptedEvent.get("startTime"));
             timeslot.setTimeEnd(adaptedEvent.get("endTime"));
             timeslot.setFatherParameters(selectedGroup.getId(), meetingId);
-            timeslot.save(new saveTimeslotsCallback(i+1, composedEvents.size()));
+            timeslot.save(new saveTimeslotsCallback(i+1, newEvents.size()));
         }
-    }
-    private Map<String, String> eventFormatAdapter(CustomWeekEvent event){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Map<String,String> map = new HashMap<>();
-        map.put("startTime", sdf.format(event.getStartTime().getTime()));
-        map.put("endTime", sdf.format(event.getEndTime().getTime()));
-        return map;
     }
 
     private class saveTimeslotsCallback implements CallOnHttpError<MeetingTimeslot>, CallOnNext<MeetingTimeslot>, CallOnNoHttpError<MeetingTimeslot> {
@@ -494,8 +480,8 @@ public class AddMeeting extends AppCompatActivity {
         @Override
         public void onNext(MeetingTimeslot meeting) {
             if(index == total){
-                if(id!=null){
-                    sendUpdatedEvents();
+                if(editMode){
+                    sendUpdatedTimeslots();
                 }
                 else{
                     progressDialog.dismiss();
@@ -567,13 +553,7 @@ public class AddMeeting extends AppCompatActivity {
         @Override
         public void onNext(com.plunner.plunner.models.models.employee.planner.Meeting meeting) {
 
-            if(id == null && groupId == null){
-                sendEvents(meeting.getId());
-            }
-            else{
-                sendUpdatedEvents();
-            }
-
+                sendTimeslots(meeting.getId());
 
         }
 
@@ -583,70 +563,50 @@ public class AddMeeting extends AppCompatActivity {
         }
     }
 
-    private void sendUpdatedEvents() {
-        List<CustomWeekEvent> updatedEvents = new ArrayList<>();
+    private void sendUpdatedTimeslots() {
+        List<CustomWeekEvent> updatedTimeslots = new ArrayList<>();
         CustomWeekEvent currentEvent;
         for(int i=0; i<composedEvents.size(); i++){
             currentEvent = composedEvents.get(i);
             if(currentEvent.isEdited() && !currentEvent.isNew()){
-                composedEvents.remove(i);
-                updatedEvents.add(currentEvent);
+                updatedTimeslots.add(currentEvent);
             }
         }
-        for(int i=0; i<updatedEvents.size(); i++){
-            currentEvent = updatedEvents.get(i);
-            idTimeslots.get(currentEvent.getId()).save(new UpdateTimeslotCallback(i, updatedEvents.size()));
+        if(updatedTimeslots.size() == 0){
+            progressDialog.dismiss();
+            startActivity(new Intent(AddMeeting.this, DashboardActivity.class));
+        }
+        for(int i=0; i<updatedTimeslots.size(); i++){
+            currentEvent = updatedTimeslots.get(i);
+            idTimeslots.get(Integer.toString((int) currentEvent.getId())).save(new UpdateTimeslotCallback(i, updatedTimeslots.size()));
         }
 
     }
 
     private void sendDeletedEvents() {
-        if(id != null && groupId != null){
-            for(int i=0; i<deletedEvents.size(); i++){
-                idTimeslots.get(deletedEvents.get(i).getId()).delete(new DeleteTimeslotCallback(i,deletedEvents.size()));
-            }
+        if(deletedEvents.size() == 0){
+            progressDialog.dismiss();
+        }
+        for(int i=0; i<deletedEvents.size(); i++){
+            idTimeslots.get(Integer.toString((int) deletedEvents.get(i).getId())).delete(new DeleteTimeslotCallback(i,deletedEvents.size()));
         }
     }
 
-    private class MeetingGetCallback implements CallOnHttpError<ModelList<Meeting>>, CallOnNext<ModelList<Meeting>>, CallOnNoHttpError<ModelList<Meeting>>{
-        @Override
-        public void onHttpError(HttpException e) {
-
-        }
-
-        @Override
-        public void onNext(ModelList<Meeting> meetingsList) {
-            List<Meeting> meetings = meetingsList.getModels();
-            Meeting currentMeeting;
-            for(int i=0; i<meetings.size(); i++){
-                currentMeeting = meetings.get(i);
-                if(currentMeeting.getId().equals(id)){
-                    selectedMeeting = currentMeeting;
-                    retrieveMeetingInformation();
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public void onNoHttpError(NoHttpException e) {
-
-        }
-    }
 
     private void retrieveMeetingInformation() {
         meetingTitle.setText(selectedMeeting.getTitle());
         meetingDesc.setText(selectedMeeting.getDescription());
-        meetingDuration.setText(selectedMeeting.getDuration());
-        seekBar.setProgress(Integer.parseInt(selectedMeeting.getDuration())/60);
-        getTimeslots();
+        int duration = Integer.parseInt(selectedMeeting.getDuration());
+        meetingDuration.setText(Integer.toString(duration/60));
+        seekBar.setProgress(duration/60 - 15);
+        getMeetingTimeslots();
     }
 
-    private void getTimeslots(){
-        selectedMeeting.getMeetingsTimeslotManaged().load(new TimeslotsGetCallback());
+    private void getMeetingTimeslots(){
+        selectedMeeting.getMeetingsTimeslotManaged().load(new getMeetingTimeslotsCallback());
     }
 
-    private class TimeslotsGetCallback implements CallOnHttpError<ModelList<MeetingTimeslot>>, CallOnNext<ModelList<MeetingTimeslot>>, CallOnNoHttpError<ModelList<MeetingTimeslot>> {
+    private class getMeetingTimeslotsCallback implements CallOnHttpError<ModelList<MeetingTimeslot>>, CallOnNext<ModelList<MeetingTimeslot>>, CallOnNoHttpError<ModelList<MeetingTimeslot>> {
         @Override
         public void onHttpError(HttpException e) {
 
@@ -668,12 +628,12 @@ public class AddMeeting extends AppCompatActivity {
                     parsedTwo = sdf.parse(meetingTimeslot.getTimeEnd());
                     calendar_one.setTime(parsedOne);
                     calendar_two.setTime(parsedTwo);
-                    composedEvents.add(new CustomWeekEvent(Integer.parseInt(meetingTimeslot.getId()),"", calendar_one,calendar_two ,false,false));
-                    mWeekView.notifyDatasetChanged();
+                    composedEvents.add(new CustomWeekEvent(Integer.parseInt(meetingTimeslot.getId()), "", calendar_one, calendar_two, false, false));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
+            mWeekView.notifyDatasetChanged();
         }
 
         @Override
@@ -690,6 +650,7 @@ public class AddMeeting extends AppCompatActivity {
 
         @Override
         public void onNext(Meeting meeting) {
+            progressDialog.dismiss();
             Intent intent = new Intent(AddMeeting.this, DashboardActivity.class);
             startActivity(intent);
         }
@@ -698,29 +659,6 @@ public class AddMeeting extends AppCompatActivity {
         public void onNoHttpError(NoHttpException e) {
 
         }
-    }
-
-    private void createDialog(){
-        AlertDialog.Builder alertDialogB = new AlertDialog.Builder(this);
-        alertDialogB.setTitle("Delete Meeting");
-        alertDialogB.setMessage("Are you sure you want to delete this meeting?");
-        alertDialogB.setNegativeButton("ABORT", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        alertDialogB.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                selectedMeeting.delete(new DeleteMeetingCallback());
-            }
-        });
-        alertDialogB.show();
-    }
-    private void createLoadingDialog(){
-        ProgressDialog progress = ProgressDialog.show(this, "",
-                "Saving changes", true);
     }
 
     private class DeleteTimeslotCallback implements CallOnHttpError<MeetingTimeslot>, CallOnNext<MeetingTimeslot>, CallOnNoHttpError<MeetingTimeslot> {
@@ -740,7 +678,8 @@ public class AddMeeting extends AppCompatActivity {
         @Override
         public void onNext(MeetingTimeslot timeslot) {
             if(index == total){
-                sendEvents(id);
+                progressDialog.dismiss();
+                startActivity(new Intent( AddMeeting.this,DashboardActivity.class));
             }
         }
 

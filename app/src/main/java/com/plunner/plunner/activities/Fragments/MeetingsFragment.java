@@ -115,6 +115,7 @@ public class MeetingsFragment extends Fragment {
 
         if(isMeetingManaged){
             intent = new Intent(getActivity(), AddMeeting.class);
+            intent.putExtra("dummy_extra","");
         }
         else{
             intent = new Intent(getActivity(), MeetingDetailActivity.class);
@@ -283,6 +284,7 @@ public class MeetingsFragment extends Fragment {
                 currentGroup = groupList.get(i);
                 currentGroup.getMeetingsManaged().load(new MeetingsManagedCallabck());
             }
+
         }
 
         @Override
@@ -298,8 +300,16 @@ public class MeetingsFragment extends Fragment {
 
             @Override
             public void onNext(ModelList<com.plunner.plunner.models.models.employee.planner.Meeting> meetingsList) {
-                ((List<com.plunner.plunner.models.models.employee.planner.Meeting>) mMeetings).addAll(meetingsList.getModels());
-                notifyContentChange();
+
+                mMeetings = meetingsList.getModels();
+                if(mode == 3){
+                    notifyContentChange();
+                }
+                if(swipeRefreshLayout.isRefreshing()){
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+
             }
 
             @Override

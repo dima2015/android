@@ -44,7 +44,7 @@
     <string name="schedules_imported">imported </string>
     <string name="menu_refresh">Refresh meetings</string>
 
-    <string name="title_activity_meeting_detail">meeting_detail</string>
+    <string name="title_activity_meeting_detail">Meeting detail</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title">Title</string>
@@ -55,4 +55,6 @@
     <string name="p_timeslots">Possible timeslots</string>
     <string name="group">Group</string>
     <string name="your_settings">Your settings</string>
+    <string name="send">Send</string>
+    <string name="delete">Delete</string>
 </resources>
