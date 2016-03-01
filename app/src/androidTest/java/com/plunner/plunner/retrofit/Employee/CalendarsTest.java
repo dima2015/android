@@ -4,7 +4,7 @@ import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Caldav;
 import com.plunner.plunner.models.models.employee.Calendar;
 import com.plunner.plunner.models.models.employee.Employee;
-import com.plunner.plunner.models.models.employee.utility.LoadResource;
+import com.plunner.plunner.models.models.employee.utils.LoadResource;
 import com.plunner.plunner.retrofit.RetrofitTest;
 
 import java.util.List;

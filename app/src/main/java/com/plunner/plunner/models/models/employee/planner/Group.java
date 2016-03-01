@@ -5,7 +5,7 @@ import com.plunner.plunner.models.adapters.Retrofit;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.models.ModelException;
 import com.plunner.plunner.models.models.ModelList;
-import com.plunner.plunner.models.models.employee.utility.LoadResource;
+import com.plunner.plunner.models.models.employee.utils.LoadResource;
 
 import java.util.List;
 
