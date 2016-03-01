@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by claudio on 25/02/16.
  */
-public class Timeslots extends RetrofitTest {
+public class MeetingTimeslots extends RetrofitTest {
     public void testGet() throws Exception {
         setResponse("{\"id\":\"34\",\"name\":\"testEmp\",\"email\":\"testEmp@test.com\",\"company_id\":\"11\",\"created_at\":\"2015-12-30 21:31:43\",\"updated_at\":\"2015-12-30 21:31:43\",\"is_planner\":true}");
         Execution<Planner> executionE = new Execution<>();
