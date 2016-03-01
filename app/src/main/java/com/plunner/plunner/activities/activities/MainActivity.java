@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
      * @author Claudio Cardinale <cardi@thecsea.it>
      * @version 1.0.0
      */
+    //TODO calback functions that modify activity data or do some graphic function shoudl be executed in the main thread
     Employee employee = null;
     LoginManager loginManager;
 
