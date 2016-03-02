@@ -28,6 +28,7 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Group;
 import com.plunner.plunner.models.models.employee.Meeting;
+import com.plunner.plunner.models.models.employee.planner.Planner;
 import com.plunner.plunner.utils.ComManager;
 
 import java.util.ArrayList;
@@ -196,15 +197,33 @@ public class MeetingsFragment extends Fragment {
 
 
     private void retrieveTBPMeetings() {
-        ComManager.getInstance().retrieveGroups(new tbpMeetingsCallback());
+        if(ComManager.getInstance().getUser().getGroups() == null){
+            ComManager.getInstance().retrieveGroups(new tbpMeetingsCallback());
+        }
+        else{
+            insertTBPMeetings((ModelList<Group>) ComManager.getInstance().getUser().getGroups().getInstance());
+        }
+
     }
 
     private void retrievePMeetings() {
-        ComManager.getInstance().retrievePlannedMeetings(new pMeetingsCallback());
+        if( ComManager.getInstance().getUser().getMeetings() == null){
+            ComManager.getInstance().retrievePlannedMeetings(new pMeetingsCallback());
+        }
+        else{
+            insertPMeetings((ModelList<Meeting>) ComManager.getInstance().getUser().getMeetings().getInstance());
+        }
+
     }
 
     private void retrieveMMeetings() {
-        ComManager.getInstance().retrieveManagedGroups(new mMeetingsCallback());
+        if(((Planner) ComManager.getInstance().getUser()).getGroupsManaged() == null){
+            ComManager.getInstance().retrieveManagedGroups(new mMeetingsCallback());
+        }
+        else{
+            elaborateManagedGroups(((Planner) ComManager.getInstance().getUser()).getGroupsManaged().getInstance());
+        }
+
     }
 
     private void onRefreshCallback() {
@@ -223,9 +242,6 @@ public class MeetingsFragment extends Fragment {
 
     public void initSequence() {
         //mode = 1;
-        if(ComManager.getInstance().getUser().getGroups().getInstance() != null){
-            insertTBPMeetings((ModelList<Group>) ComManager.getInstance().getUser().getGroups().getInstance());
-        }
         retrieveTBPMeetings();
         retrievePMeetings();
         if (ComManager.getInstance().isUserPlanner()) {
@@ -294,13 +310,8 @@ public class MeetingsFragment extends Fragment {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    pMeetings = meetingModelList.getModels();
-                    if (mode == 2) {
-                        notifyContentChange();
-                    }
-                    if (swipeRefreshLayout.isRefreshing()) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
+                    insertPMeetings(meetingModelList);
+
                 }
             });
 
@@ -313,6 +324,29 @@ public class MeetingsFragment extends Fragment {
         }
     }
 
+    private void insertPMeetings(ModelList<Meeting> meetingModelList) {
+        pMeetings = meetingModelList.getModels();
+        if (mode == 2) {
+            notifyContentChange();
+        }
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+    private void elaborateManagedGroups(ModelList<com.plunner.plunner.models.models.employee.planner.Group> groupModelList){
+        List<com.plunner.plunner.models.models.employee.planner.Group> groupList = groupModelList.getModels();
+        com.plunner.plunner.models.models.employee.planner.Group currentGroup;
+        for (int i = 0; i < groupList.size(); i++) {
+            currentGroup = groupList.get(i);
+            if(currentGroup.getMeetingsManaged() == null){
+                currentGroup.getMeetingsManaged().load(new MeetingsManagedCallabck());
+            }
+            else{
+                insertManagedMeetings(currentGroup.getMeetingsManaged().getInstance());
+            }
+
+        }
+    }
     private class mMeetingsCallback implements CallOnHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Group>>, CallOnNext<ModelList<com.plunner.plunner.models.models.employee.planner.Group>>, CallOnNoHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Group>> {
 
         @Override
@@ -342,34 +376,37 @@ public class MeetingsFragment extends Fragment {
 
         }
 
-        private class MeetingsManagedCallabck implements CallOnHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNext<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNoHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>> {
-            @Override
-            public void onHttpError(HttpException e) {
+    }
+    private void insertManagedMeetings(ModelList<com.plunner.plunner.models.models.employee.planner.Meeting> meetingsList){
+        mMeetings = meetingsList.getModels();
+        if (mode == 3) {
+            notifyContentChange();
+        }
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+    private class MeetingsManagedCallabck implements CallOnHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNext<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNoHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>> {
+        @Override
+        public void onHttpError(HttpException e) {
 
-            }
+        }
 
-            @Override
-            public void onNext(final ModelList<com.plunner.plunner.models.models.employee.planner.Meeting> meetingsList) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mMeetings = meetingsList.getModels();
-                        if (mode == 3) {
-                            notifyContentChange();
-                        }
-                        if (swipeRefreshLayout.isRefreshing()) {
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                });
+        @Override
+        public void onNext(final ModelList<com.plunner.plunner.models.models.employee.planner.Meeting> meetingsList) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            });
 
 
-            }
+        }
 
-            @Override
-            public void onNoHttpError(NoHttpException e) {
+        @Override
+        public void onNoHttpError(NoHttpException e) {
 
-            }
         }
     }
 
