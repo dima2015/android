@@ -10,4 +10,6 @@ public class idFactory {
     public static long generate(){
         return reservoir++;
     }
+
+    private idFactory(){}
 }

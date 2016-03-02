@@ -21,19 +21,29 @@ public class TimeslotValidator {
     private TimeslotValidator() {
     }
 
-    public boolean validate(Calendar calendar){
-        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    public boolean validate(Calendar calendar, Calendar todayDate){
+        Calendar today, cloned_today;
+        if(todayDate == null){
+            today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        }
+        else{
+            today = todayDate;
+        }
+        cloned_today = (Calendar) today.clone();
         if(today.after(calendar)){
             return false;
         }
-        else if(today.get(Calendar.WEEK_OF_MONTH) == calendar.get(Calendar.WEEK_OF_MONTH) ){
+        else if(today.get(Calendar.WEEK_OF_YEAR) == calendar.get(Calendar.WEEK_OF_YEAR) ){
             return false;
         }
-        else if(today.get(Calendar.WEEK_OF_MONTH) + 1 == calendar.get(Calendar.WEEK_OF_MONTH)){
-            if(today.get(Calendar.DAY_OF_WEEK) == 1 && calendar.get(Calendar.DAY_OF_WEEK)!=1){
+        else{
+            cloned_today.add(Calendar.WEEK_OF_YEAR,1);
+            if(cloned_today.get(Calendar.WEEK_OF_YEAR) == calendar.get(Calendar.WEEK_OF_YEAR) && today.get(Calendar.DAY_OF_WEEK)==1){
                 return false;
             }
+
+            return true;
         }
-        return true;
+
     }
 }

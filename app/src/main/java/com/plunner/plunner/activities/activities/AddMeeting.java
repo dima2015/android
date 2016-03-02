@@ -413,7 +413,7 @@ public class AddMeeting extends AppCompatActivity {
     }
 
     private void onEmptySpaceClick(Calendar time) {
-        if (TimeslotValidator.getInstance().validate(time)) {
+        if (TimeslotValidator.getInstance().validate(time, null)) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             actionBar.hide();
 
