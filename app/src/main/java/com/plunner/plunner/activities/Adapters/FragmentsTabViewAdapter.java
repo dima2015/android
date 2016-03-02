@@ -1,4 +1,4 @@
-package com.plunner.plunner.activities.Adapters;
+package com.plunner.plunner.activities.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

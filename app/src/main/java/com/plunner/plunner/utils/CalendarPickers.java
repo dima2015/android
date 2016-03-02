@@ -50,7 +50,6 @@ public class CalendarPickers {
      *              the list of related days
      * @return A map that encapsulates the list of the days relative the current or given month and the list
      * all the months with their year within a 1 year period before and after the current month
-     * @see DayMonthStructure
      */
     public List<Calendar> buildMonths(int month) {
         Calendar calendar = Calendar.getInstance();
@@ -59,25 +58,26 @@ public class CalendarPickers {
         int previousYear = currentYear - 1;
         int currentMonth = calendar.get(Calendar.MONTH);
 
-        this.monthsList.clear();
         if(month != -1){
             currentMonth = month;
         }
+        this.monthsList.clear();
         for (int i = currentMonth; i < 12; i++) {
             calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, i);
             calendar.set(Calendar.YEAR, previousYear);
             monthsList.add(calendar);
         }
-        for (int i = 0; i < 11; i++) {
+        for (int i = Calendar.JANUARY; i < 12; i++) {
             calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, i);
             monthsList.add(calendar);
         }
-        for (int i = 0; i <= currentMonth; i++) {
+        for (int i = Calendar.JANUARY; i <= currentMonth; i++) {
             calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, i);
             calendar.set(Calendar.YEAR, nextYear);
+            monthsList.add(calendar);
         }
 
         return monthsList;

@@ -1,18 +1,12 @@
-<resources>>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-    </style>
-
-    <style name="subCategoryButton" parent="@android:style/Widget.Button">
-        <item name="android:stateListAnimator">@null</item>
-        <item name="android:background">@drawable/categorybutton</item>
-        <item name="android:paddingRight">15dp</item>
-        <item name="android:paddingLeft">15dp</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textStyle">bold</item>
-    </style>
+        <style name="subCategoryButton" parent="@android:style/Widget.Button">
+                <item name="android:stateListAnimator">@null</item>
+                <item name="android:background">@drawable/categorybutton</item>
+                <item name="android:paddingRight">15dp</item>
+                <item name="android:paddingLeft">15dp</item>
+                <item name="android:textColor">@color/white</item>
+                <item name="android:textStyle">bold</item>
+        </style>
 </resources>

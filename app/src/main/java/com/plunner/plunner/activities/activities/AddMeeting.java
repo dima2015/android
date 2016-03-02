@@ -31,7 +31,7 @@ import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.Fragments.EventDetailFragment;
+import com.plunner.plunner.activities.fragments.EventDetailFragment;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;

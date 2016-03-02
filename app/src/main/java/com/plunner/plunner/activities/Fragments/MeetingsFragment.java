@@ -1,8 +1,7 @@
-package com.plunner.plunner.activities.Fragments;
+package com.plunner.plunner.activities.fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,7 +17,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.Adapters.MeetingsListAdapter;
+import com.plunner.plunner.activities.adapters.MeetingsListAdapter;
 import com.plunner.plunner.activities.activities.AddMeeting;
 import com.plunner.plunner.activities.activities.MeetingDetailActivity;
 import com.plunner.plunner.models.adapters.HttpException;
@@ -31,7 +30,6 @@ import com.plunner.plunner.models.models.employee.Group;
 import com.plunner.plunner.models.models.employee.Meeting;
 import com.plunner.plunner.utils.ComManager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

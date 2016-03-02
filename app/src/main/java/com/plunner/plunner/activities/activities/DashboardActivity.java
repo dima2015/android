@@ -15,9 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.Adapters.FragmentsTabViewAdapter;
-import com.plunner.plunner.activities.Fragments.MeetingsFragment;
-import com.plunner.plunner.activities.Fragments.SchedulesFragment;
+import com.plunner.plunner.activities.adapters.FragmentsTabViewAdapter;
+import com.plunner.plunner.activities.fragments.MeetingsFragment;
+import com.plunner.plunner.activities.fragments.SchedulesFragment;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;

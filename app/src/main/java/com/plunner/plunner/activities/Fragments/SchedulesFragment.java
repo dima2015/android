@@ -1,8 +1,7 @@
-package com.plunner.plunner.activities.Fragments;
+package com.plunner.plunner.activities.fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,12 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.Adapters.SchedulesListAdapter;
+import com.plunner.plunner.activities.adapters.SchedulesListAdapter;
 import com.plunner.plunner.activities.activities.ComposeScheduleActivity;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;

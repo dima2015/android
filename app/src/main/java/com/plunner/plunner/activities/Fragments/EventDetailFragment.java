@@ -1,4 +1,4 @@
-package com.plunner.plunner.activities.Fragments;
+package com.plunner.plunner.activities.fragments;
 
 
 import android.app.Activity;
@@ -17,7 +17,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.activities.ComposeScheduleActivity;
 import com.plunner.plunner.utils.CustomWeekEvent;
 import com.plunner.plunner.utils.idFactory;
 
