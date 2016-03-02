@@ -1,4 +1,5 @@
 # android
+Build status: [![Build Status](https://travis-ci.org/dima2015/android.svg?branch=master)](https://travis-ci.org/dima2015/android)
 
 # What is it?
 Android restful client for employees users of [https://github.com/dsd-meetme/backend](https://github.com/dsd-meetme/backend)
