@@ -52,3 +52,10 @@ dependencies {
     compile 'com.prolificinteractive:material-calendarview:1.1.0'
     compile 'io.github.yavski:fab-speed-dial:1.0.3'
 }
+
+android {
+
+    lintOptions {
+        abortOnError false
+    }
+}

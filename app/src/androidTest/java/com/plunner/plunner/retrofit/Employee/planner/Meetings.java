@@ -8,7 +8,9 @@ import com.plunner.plunner.models.models.employee.planner.Planner;
 import com.plunner.plunner.models.models.employee.utils.LoadResource;
 import com.plunner.plunner.retrofit.RetrofitTest;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by claudio on 25/02/16.
@@ -70,7 +72,11 @@ public class Meetings extends RetrofitTest {
         assertOK();
         assertUrl("/employees/planners/groups/45/meetings/345/");
         assertMethod("PUT");
-        assertRequestBody("duration=900&description=dsdasdas&title=NewTitle");
+        Map<String, String> body = new HashMap<>();
+        body.put("duration", "900");
+        body.put("description", "dsdasdas");
+        body.put("title", "NewTitle");
+        assertRequestBody(body);
         assertEquals("NewTitle", execution3.getModel().getTitle());
     }
 
@@ -105,7 +111,11 @@ public class Meetings extends RetrofitTest {
         assertOK();
         assertUrl("/employees/planners/groups/45/meetings/");
         assertMethod("POST");
-        assertRequestBody("duration=900&description=dsdasdas&title=NewTitle");
+        Map<String, String> body = new HashMap<>();
+        body.put("duration", "900");
+        body.put("description", "dsdasdas");
+        body.put("title", "NewTitle");
+        assertRequestBody(body);
         assertEquals("NewTitle", execution3.getModel().getTitle());
         assertEquals("400", execution3.getModel().getId());
     }

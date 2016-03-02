@@ -7,7 +7,9 @@ import com.plunner.plunner.models.models.employee.Timeslot;
 import com.plunner.plunner.models.models.employee.utils.LoadResource;
 import com.plunner.plunner.retrofit.RetrofitTest;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by claudio on 22/02/16.
@@ -72,7 +74,10 @@ public class TimeslotTest extends RetrofitTest {
         assertOK();
         assertUrl("/employees/calendars/102/timeslots/304/");
         assertMethod("PUT");
-        assertRequestBody("time_start=1970-11-30%2004%3A13%3A00&time_end=1972-03-18%2007%3A23%3A42");
+        Map<String, String> body = new HashMap<>();
+        body.put("time_start", "1970-11-30%2004%3A13%3A00");
+        body.put("time_end", "1972-03-18%2007%3A23%3A42");
+        assertRequestBody(body);
         assertEquals("1970-11-30 04:13:00", execution3.getModel().getTimeStart());
     }
 
@@ -108,7 +113,10 @@ public class TimeslotTest extends RetrofitTest {
         assertOK();
         assertUrl("/employees/calendars/102/timeslots/");
         assertMethod("POST");
-        assertRequestBody("time_start=1970-11-30%2004%3A13%3A00&time_end=1972-03-18%2007%3A23%3A42");
+        Map<String, String> body = new HashMap<>();
+        body.put("time_start", "1970-11-30%2004%3A13%3A00");
+        body.put("time_end", "1972-03-18%2007%3A23%3A42");
+        assertRequestBody(body);
         assertEquals("1970-11-30 04:13:00", execution3.getModel().getTimeStart());
         assertEquals("400", execution3.getModel().getId());
     }
