@@ -7,7 +7,9 @@ import com.plunner.plunner.models.models.employee.Employee;
 import com.plunner.plunner.models.models.employee.utils.LoadResource;
 import com.plunner.plunner.retrofit.RetrofitTest;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by claudio on 22/02/16.
@@ -58,7 +60,10 @@ public class CalendarsTest extends RetrofitTest {
         assertOK();
         assertUrl("/employees/calendars/102/");
         assertMethod("PUT");
-        assertRequestBody("name=NewName&enabled=0");
+        Map<String, String> body = new HashMap<>();
+        body.put("name", "NewName");
+        body.put("enabled", "0");
+        assertRequestBody(body);
         assertEquals("NewName", execution2.getModel().getName());
     }
 
@@ -85,7 +90,10 @@ public class CalendarsTest extends RetrofitTest {
         assertOK();
         assertUrl("/employees/calendars/");
         assertMethod("POST");
-        assertRequestBody("name=NewName&enabled=0");
+        Map<String, String> body = new HashMap<>();
+        body.put("name", "NewName");
+        body.put("enabled", "0");
+        assertRequestBody(body);
         assertEquals("NewName", execution2.getModel().getName());
         assertEquals("400", execution2.getModel().getId());
     }

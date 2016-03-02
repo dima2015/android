@@ -20,6 +20,8 @@ import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import okio.Buffer;
 
@@ -65,6 +67,41 @@ public class RetrofitTest extends ApplicationTestCase<Application> {
 
     protected void assertRequestBody(String requestBody) {
         assertEquals(requestBody, interceptorClient.getRequestBody());
+    }
+
+    protected void assertRequestBody(Map<String, String> data) {
+        Map<String, String> body = new HashMap<>();
+        for (String element : interceptorClient.getRequestBody().split("&")) {
+            String[] tmp = element.split("=");
+            body.put(tmp[0], tmp[1]);
+        }
+        assertBothMapsEquals(data, body);
+    }
+
+    /**
+     * this check isn based on both maps
+     *
+     * @param map1
+     * @param map2
+     * @return
+     */
+    private void assertBothMapsEquals(Map<String, String> map1, Map<String, String> map2) {
+        assertFirstMapsEquals(map1, map2);
+        assertFirstMapsEquals(map2, map1);
+    }
+
+    /**
+     * this check is based only on the first map (list only it)
+     *
+     * @param map1
+     * @param map2
+     * @return
+     */
+    private void assertFirstMapsEquals(Map<String, String> map1, Map<String, String> map2) {
+        for (Map.Entry<String, String> entry : map1.entrySet()) {
+            assertTrue(map2.containsKey(entry.getKey()));
+            assertEquals(map2.get(entry.getKey()), entry.getValue());
+        }
     }
 
     protected void assertOK() {
