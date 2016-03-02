@@ -28,7 +28,6 @@ public class MeetingDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_meeting);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setElevation(0);
         meetingTitle = (TextView) findViewById(R.id.activity_meeting_detail_meeting_title);
         meetingDesc = (TextView) findViewById(R.id.activity_meeting_detail_meeting_desc);
         meetingDuration = (TextView) findViewById(R.id.activity_meeting_detail_meeting_duration);

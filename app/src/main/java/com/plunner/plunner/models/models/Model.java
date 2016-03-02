@@ -4,13 +4,14 @@ package com.plunner.plunner.models.models;
 import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.Callable;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 
 /**
  * Created by claudio on 19/12/15.
  */
 
-abstract public class Model<S extends Model> {
+abstract public class Model<S extends Model> implements Serializable {
 
     protected Callable<? extends S> callable;
 

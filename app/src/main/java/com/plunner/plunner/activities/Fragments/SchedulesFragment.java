@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -42,12 +44,20 @@ public class SchedulesFragment extends Fragment {
     private ProgressBar loadingSpinner;
     private SchedulesListAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
-    int mode;
+    private boolean showLoadingBar;
+
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState != null){
+            showLoadingBar = true;
+        }
+        else{
+            showLoadingBar = false;
+        }
+        content = new ArrayList<>();
 
     }
 
@@ -85,9 +95,12 @@ public class SchedulesFragment extends Fragment {
                 }
         );
         swipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.colorPrimary, R.color.colorPrimaryDark);
-        content = new ArrayList<>();
+
         adapter = new SchedulesListAdapter(getActivity(), content);
         loadingSpinner = (ProgressBar) getActivity().findViewById(R.id.fragment_schedules_laoding_spinner);
+        if(showLoadingBar){
+            loadingSpinner.setVisibility(View.VISIBLE);
+        }
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -123,26 +136,6 @@ public class SchedulesFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    public void switchSchedulesType(View v) {
-        int tag = Integer.parseInt((String) v.getTag());
-        ViewGroup viewGroup = (ViewGroup) v.getParent();
-        if (tag != mode) {
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                viewGroup.getChildAt(i).setBackgroundResource(R.drawable.categorybutton);
-            }
-            v.setBackgroundResource(R.drawable.categorybutton_c);
-            setMode(tag);
-            notifyContentChange();
-        }
-    }
-
-    public void setMode(int mode) throws IllegalArgumentException {
-        if (mode == 1 || mode == 2) {
-            this.mode = mode;
-        } else {
-            throw new IllegalArgumentException("mode must be either 1 or 2");
-        }
-    }
 
     public void initSequence() {
         //mode = 1;
@@ -160,31 +153,50 @@ public class SchedulesFragment extends Fragment {
         }
 
         @Override
-        public void onNext(ModelList<Calendar> calendarModelList) {
-            List<Calendar> schedulesList = calendarModelList.getModels();
-            //List<Calendar> lImportedSchedules = new ArrayList<>();
-            List<Calendar> lComposedSchedules = new ArrayList<>();
-            Calendar currentSchedule;
-            for (int i = 0; i < schedulesList.size(); i++) {
-                currentSchedule = schedulesList.get(i);
-                if (currentSchedule.getCaldav() == null) {
-                    lComposedSchedules.add(currentSchedule);
-                } else {
-                   // lImportedSchedules.add(currentSchedule);
+        public void onNext(final ModelList<Calendar> calendarModelList) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    insertSchedules(calendarModelList);
                 }
-            }
-            //importedSchedules = lImportedSchedules;
-            composedSchedules = lComposedSchedules;
-            if (swipeRefreshLayout.isRefreshing()) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-            loadingSpinner.setVisibility(View.GONE);
-            notifyContentChange();
+            });
         }
 
         @Override
         public void onNoHttpError(NoHttpException e) {
 
         }
+    }
+
+    private void insertSchedules(ModelList<Calendar> calendarModelList){
+        List<Calendar> schedulesList = calendarModelList.getModels();
+        //List<Calendar> lImportedSchedules = new ArrayList<>();
+        List<Calendar> lComposedSchedules = new ArrayList<>();
+        Calendar currentSchedule;
+        for (int i = 0; i < schedulesList.size(); i++) {
+            currentSchedule = schedulesList.get(i);
+            if (currentSchedule.getCaldav() == null) {
+                lComposedSchedules.add(currentSchedule);
+            } else {
+                // lImportedSchedules.add(currentSchedule);
+            }
+        }
+        //importedSchedules = lImportedSchedules;
+        composedSchedules = lComposedSchedules;
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+        loadingSpinner.setVisibility(View.GONE);
+        notifyContentChange();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedState) {
+
+        super.onSaveInstanceState(savedState);
+
+        // Note: getValues() is a method in your ArrayAdapter subclass
+        savedState.putInt("mode", 0);
+
     }
 }

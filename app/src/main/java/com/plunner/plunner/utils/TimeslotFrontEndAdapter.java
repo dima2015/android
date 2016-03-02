@@ -27,14 +27,14 @@ public class TimeslotFrontEndAdapter {
     private TimeslotFrontEndAdapter() {
     }
 
-    public Map<String, Calendar> adapt(Timeslot timeslot) throws ParseException {
+    public Map<String, Calendar> adapt(String startDate, String endDate) throws ParseException {
         Date parsedOne, parsedTwo;
         Map<String, Calendar> toReturn = new HashMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
         Calendar calendar_one = java.util.Calendar.getInstance();
         Calendar calendar_two = (java.util.Calendar) calendar_one.clone();
-        parsedOne = sdf.parse(timeslot.getTimeStart());
-        parsedTwo = sdf.parse(timeslot.getTimeEnd());
+        parsedOne = sdf.parse(startDate);
+        parsedTwo = sdf.parse(endDate);
         calendar_one.setTime(parsedOne);
         calendar_two.setTime(parsedTwo);
         toReturn.put("startTime", calendar_one);

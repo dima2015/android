@@ -2,11 +2,14 @@ package com.plunner.plunner.activities.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +33,7 @@ import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 /**
  * CODE REVISED, NEED DOCUMENT
  */
-public class DashboardActivity extends AppCompatActivity{
+public class DashboardActivity extends AppCompatActivity {
 
 
     private MeetingsFragment meetingsFragment;
@@ -45,12 +48,13 @@ public class DashboardActivity extends AppCompatActivity{
         //Action bar setting
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Log.w("2","I'm started");
         //Fab setting
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.dashboard_activity_fab);
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
-                switch (menuItem.getItemId()){
+                switch (menuItem.getItemId()) {
                     case R.id.dashboard_activity_fab_add_meeting:
                         switchToAddMeetingActivity();
                         return true;
@@ -61,14 +65,14 @@ public class DashboardActivity extends AppCompatActivity{
                         return super.onMenuItemSelected(menuItem);
                 }
             }
+
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                try{
-                    if(!comManager.isUserPlanner()){
+                try {
+                    if (!comManager.isUserPlanner()) {
                         navigationMenu.removeItem(R.id.dashboard_activity_fab_add_meeting);
                     }
-                }
-                catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     navigationMenu.removeItem(R.id.dashboard_activity_fab_add_meeting);
                 }
                 return true;
@@ -100,6 +104,7 @@ public class DashboardActivity extends AppCompatActivity{
         viewPager.setAdapter(fragmentsTabViewAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -110,7 +115,7 @@ public class DashboardActivity extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_dashboard_activity_user) {
             switchToUserProfileActivity();
@@ -120,26 +125,35 @@ public class DashboardActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    private void switchToUserProfileActivity() {
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.w("1", "I'm resumed");
+        if(ComManager.getInstance().getUser() != null){
+
+        }
+
     }
 
-    private void switchToAddMeetingActivity(){
+    private void switchToUserProfileActivity() {
+        startActivity(new Intent(this, UserSettingsActivity.class));
+    }
+
+    private void switchToAddMeetingActivity() {
         Intent intent = new Intent(this, AddMeeting.class);
         startActivity(intent);
     }
+
     private void switchToScopedAddActivity() {
         Intent intent = new Intent(this, ComposeScheduleActivity.class);
         startActivity(intent);
     }
-    
+
 
     public void switchMeetingsType(View v) {
         meetingsFragment.switchMeetingsType(v);
     }
 
-    public void switchSchedulesType(View v) {
-        schedulesFragment.switchSchedulesType(v);
-    }
 
     private class retrieveUserCallaback implements CallOnHttpError<Employee>, CallOnNext<Employee>, CallOnNoHttpError<Employee> {
         @Override
@@ -148,10 +162,16 @@ public class DashboardActivity extends AppCompatActivity{
         }
 
         @Override
-        public void onNext(Employee employee) {
-            comManager.setUser(employee);
-            meetingsFragment.initSequence();
-            schedulesFragment.initSequence();
+        public void onNext(final Employee employee) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    comManager.setUser(employee);
+                    meetingsFragment.initSequence();
+                    schedulesFragment.initSequence();
+                }
+            });
+
         }
 
         @Override
@@ -159,6 +179,5 @@ public class DashboardActivity extends AppCompatActivity{
 
         }
     }
-
 
 }

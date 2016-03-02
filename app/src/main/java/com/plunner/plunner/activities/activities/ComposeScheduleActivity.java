@@ -200,8 +200,14 @@ public class ComposeScheduleActivity extends AppCompatActivity {
     private void setWeekView() {
         mWeekView.setOnEventClickListener(new WeekView.EventClickListener() {
             @Override
-            public void onEventClick(WeekViewEvent event, RectF eventRect) {
-                onEventClickM(event);
+            public void onEventClick(final WeekViewEvent event, RectF eventRect) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onEventClickM(event);
+                    }
+                });
+
             }
         });
         mWeekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
@@ -213,14 +219,26 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         });
         mWeekView.setEmptyViewClickListener(new WeekView.EmptyViewClickListener() {
             @Override
-            public void onEmptyViewClicked(Calendar time) {
-                onEmptySpaceClick(time);
+            public void onEmptyViewClicked(final Calendar time) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onEmptySpaceClick(time);
+                    }
+                });
+
             }
         });
         mWeekView.setScrollListener(new WeekView.ScrollListener() {
             @Override
-            public void onFirstVisibleDayChanged(Calendar newFirstVisibleDay, Calendar oldFirstVisibleDay) {
-                calendarPickersViewSupport.scrollDayScroll(newFirstVisibleDay, oldFirstVisibleDay);
+            public void onFirstVisibleDayChanged(final Calendar newFirstVisibleDay, final Calendar oldFirstVisibleDay) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        calendarPickersViewSupport.scrollDayScroll(newFirstVisibleDay, oldFirstVisibleDay);
+                    }
+                });
+
             }
         });
         mWeekView.setDateTimeInterpreter(new DateTimeInterpreter() {
@@ -426,7 +444,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
             timeslot = timeslots.get(i);
             fromIdToTimeslot.put(timeslot.getId(), timeslot);
             try {
-                adaptedEvent = TimeslotFrontEndAdapter.getInstance().adapt(timeslot);
+                adaptedEvent = TimeslotFrontEndAdapter.getInstance().adapt(timeslot.getTimeStart(), timeslot.getTimeEnd());
                 tmpList.add(new CustomWeekEvent(Integer.parseInt(timeslot.getId()), "", adaptedEvent.get("startTime"), adaptedEvent.get("endTime"), false, false));
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -587,9 +605,15 @@ public class ComposeScheduleActivity extends AppCompatActivity {
 
         @Override
         public void onNext(Timeslot timeslot) {
-            if (index == tot) {
-                deleteTimeslots();
-            }
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    if (index == tot) {
+                        deleteTimeslots();
+                    }
+                }
+            });
+
         }
 
         @Override
@@ -623,10 +647,16 @@ public class ComposeScheduleActivity extends AppCompatActivity {
 
         @Override
         public void onNext(Timeslot timeslot) {
-            if (index == tot) {
-                progressDialog.dismiss();
-                startActivity(new Intent(ComposeScheduleActivity.this, DashboardActivity.class));
-            }
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    if (index == tot) {
+                        progressDialog.dismiss();
+                        startActivity(new Intent(ComposeScheduleActivity.this, DashboardActivity.class));
+                    }
+                }
+            });
+
         }
 
         @Override
@@ -643,8 +673,14 @@ public class ComposeScheduleActivity extends AppCompatActivity {
 
         @Override
         public void onNext(com.plunner.plunner.models.models.employee.Calendar calendar) {
-            progressDialog.dismiss();
-            startActivity(new Intent(ComposeScheduleActivity.this,DashboardActivity.class));
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    progressDialog.dismiss();
+                    startActivity(new Intent(ComposeScheduleActivity.this, DashboardActivity.class));
+                }
+            });
+
         }
 
         @Override

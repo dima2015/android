@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,7 @@ import com.plunner.plunner.models.models.employee.Group;
 import com.plunner.plunner.models.models.employee.Meeting;
 import com.plunner.plunner.utils.ComManager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,12 +47,21 @@ public class MeetingsFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout scrollView;
     private int mode;
+    private boolean showLoadBar;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (savedInstanceState != null) {
+            mode = savedInstanceState.getInt("mode");
+            showLoadBar = true;
+        } else {
+            mode = 1;
+            showLoadBar = false;
+        }
+        mMeetings = new ArrayList<>();
+        content = new ArrayList<>();
     }
 
     @Override
@@ -57,21 +70,29 @@ public class MeetingsFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_meetings, container, false);
     }
+
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         ListView listView = (ListView) getActivity().findViewById(R.id.fragment_meetings_meetings_list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                meetingClickedCallback(position);
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        meetingClickedCallback(position);
+                    }
+                });
+
             }
         });
         scrollView = (LinearLayout) getActivity().findViewById(R.id.fragment_meetings_top_menu);
         loadingSpinner = (ProgressBar) getActivity().findViewById(R.id.fragment_meetings_loading_spinner);
-        scrollView.getChildAt(0).setBackgroundResource(R.drawable.categorybutton_c);
-        mMeetings = new ArrayList<>();
-        content = new ArrayList<>();
+        scrollView.getChildAt(mode - 1).setBackgroundResource(R.drawable.categorybutton_c);
+        if (showLoadBar) {
+            loadingSpinner.setVisibility(View.VISIBLE);
+        }
         adapter = new MeetingsListAdapter(getActivity(), content);
         swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.fragment_meetings_refresh_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.colorPrimary, R.color.colorPrimaryDark);
@@ -92,7 +113,7 @@ public class MeetingsFragment extends Fragment {
         Meeting selectedMeeting;
         Intent intent;
 
-        switch (mode){
+        switch (mode) {
             case 1:
                 selectedMeeting = tbpMeetings.get(position);
                 isMeetingManaged = false;
@@ -113,11 +134,10 @@ public class MeetingsFragment extends Fragment {
 
         ComManager.getInstance().setExchangeMeeting(selectedMeeting);
 
-        if(isMeetingManaged){
+        if (isMeetingManaged) {
             intent = new Intent(getActivity(), AddMeeting.class);
-            intent.putExtra("dummy_extra","");
-        }
-        else{
+            intent.putExtra("dummy_extra", "");
+        } else {
             intent = new Intent(getActivity(), MeetingDetailActivity.class);
         }
         startActivity(intent);
@@ -140,15 +160,16 @@ public class MeetingsFragment extends Fragment {
         super.onDetach();
         //mListener = null;
     }
+
     @Override
-    public void onActivityCreated(Bundle savedInstanceState){
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
     }
 
-    public void notifyContentChange(){
+    public void notifyContentChange() {
         content.clear();
-        switch (mode){
+        switch (mode) {
             case 1:
                 content.addAll(tbpMeetings);
                 break;
@@ -162,11 +183,11 @@ public class MeetingsFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    public void switchMeetingsType(View v){
-        int tag =  Integer.parseInt((String) v.getTag());
+    public void switchMeetingsType(View v) {
+        int tag = Integer.parseInt((String) v.getTag());
         ViewGroup viewGroup = (ViewGroup) v.getParent();
-        if(tag != mode ){
-            for(int i=0; i<viewGroup.getChildCount(); i++){
+        if (tag != mode) {
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 viewGroup.getChildAt(i).setBackgroundResource(R.drawable.categorybutton);
             }
             v.setBackgroundResource(R.drawable.categorybutton_c);
@@ -176,17 +197,20 @@ public class MeetingsFragment extends Fragment {
     }
 
 
-    private void retrieveTBPMeetings(){
+    private void retrieveTBPMeetings() {
         ComManager.getInstance().retrieveGroups(new tbpMeetingsCallback());
     }
-    private void retrievePMeetings(){
+
+    private void retrievePMeetings() {
         ComManager.getInstance().retrievePlannedMeetings(new pMeetingsCallback());
     }
-    private void retrieveMMeetings(){
+
+    private void retrieveMMeetings() {
         ComManager.getInstance().retrieveManagedGroups(new mMeetingsCallback());
     }
-    private void onRefreshCallback(){
-        switch (mode){
+
+    private void onRefreshCallback() {
+        switch (mode) {
             case 1:
                 retrieveTBPMeetings();
                 break;
@@ -198,16 +222,21 @@ public class MeetingsFragment extends Fragment {
                 break;
         }
     }
-    public void initSequence(){
-        mode = 1;
+
+    public void initSequence() {
+        //mode = 1;
+        if(ComManager.getInstance().getUser().getGroups().getInstance() != null){
+            insertTBPMeetings((ModelList<Group>) ComManager.getInstance().getUser().getGroups().getInstance());
+        }
         retrieveTBPMeetings();
         retrievePMeetings();
-        if(ComManager.getInstance().isUserPlanner()){
+        if (ComManager.getInstance().isUserPlanner()) {
             scrollView.getChildAt(2).setVisibility(View.VISIBLE);
             retrieveMMeetings();
         }
     }
-    private class tbpMeetingsCallback implements  CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
+
+    private class tbpMeetingsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
 
         @Override
         public void onHttpError(HttpException e) {
@@ -215,29 +244,13 @@ public class MeetingsFragment extends Fragment {
         }
 
         @Override
-        public void onNext(ModelList<Group> groupModelList) {
-            List<Group> groupList = groupModelList.getModels();
-            List<Meeting> meetingList = new ArrayList<>();
-            Meeting currentMeeting;
-            Group currentGroup;
-            List<Meeting> currentMeetings;
-            for (int i = 0; i < groupList.size(); i++) {
-                currentGroup = groupList.get(i);
-                currentMeetings = currentGroup.getMeetings();
-                for(int j=0; j<currentMeetings.size(); j++){
-                    currentMeeting = currentMeetings.get(j);
-                    currentMeeting.setGroupName(currentGroup.getName());
-                    meetingList.add(currentMeeting);
+        public void onNext(final ModelList<Group> groupModelList) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    insertTBPMeetings(groupModelList);
                 }
-            }
-            tbpMeetings = meetingList;
-            if(mode == 1){
-                notifyContentChange();
-            }
-            if(swipeRefreshLayout.isRefreshing()){
-                swipeRefreshLayout.setRefreshing(false);
-            }
-            loadingSpinner.setVisibility(View.GONE);
+            });
         }
 
         @Override
@@ -245,7 +258,33 @@ public class MeetingsFragment extends Fragment {
 
         }
     }
-    private class pMeetingsCallback implements  CallOnHttpError<ModelList<Meeting>>, CallOnNext<ModelList<Meeting>>, CallOnNoHttpError<ModelList<Meeting>> {
+
+    private void insertTBPMeetings(ModelList<Group> groupModelList) {
+        List<Group> groupList = groupModelList.getModels();
+        List<Meeting> meetingList = new ArrayList<>();
+        Meeting currentMeeting;
+        Group currentGroup;
+        List<Meeting> currentMeetings;
+        for (int i = 0; i < groupList.size(); i++) {
+            currentGroup = groupList.get(i);
+            currentMeetings = currentGroup.getMeetings();
+            for (int j = 0; j < currentMeetings.size(); j++) {
+                currentMeeting = currentMeetings.get(j);
+                currentMeeting.setGroupName(currentGroup.getName());
+                meetingList.add(currentMeeting);
+            }
+        }
+        tbpMeetings = meetingList;
+        if (mode == 1) {
+            notifyContentChange();
+        }
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+        loadingSpinner.setVisibility(View.GONE);
+    }
+
+    private class pMeetingsCallback implements CallOnHttpError<ModelList<Meeting>>, CallOnNext<ModelList<Meeting>>, CallOnNoHttpError<ModelList<Meeting>> {
 
         @Override
         public void onHttpError(HttpException e) {
@@ -253,14 +292,20 @@ public class MeetingsFragment extends Fragment {
         }
 
         @Override
-        public void onNext(ModelList<Meeting> meetingModelList) {
-            pMeetings = meetingModelList.getModels();
-            if(mode == 2){
-                notifyContentChange();
-            }
-            if(swipeRefreshLayout.isRefreshing()){
-                swipeRefreshLayout.setRefreshing(false);
-            }
+        public void onNext(final ModelList<Meeting> meetingModelList) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    pMeetings = meetingModelList.getModels();
+                    if (mode == 2) {
+                        notifyContentChange();
+                    }
+                    if (swipeRefreshLayout.isRefreshing()) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }
+            });
+
 
         }
 
@@ -269,6 +314,7 @@ public class MeetingsFragment extends Fragment {
 
         }
     }
+
     private class mMeetingsCallback implements CallOnHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Group>>, CallOnNext<ModelList<com.plunner.plunner.models.models.employee.planner.Group>>, CallOnNoHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Group>> {
 
         @Override
@@ -277,13 +323,19 @@ public class MeetingsFragment extends Fragment {
         }
 
         @Override
-        public void onNext(ModelList<com.plunner.plunner.models.models.employee.planner.Group> groupModelList) {
-            List<com.plunner.plunner.models.models.employee.planner.Group> groupList = groupModelList.getModels();
-            com.plunner.plunner.models.models.employee.planner.Group currentGroup;
-            for (int i = 0; i < groupList.size(); i++) {
-                currentGroup = groupList.get(i);
-                currentGroup.getMeetingsManaged().load(new MeetingsManagedCallabck());
-            }
+        public void onNext(final ModelList<com.plunner.plunner.models.models.employee.planner.Group> groupModelList) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    List<com.plunner.plunner.models.models.employee.planner.Group> groupList = groupModelList.getModels();
+                    com.plunner.plunner.models.models.employee.planner.Group currentGroup;
+                    for (int i = 0; i < groupList.size(); i++) {
+                        currentGroup = groupList.get(i);
+                        currentGroup.getMeetingsManaged().load(new MeetingsManagedCallabck());
+                    }
+                }
+            });
+
 
         }
 
@@ -292,22 +344,26 @@ public class MeetingsFragment extends Fragment {
 
         }
 
-        private class MeetingsManagedCallabck implements CallOnHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNext<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNoHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>   {
+        private class MeetingsManagedCallabck implements CallOnHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNext<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNoHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>> {
             @Override
             public void onHttpError(HttpException e) {
 
             }
 
             @Override
-            public void onNext(ModelList<com.plunner.plunner.models.models.employee.planner.Meeting> meetingsList) {
-
-                mMeetings = meetingsList.getModels();
-                if(mode == 3){
-                    notifyContentChange();
-                }
-                if(swipeRefreshLayout.isRefreshing()){
-                    swipeRefreshLayout.setRefreshing(false);
-                }
+            public void onNext(final ModelList<com.plunner.plunner.models.models.employee.planner.Meeting> meetingsList) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMeetings = meetingsList.getModels();
+                        if (mode == 3) {
+                            notifyContentChange();
+                        }
+                        if (swipeRefreshLayout.isRefreshing()) {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    }
+                });
 
 
             }
@@ -317,5 +373,21 @@ public class MeetingsFragment extends Fragment {
 
             }
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedState) {
+
+        super.onSaveInstanceState(savedState);
+
+        // Note: getValues() is a method in your ArrayAdapter subclass
+        savedState.putInt("mode", mode);
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.w("12","Fragment resumed");
     }
 }

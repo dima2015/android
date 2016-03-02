@@ -34,10 +34,8 @@
         <activity
             android:name=".activities.activities.DashboardActivity"
             android:label="@string/title_activity_dashboard"
-            android:theme="@style/AppTheme.NoActionBar"
-            >
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -72,6 +70,10 @@
             android:label="Add meeting"
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/CustomTheme" />
+        <activity android:name=".activities.activities.UserSettingsActivity"
+            android:label="Your settings"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".activities.activities.DashboardActivity"/>
     </application>
 
 </manifest>
