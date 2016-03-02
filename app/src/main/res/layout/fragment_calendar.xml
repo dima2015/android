@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.plunner.plunner.activities.Fragments.CalendarFragment"
+    tools:context="com.plunner.plunner.activities.fragments.CalendarFragment"
     android:background="@android:color/white"
     android:id="@+id/calendarFragment">
 

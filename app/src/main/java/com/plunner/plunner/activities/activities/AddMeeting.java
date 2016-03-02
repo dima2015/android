@@ -31,7 +31,7 @@ import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.Fragments.EventDetailFragment;
+import com.plunner.plunner.activities.fragments.EventDetailFragment;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
@@ -202,7 +202,13 @@ public class AddMeeting extends AppCompatActivity {
 
     private void retrieveGroups() {
         Planner planner = (Planner) ComManager.getInstance().getUser();
-        planner.getGroupsManaged().load(new ManagedGroupsCallback());
+        if(planner.getGroupsManaged() == null){
+            planner.getGroupsManaged().load(new ManagedGroupsCallback());
+        }
+        else{
+            insertGroups(planner.getGroupsManaged().getInstance());
+        }
+
     }
 
     private void sendData() {
@@ -413,7 +419,7 @@ public class AddMeeting extends AppCompatActivity {
     }
 
     private void onEmptySpaceClick(Calendar time) {
-        if (TimeslotValidator.getInstance().validate(time)) {
+        if (TimeslotValidator.getInstance().validate(time, null)) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             actionBar.hide();
 
@@ -647,13 +653,19 @@ public class AddMeeting extends AppCompatActivity {
         meetingTitle.setText(selectedMeeting.getTitle());
         meetingDesc.setText(selectedMeeting.getDescription());
         int duration = Integer.parseInt(selectedMeeting.getDuration());
-        meetingDuration.setText(Integer.toString(duration / 60));
+        meetingDuration.setText((duration / 60));
         seekBar.setProgress(duration / 60 - 15);
         getMeetingTimeslots();
     }
 
     private void getMeetingTimeslots() {
-        selectedMeeting.getMeetingsTimeslotManaged().load(new getMeetingTimeslotsCallback());
+        if(selectedMeeting.getMeetingsTimeslotManaged() == null){
+            selectedMeeting.getMeetingsTimeslotManaged().load(new getMeetingTimeslotsCallback());
+        }
+        else{
+            insertTimeslots(selectedMeeting.getMeetingsTimeslotManaged().getInstance());
+        }
+
     }
 
     private class getMeetingTimeslotsCallback implements CallOnHttpError<ModelList<MeetingTimeslot>>, CallOnNext<ModelList<MeetingTimeslot>>, CallOnNoHttpError<ModelList<MeetingTimeslot>> {

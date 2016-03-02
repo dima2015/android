@@ -1,4 +1,4 @@
-package com.plunner.plunner.activities.Adapters;
+package com.plunner.plunner.activities.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

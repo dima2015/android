@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -29,10 +30,9 @@ import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.Fragments.EventDetailFragment;
+import com.plunner.plunner.activities.fragments.EventDetailFragment;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
-import com.plunner.plunner.models.adapters.Subscriber;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
@@ -64,8 +64,9 @@ public class ComposeScheduleActivity extends AppCompatActivity {
      */
     private WeekView mWeekView;
     private ActionBar actionBar;
-    private EditText scheduleNameInput;
+    private EditText scheduleName;
     private TextView scheduleStatus;
+    private TextView scheduleNameError;
     /**
      * Maps month buttons to {@link Calendar} instancies
      */
@@ -103,7 +104,8 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         calendarPickersViewSupport.setActivity(this);
         calendarPickersViewSupport.setDaysPicker((LinearLayout) findViewById(R.id.days_picker));
         calendarPickersViewSupport.setMonthsPicker((LinearLayout) findViewById(R.id.months_picker));
-        scheduleNameInput = (EditText) findViewById(R.id.compose_schedule_schedule_name);
+        scheduleName = (EditText) findViewById(R.id.compose_schedule_schedule_name);
+        scheduleNameError = (TextView) findViewById(R.id.compose_schedule_schedule_name_error);
         mWeekView = (WeekView) findViewById(R.id.weekView);
 
         enabledSwitch = (Switch) findViewById(R.id.compose_schedule_enabled_switch);
@@ -127,7 +129,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         fromIdToTimeslot = new HashMap<>();
         if (editMode) {
             exchangedSchedule = ComManager.getInstance().getExchangeSchedule();
-            scheduleNameInput.setText(exchangedSchedule.getName());
+            scheduleName.setText(exchangedSchedule.getName());
             setTitle(getResources().getText(R.string.edit_schedule));
             if (exchangedSchedule.getEnabled().equals("0")) {
                 enabledSwitch.setChecked(false);
@@ -260,7 +262,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
      * @param v The pressed dayBtn
      */
     public void changeDay(View v) {
-        scheduleNameInput.clearFocus();
+        scheduleName.clearFocus();
         Calendar associatedDate = calendarPickersViewSupport.changeDay(v);
         mWeekView.goToDate(associatedDate);
     }
@@ -274,7 +276,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
      * @see #mWeekView
      */
     public void changeMonth(View v) {
-        scheduleNameInput.clearFocus();
+        scheduleName.clearFocus();
         Calendar associatedDate = calendarPickersViewSupport.changeMonth(v);
         mWeekView.goToDate(associatedDate);
     }
@@ -286,7 +288,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
      */
     private void onEnabledSwitchStatusChange(boolean isChecked) {
         //Resets the focus on the editext relative to the name of the schedule
-        scheduleNameInput.clearFocus();
+        scheduleName.clearFocus();
         if (isChecked) {
             scheduleStatus.setText(getResources().getText(R.string.enabled));
             scheduleStatus.setTextColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
@@ -454,25 +456,49 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         composedEvents.addAll(tmpList);
         mWeekView.notifyDatasetChanged();
     }
-
-    private void sendData() {
-        com.plunner.plunner.models.models.employee.Calendar schedule;
-        if (!editMode) {
-            progressDialog = ProgressDialog.show(this,"","Adding schedule",true);
-            schedule = new com.plunner.plunner.models.models.employee.Calendar();
-        } else {
-            schedule = exchangedSchedule;
-            progressDialog = ProgressDialog.show(this,"","Saving changes", true);
-        }
-        schedule.setName(scheduleNameInput.getText().toString());
-        if(enabledSwitch.isChecked()){
-            schedule.setEnabled("1");
+    private boolean validate(){
+        boolean errorName, errorTimeslots = false;
+        if(scheduleName.getText().toString().equals("")){
+            errorName = true;
+            scheduleNameError.setVisibility(View.VISIBLE);
         }
         else{
-            schedule.setEnabled("0");
+            errorName = false;
+            scheduleNameError.setVisibility(View.GONE);
         }
+        if(composedEvents.size() == 0){
+            errorTimeslots = true;
+            makeSnackBar("Please insert at least one busy timeslot");
+        }
+        return !(errorName && errorTimeslots);
+    }
 
-        schedule.save(new SaveScheduleCallback());
+    private void makeSnackBar(String message){
+        Snackbar snackbar;
+        snackbar = Snackbar.make(findViewById(R.id.compose_schedule_root), message, Snackbar.LENGTH_LONG);
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+        snackbar.show();
+    }
+    private void sendData() {
+        com.plunner.plunner.models.models.employee.Calendar schedule;
+        if(validate()){
+            if (!editMode) {
+                progressDialog = ProgressDialog.show(this,"","Adding schedule",true);
+                schedule = new com.plunner.plunner.models.models.employee.Calendar();
+            } else {
+                schedule = exchangedSchedule;
+                progressDialog = ProgressDialog.show(this,"","Saving changes", true);
+            }
+            schedule.setName(scheduleName.getText().toString());
+            if(enabledSwitch.isChecked()){
+                schedule.setEnabled("1");
+            }
+            else{
+                schedule.setEnabled("0");
+            }
+
+            schedule.save(new SaveScheduleCallback());
+        }
     }
 
     private class SaveScheduleCallback implements CallOnHttpError<com.plunner.plunner.models.models.employee.Calendar>, CallOnNext<com.plunner.plunner.models.models.employee.Calendar>, CallOnNoHttpError<com.plunner.plunner.models.models.employee.Calendar> {
