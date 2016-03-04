@@ -600,8 +600,7 @@ public class ScheduleActivity extends AppCompatActivity {
             }
         }
         if (newEvents.size() == 0) {
-            progressDialog.dismiss();
-            startActivity(new Intent(this, DashboardActivity.class));
+            saveUpdatedTimeslots();
         }
         for (int i = 0; i < newEvents.size(); i++) {
             eventMap = TimeslotBackEndAdapter.getInstance().adapt(composedTimeslots.get(i));
@@ -629,7 +628,7 @@ public class ScheduleActivity extends AppCompatActivity {
             }
         }
         if (events.size() == 0) {
-            progressDialog.dismiss();
+            saveDeletedTimeslots();
         }
         for (int i = 0; i < events.size(); i++) {
             eventMap = TimeslotBackEndAdapter.getInstance().adapt(events.get(i));
@@ -723,7 +722,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     if (index == tot) {
-                        deleteTimeslots();
+                        saveDeletedTimeslots();
                     }
                 }
             });
@@ -739,12 +738,12 @@ public class ScheduleActivity extends AppCompatActivity {
     /**
      * Saves the deletion of timeslots by the user
      */
-    private void deleteTimeslots() {
+    private void saveDeletedTimeslots() {
         if (deletedTimeslots.size() == 0) {
             progressDialog.dismiss();
         }
         for (int i = 0; i < deletedTimeslots.size(); i++) {
-            fromIdToTimeslot.get(deletedTimeslots.get(i)).delete(new DeleteTimeslotCallback(i + 1, deletedTimeslots.size()));
+            fromIdToTimeslot.get(Integer.toString((int) deletedTimeslots.get(i).getId())).delete(new DeleteTimeslotCallback(i + 1, deletedTimeslots.size()));
         }
 
     }

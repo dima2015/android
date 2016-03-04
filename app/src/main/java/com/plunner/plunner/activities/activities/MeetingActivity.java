@@ -578,7 +578,7 @@ public class MeetingActivity extends AppCompatActivity {
         }
         //Dismisses loading dialog
         if (newTimeslots.size() == 0) {
-            progressDialog.dismiss();
+            saveUpdatedTimeslots();
         }
         for (int i = 0; i < newTimeslots.size(); i++) {
             timeslot = new MeetingTimeslot();
@@ -722,13 +722,12 @@ public class MeetingActivity extends AppCompatActivity {
             }
         }
         if (updatedTimeslots.size() == 0) {
-            progressDialog.dismiss();
-            startActivity(new Intent(MeetingActivity.this, DashboardActivity.class));
+            saveDeletedTimeslots();
         }
         for (int i = 0; i < updatedTimeslots.size(); i++) {
             currentEvent = updatedTimeslots.get(i);
             //Save request to backend
-            idTimeslots.get(Integer.toString((int) currentEvent.getId())).save(new saveUpdatedTimeslotsCallback(i, updatedTimeslots.size()));
+            idTimeslots.get(Integer.toString((int) currentEvent.getId())).save(new saveUpdatedTimeslotsCallback(i+1, updatedTimeslots.size()));
         }
 
     }
@@ -739,10 +738,11 @@ public class MeetingActivity extends AppCompatActivity {
     private void saveDeletedTimeslots() {
         if (deletedTimeslots.size() == 0) {
             progressDialog.dismiss();
+            startActivity(new Intent(MeetingActivity.this, DashboardActivity.class));
         }
         for (int i = 0; i < deletedTimeslots.size(); i++) {
             //Delete request to backend
-            idTimeslots.get(Integer.toString((int) deletedTimeslots.get(i).getId())).delete(new saveDeletedTimeslots(i, deletedTimeslots.size()));
+            idTimeslots.get(Integer.toString((int) deletedTimeslots.get(i).getId())).delete(new saveDeletedTimeslots(i+1, deletedTimeslots.size()));
         }
     }
 

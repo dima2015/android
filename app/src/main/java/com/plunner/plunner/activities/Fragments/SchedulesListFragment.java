@@ -28,7 +28,6 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.login.LoginManager;
-import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Calendar;
 import com.plunner.plunner.utils.DataExchanger;
@@ -40,7 +39,7 @@ import java.util.List;
 /**
  * REVISED
  */
-public class SchedulesFragment extends Fragment {
+public class SchedulesListFragment extends Fragment {
 
 
     private List<Calendar> composedSchedules;
@@ -186,7 +185,7 @@ public class SchedulesFragment extends Fragment {
             } else {
                 msg = "Communication Error, please try again later";
             }
-            SchedulesFragment.this.createSnackBar(msg);
+            SchedulesListFragment.this.createSnackBar(msg);
         }
 
         @Override

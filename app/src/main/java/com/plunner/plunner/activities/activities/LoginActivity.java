@@ -338,6 +338,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
             switch (error.getKey()) {
                 //same behaviour
                 case "email":
+                    setError(mEmailView, error);
                 case "password":
                     setError(mPasswordView, error);
                     break;

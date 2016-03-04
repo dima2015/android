@@ -17,7 +17,7 @@ import android.view.View;
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.adapters.FragmentsTabViewAdapter;
 import com.plunner.plunner.activities.fragments.MeetingsListFragment;
-import com.plunner.plunner.activities.fragments.SchedulesFragment;
+import com.plunner.plunner.activities.fragments.SchedulesListFragment;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
@@ -44,9 +44,9 @@ public class DashboardActivity extends AppCompatActivity {
      */
     private MeetingsListFragment meetingsListFragment;
     /**
-     * @see SchedulesFragment
+     * @see SchedulesListFragment
      */
-    private SchedulesFragment schedulesFragment;
+    private SchedulesListFragment schedulesListFragment;
     /**
      * @see DataExchanger
      */
@@ -116,9 +116,9 @@ public class DashboardActivity extends AppCompatActivity {
         FragmentsTabViewAdapter fragmentsTabViewAdapter = new FragmentsTabViewAdapter(getSupportFragmentManager());
         //Binding tabs to fragments
         meetingsListFragment = new MeetingsListFragment();
-        schedulesFragment = new SchedulesFragment();
+        schedulesListFragment = new SchedulesListFragment();
         fragmentsTabViewAdapter.addFragment(meetingsListFragment, "Meetings");
-        fragmentsTabViewAdapter.addFragment(schedulesFragment, "Schedules");
+        fragmentsTabViewAdapter.addFragment(schedulesListFragment, "Schedules");
         viewPager.setAdapter(fragmentsTabViewAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }
@@ -142,7 +142,7 @@ public class DashboardActivity extends AppCompatActivity {
             return true;
         }
         else if(id == R.id.menu_dashboard_activity_refresh_schedules){
-            schedulesFragment.refresh();
+            schedulesListFragment.refresh();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -200,7 +200,7 @@ public class DashboardActivity extends AppCompatActivity {
                     //Populates the meeting list with meetings
                     meetingsListFragment.initSequence();
                     //Populates the schedules list with schedules
-                    schedulesFragment.initSequence();
+                    schedulesListFragment.initSequence();
                 }
             });
 

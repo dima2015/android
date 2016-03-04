@@ -46,7 +46,8 @@
 
         <activity
             android:name=".activities.activities.LoginActivity"
-            android:label="@string/title_activity_login" />
+            android:label="@string/title_activity_login"
+            android:theme="@style/CustomTheme"/>
         <activity
             android:name=".activities.activities.MeetingDetailActivity"
             android:label="@string/title_activity_meeting_detail"
