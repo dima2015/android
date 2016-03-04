@@ -29,7 +29,7 @@ public class DashboardActivityTest {
 
     @Test
     public void viewPresence(){
-        //onView(withId(R.id.dashboard_activity_fab)).check(ViewAssertions.matches(isDisplayed()));
+        onView(withId(R.id.dashboard_activity_fab)).check(ViewAssertions.matches(isDisplayed()));
     }
 
 

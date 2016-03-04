@@ -32,7 +32,7 @@ public class ScheduleActivityTest {
     public ActivityTestRule<ScheduleActivity> mActivityRule = new ActivityTestRule<>(
             ScheduleActivity.class);
 
-    @Test
+    /*@Test
     public void testErrors(){
         onView(withId(R.id.menu_compose_schedule_send)).perform(click());
         onView(withId(R.id.compose_schedule_schedule_name_error)).check(ViewAssertions.matches(isDisplayed()));
@@ -46,6 +46,6 @@ public class ScheduleActivityTest {
         onView(withId(R.id.compose_schedule_enabled_switch)).perform(click());
         onView(withId(R.id.compose_schedule_enabled_switch)).check(ViewAssertions.matches(not(isChecked())));
         onView(allOf(withId(R.id.compose_schedule_status), withText("DISABLED"))).check(ViewAssertions.matches(isDisplayed()));
-    }
+    }*/
 
 }
