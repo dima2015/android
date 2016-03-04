@@ -1,6 +1,15 @@
 <resources>
     <string name="app_name">Plunner</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_dashboard">Dashboard</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_compose_schedule">Compose a schedule</string>
+    <string name="edit_schedule">Edit schedule</string>
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
@@ -17,4 +26,45 @@
         completions."
     </string>
     <string name="account_type">com.plunner.plunner</string>
+    <string name="action_search" />
+    <string name="meeting">Meeting</string>
+    <string name="lipsum">Secondary line text lorem ipsum dapibus, neque id cursus faucibus</string>
+    <string name="meeting_tbp">TO BE PLANNED</string>
+    <string name="meeting_p">PLANNED</string>
+    <string name="meeting_c">CREATED</string>
+    <string name="enabled">ENABLED</string>
+    <string name="disabled">DISABLED</string>
+    <string name="edit_event">Edit event</string>
+    <string name="add_event">Add event</string>
+    <string name="delete_event">Delete event</string>
+    <string name="meetings_tbp">to be planned</string>
+    <string name="meetings_p">planned</string>
+    <string name="meeting_mg">managed</string>
+    <string name="schedules_composed">Composed </string>
+    <string name="schedules_imported">imported </string>
+    <string name="menu_refresh">Refresh meetings</string>
+
+    <string name="title_activity_meeting_detail">Meeting detail</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title">Title</string>
+    <string name="desc">Description</string>
+    <string name="duration">Duration</string>
+    <string name="meeting_title">Meeting title</string>
+    <string name="meeting_desc">Meeting description</string>
+    <string name="p_timeslots">Possible timeslots</string>
+    <string name="group">Group</string>
+    <string name="your_settings">Your settings</string>
+    <string name="send">Send</string>
+    <string name="delete">Delete</string>
+    <string name="name">Name</string>
+    <string name="edit_settings">Edit settings</string>
+    <string name="name_error">Please insert a name</string>
+    <string name="pwd_error">Please insert a password of at least 6 characters</string>
+    <string name="emptyStateTBPMeetings">Sorry, no meetings to be planned for your group at the moment</string>
+    <string name="emptyStatePMeetings">Sorry, no meetings planned for your group at the moment</string>
+    <string name="emptyStateMMeetings">Sorry, no meetings managed by you at the moment</string>
+    <string name="emptyStateSchedules">Sorry, no composed schedules for you at the moment</string>
+    <string name="refresh_schedules">Refresh schedules</string>
+    <string name="minutes">mins</string>
 </resources>

@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.fragments.SchedulesListFragment">
+
+    <!--POSSIBLE FUTURE IMPLEMENTATION -->
+    <!--<HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="15dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:id="@+id/fragment_schedules_top_menu">
+            <Button
+                style="@style/categoryButton"
+                android:text="@string/schedules_composed"
+                android:tag="1"
+                android:onClick="switchSchedulesType"/>
+            <Button
+                style="@style/categoryButton"
+                android:text="@string/schedules_imported"
+                android:tag="2"
+                android:onClick="switchSchedulesType"/>
+        </LinearLayout>
+
+    </HorizontalScrollView>-->
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_schedules_laoding_spinner"
+        android:layout_gravity="center_horizontal"
+        android:theme="@style/CustomTheme" />
+    <TextView
+        style="@style/emptyStateStyle"
+        android:id="@+id/empty_state_schedules"
+        android:text="@string/emptyStateSchedules" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_schedules_swipe_refresh">
+        <android.widget.ListView
+            android:id="@+id/schedulesList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.widget.ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+
+
+</LinearLayout>

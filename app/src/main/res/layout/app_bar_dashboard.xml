@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/dashboard_activity_root"
+    tools:context="com.plunner.plunner.activities.activities.DashboardActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        <android:android.support.design.widget.TabLayout
+            android:id="@+id/dashboard_activity_tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android:android.support.design.widget.TabLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_dashboard" />
+
+
+    <io.github.yavski.fabspeeddial.FabSpeedDial
+        android:id="@+id/dashboard_activity_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        app:fabGravity="bottom_end"
+        app:fabMenu="@menu/menu_dashboard_fab"
+        app:miniFabBackgroundTint="@color/secondary_text"
+        app:miniFabDrawableTint="@color/white"
+        app:miniFabTitleTextColor="@color/secondary_text" />
+
+
+</android.support.design.widget.CoordinatorLayout>

@@ -70,6 +70,10 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         view.requestFocus();
         Log.v("Login", "errors in " + error.getKey() + ": " + error.getValue());
     }
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -338,6 +342,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
             switch (error.getKey()) {
                 //same behaviour
                 case "email":
+                    setError(mEmailView, error);
                 case "password":
                     setError(mPasswordView, error);
                     break;

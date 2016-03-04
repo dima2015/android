@@ -15,6 +15,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.Generated;
@@ -52,6 +53,7 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
     protected String updatedAt;
     //TODO use resources??? or not isnce it is already loaded?
     protected ModelList<? extends MeetingTimeslot> timeslots = new ModelList<MeetingTimeslot>(new MeetingTimeslot());
+    protected String groupName;
 
     /**
      * No args constructor for use in serialization
@@ -265,6 +267,15 @@ public class Meeting<S extends Meeting> extends Model<S> implements Listable {
         //TODO check if current is keep in consideration
         @GET("/employees/meetings/?current=1")
         Observable<List<Meeting>> index();
+    }
+    public String sToString(){
+        return "id="+id+",title="+title+",description="+description+",group="+groupName+",duration="+duration+",starts="+startTime;
+    }
+    public void setGroupName(String groupName){
+        this.groupName = groupName;
+    }
+    public String getGroupName(){
+        return this.groupName;
     }
 
     //TODO abstract load timeslots

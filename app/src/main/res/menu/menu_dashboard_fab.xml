@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/dashboard_activity_fab_add_meeting"
+        android:icon="@drawable/meeting_icon"
+        android:title="Meeting" />
+    <item
+        android:id="@+id/dashboard_activity_fab_add_schedule"
+        android:icon="@drawable/schedule_icon"
+        android:title="Schedule" />
+</menu>
