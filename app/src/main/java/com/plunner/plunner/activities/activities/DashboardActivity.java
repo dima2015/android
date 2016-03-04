@@ -48,7 +48,6 @@ public class DashboardActivity extends AppCompatActivity {
         //Action bar setting
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Log.w("2","I'm started");
         //Fab setting
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.dashboard_activity_fab);
         dataExchanger = DataExchanger.getInstance();
