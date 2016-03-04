@@ -1,11 +1,13 @@
 package com.plunner.plunner.activities.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.plunner.plunner.R;
+import com.plunner.plunner.models.models.employee.Employee;
 import com.plunner.plunner.utils.DataExchanger;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -25,7 +27,11 @@ public class SettingsActivity extends AppCompatActivity {
         nameField = (TextView) findViewById(R.id.activity_user_settings_name);
         emailField = (TextView) findViewById(R.id.activity_user_settings_email);
 
-        retrieveFields();
+        Intent intent = getIntent();
+        if(!intent.getExtras().getBoolean("Testing")){
+            retrieveFields();
+        }
+
     }
 
     private void retrieveFields() {
@@ -38,5 +44,10 @@ public class SettingsActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_user_settings, menu);
         return true;
     }*/
+    public void retrieveFields(Employee employee){
+        nameField.setText(employee.getName());
+        emailField.setText(employee.getEmail());
+
+    }
 
 }

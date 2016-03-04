@@ -59,5 +59,17 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    <style name="emptyStateStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Large</item>
+        <item name="android:padding">20dp</item>
+        <item name="android:textColor">@color/light_gray</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:layout_marginTop">40dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:visibility">gone</item>
+    </style>
 
 </resources>

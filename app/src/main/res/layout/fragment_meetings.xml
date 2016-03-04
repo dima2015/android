@@ -43,7 +43,20 @@
         android:id="@+id/fragment_meetings_loading_spinner"
         android:layout_gravity="center_horizontal"
         android:theme="@style/CustomTheme"/>
-
+    <TextView
+        style="@style/emptyStateStyle"
+        android:id="@+id/empty_state_tbp_meetings"
+        android:text="@string/emptyStateTBPMeetings" />
+    <TextView
+        style="@style/emptyStateStyle"
+        android:id="@+id/empty_state_p_meetings"
+        android:text="@string/emptyStatePMeetings"
+        />
+    <TextView
+        style="@style/emptyStateStyle"
+        android:id="@+id/empty_state_m_meetings"
+        android:text="@string/emptyStateMMeetings"
+        />
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,7 +70,6 @@
         </android.widget.ListView>
 
     </android.support.v4.widget.SwipeRefreshLayout>
-
 
 
 </LinearLayout>

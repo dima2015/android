@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.adapters.SchedulesListAdapter;
@@ -22,6 +23,7 @@ import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
+import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Calendar;
 import com.plunner.plunner.utils.DataExchanger;
@@ -43,6 +45,7 @@ public class SchedulesFragment extends Fragment {
     private SchedulesListAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private boolean showLoadingBar;
+    private TextView emptyState;
 
 
 
@@ -81,6 +84,7 @@ public class SchedulesFragment extends Fragment {
     public void onStart() {
         super.onStart();
         ListView listView = (ListView) getActivity().findViewById(R.id.schedulesList);
+        emptyState = (TextView) getActivity().findViewById(R.id.empty_state_schedules);
         //LinearLayout horizontalScrollView = (LinearLayout) getActivity().findViewById(R.id.fragment_schedules_top_menu);
         // horizontalScrollView.getChildAt(0).setBackgroundResource(R.drawable.categorybutton_c);
         swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.fragment_schedules_swipe_refresh);
@@ -120,6 +124,7 @@ public class SchedulesFragment extends Fragment {
     public void notifyContentChange() {
         content.clear();
         content.addAll(composedSchedules);
+        checkEmptyState();
         /*
         switch (mode) {
             case 1:
@@ -134,6 +139,15 @@ public class SchedulesFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
+    private void checkEmptyState() {
+        if(content.size() == 0){
+            emptyState.setVisibility(View.VISIBLE);
+        }
+        else{
+            emptyState.setVisibility(View.GONE);
+        }
+    }
+
 
     public void initSequence() {
         //mode = 1;
@@ -141,11 +155,12 @@ public class SchedulesFragment extends Fragment {
     }
 
     private void retrieveSchedules() {
-        if(DataExchanger.getInstance().getUser().getCalendars() == null){
+        ModelList<Calendar> calendars = (ModelList<Calendar>) DataExchanger.getInstance().getUser().getCalendars().getInstance();
+        if(calendars.getModels().size() == 0){
             DataExchanger.getInstance().getUser().getCalendars().load(new SchedulesCallback());
         }
         else{
-            insertSchedules((ModelList<Calendar>) DataExchanger.getInstance().getUser().getCalendars().getInstance());
+            insertSchedules(calendars);
         }
 
     }

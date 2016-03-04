@@ -1,35 +1,51 @@
 package com.plunner.plunner.activities;
 
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.test.ActivityInstrumentationTestCase2;
+import android.app.Instrumentation;
+import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.assertion.ViewAssertions;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.LargeTest;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.activities.DashboardActivity;
+import com.plunner.plunner.activities.activities.MeetingActivity;
+import com.plunner.plunner.activities.activities.MeetingDetailActivity;
+import com.plunner.plunner.activities.activities.SettingsActivity;
+import com.plunner.plunner.models.models.employee.Meeting;
 
-import io.github.yavski.fabspeeddial.FabSpeedDial;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
+
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.espresso.Espresso.onData;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withChild;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
+import static android.support.test.espresso.matcher.ViewMatchers.withTagKey;
+import static junit.framework.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.core.AllOf.allOf;
+import static org.hamcrest.core.AnyOf.anyOf;
 
 /**
  * Created by giorgiopea on 04/03/16.
  */
-public class DashboardActivityTest extends ActivityInstrumentationTestCase2<DashboardActivity> {
+@RunWith(AndroidJUnit4.class)
+@LargeTest
+public class DashboardActivityTest {
 
-    DashboardActivity activity;
+    @Rule
+    public ActivityTestRule<DashboardActivity> mActivityRule = new ActivityTestRule<>(
+            DashboardActivity.class);
 
-    public DashboardActivityTest() {
-        super(DashboardActivity.class);
-    }
-    @Override
-    protected void setUp(){
-        activity = getActivity();
-    }
 
-    public void testView(){
-        FabSpeedDial fabSpeedDial = (FabSpeedDial) activity.findViewById(R.id.dashboard_activity_fab);
-        TabLayout tabLayout = (TabLayout) activity.findViewById(R.id.dashboard_activity_tab_layout);
-        ViewPager viewPager = (ViewPager) activity.findViewById(R.id.dashboard_activity_view_pager);
-        assertNotNull(fabSpeedDial);
-        assertNotNull(tabLayout);
-        assertNotNull(viewPager);
-    }
+
 }

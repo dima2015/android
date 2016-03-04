@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.adapters.MeetingsListAdapter;
@@ -25,6 +26,7 @@ import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
+import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Group;
 import com.plunner.plunner.models.models.employee.Meeting;
@@ -47,6 +49,9 @@ public class MeetingsListFragment extends Fragment {
     private LinearLayout scrollView;
     private int mode;
     private boolean showLoadBar;
+    private TextView emptyStateTBP;
+    private TextView emptyStateP;
+    private TextView emptyStateM;
 
 
     @Override
@@ -86,6 +91,9 @@ public class MeetingsListFragment extends Fragment {
 
             }
         });
+        emptyStateTBP = (TextView) getActivity().findViewById(R.id.empty_state_tbp_meetings);
+        emptyStateP = (TextView) getActivity().findViewById(R.id.empty_state_p_meetings);
+        emptyStateM = (TextView) getActivity().findViewById(R.id.empty_state_m_meetings);
         scrollView = (LinearLayout) getActivity().findViewById(R.id.fragment_meetings_top_menu);
         loadingSpinner = (ProgressBar) getActivity().findViewById(R.id.fragment_meetings_loading_spinner);
         scrollView.getChildAt(mode - 1).setBackgroundResource(R.drawable.categorybutton_c);
@@ -179,9 +187,30 @@ public class MeetingsListFragment extends Fragment {
                 content.addAll(mMeetings);
                 break;
         }
+        checkEmptyState();
         adapter.notifyDataSetChanged();
-    }
 
+    }
+    private void checkEmptyState(){
+        emptyStateTBP.setVisibility(View.GONE);
+        emptyStateP.setVisibility(View.GONE);
+        emptyStateM.setVisibility(View.GONE);
+        if(content.size() == 0){
+
+            switch (mode) {
+                case 1:
+                    emptyStateTBP.setVisibility(View.VISIBLE);
+                    break;
+                case 2:
+                    emptyStateP.setVisibility(View.VISIBLE);
+                    break;
+                case 3:
+                    emptyStateM.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }
+
+    }
     public void switchMeetingsType(View v) {
         int tag = Integer.parseInt((String) v.getTag());
         ViewGroup viewGroup = (ViewGroup) v.getParent();
@@ -197,31 +226,34 @@ public class MeetingsListFragment extends Fragment {
 
 
     private void retrieveTBPMeetings() {
-        if(DataExchanger.getInstance().getUser().getGroups() == null){
+        ModelList<Group> groups = (ModelList<Group>) DataExchanger.getInstance().getUser().getGroups().getInstance();
+        if(groups.getModels().size() == 0){
             DataExchanger.getInstance().getUser().getGroups().load(new tbpMeetingsCallback());
         }
         else{
-            insertTBPMeetings((ModelList<Group>) DataExchanger.getInstance().getUser().getGroups().getInstance());
+            insertTBPMeetings(groups);
         }
 
     }
 
     private void retrievePMeetings() {
-        if( DataExchanger.getInstance().getUser().getMeetings() == null){
+        ModelList<Meeting> meetings = (ModelList<Meeting>) DataExchanger.getInstance().getUser().getMeetings().getInstance();
+        if( meetings.getModels().size() == 0){
             DataExchanger.getInstance().getUser().getMeetings().load(new pMeetingsCallback());
         }
         else{
-            insertPMeetings((ModelList<Meeting>) DataExchanger.getInstance().getUser().getMeetings().getInstance());
+            insertPMeetings(meetings);
         }
 
     }
 
     private void retrieveMMeetings() {
-        if(((Planner) DataExchanger.getInstance().getUser()).getGroupsManaged() == null){
+        ModelList<com.plunner.plunner.models.models.employee.planner.Group> groups = ((Planner) DataExchanger.getInstance().getUser()).getGroupsManaged().getInstance();
+        if( groups.getModels().size() == 0){
             ((Planner) DataExchanger.getInstance().getUser()).getGroupsManaged().load(new mMeetingsCallback());
         }
         else{
-            elaborateManagedGroups(((Planner) DataExchanger.getInstance().getUser()).getGroupsManaged().getInstance());
+            elaborateManagedGroups(groups);
         }
 
     }
@@ -339,7 +371,7 @@ public class MeetingsListFragment extends Fragment {
         com.plunner.plunner.models.models.employee.planner.Group currentGroup;
         for (int i = 0; i < groupList.size(); i++) {
             currentGroup = groupList.get(i);
-            if(currentGroup.getMeetingsManaged() == null){
+            if(currentGroup.getMeetingsManaged().getInstance().getModels().size() == 0){
                 currentGroup.getMeetingsManaged().load(new MeetingsManagedCallabck());
             }
             else{
@@ -360,12 +392,7 @@ public class MeetingsListFragment extends Fragment {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    List<com.plunner.plunner.models.models.employee.planner.Group> groupList = groupModelList.getModels();
-                    com.plunner.plunner.models.models.employee.planner.Group currentGroup;
-                    for (int i = 0; i < groupList.size(); i++) {
-                        currentGroup = groupList.get(i);
-                        currentGroup.getMeetingsManaged().load(new MeetingsManagedCallabck());
-                    }
+                    elaborateManagedGroups(groupModelList);
                 }
             });
 
@@ -398,7 +425,7 @@ public class MeetingsListFragment extends Fragment {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-
+                    insertManagedMeetings(meetingsList);
                 }
             });
 

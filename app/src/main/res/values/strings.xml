@@ -61,4 +61,8 @@
     <string name="edit_settings">Edit settings</string>
     <string name="name_error">Please insert a name</string>
     <string name="pwd_error">Please insert a password of at least 6 characters</string>
+    <string name="emptyStateTBPMeetings">Sorry, no meetings to be planned for your group at the moment</string>
+    <string name="emptyStatePMeetings">Sorry, no meetings planned for your group at the moment</string>
+    <string name="emptyStateMMeetings">Sorry, no meetings managed by you at the moment</string>
+    <string name="emptyStateSchedules">Sorry, no composed schedules for you at the moment</string>
 </resources>

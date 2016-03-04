@@ -202,7 +202,7 @@ public class MeetingActivity extends AppCompatActivity {
 
     private void retrieveGroups() {
         Planner planner = (Planner) DataExchanger.getInstance().getUser();
-        if(planner.getGroupsManaged() == null){
+        if(planner.getGroupsManaged().getInstance().getModels().size() == 0){
             planner.getGroupsManaged().load(new ManagedGroupsCallback());
         }
         else{
@@ -659,7 +659,7 @@ public class MeetingActivity extends AppCompatActivity {
     }
 
     private void getMeetingTimeslots() {
-        if(selectedMeeting.getMeetingsTimeslotManaged() == null){
+        if(selectedMeeting.getMeetingsTimeslotManaged().getInstance().getModels().size() == 0){
             selectedMeeting.getMeetingsTimeslotManaged().load(new getMeetingTimeslotsCallback());
         }
         else{
