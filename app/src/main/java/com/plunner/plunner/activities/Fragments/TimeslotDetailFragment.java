@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 
-public class EventDetailFragment extends Fragment {
+public class TimeslotDetailFragment extends Fragment {
 
     private TextView startDate;
     private TextView startTime;
@@ -44,7 +44,7 @@ public class EventDetailFragment extends Fragment {
     private boolean mode;
 
 
-    public EventDetailFragment() {
+    public TimeslotDetailFragment() {
 
     }
 

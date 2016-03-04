@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context=".activities.fragments.EventDetailFragment"
+    tools:context=".activities.fragments.TimeslotDetailFragment"
     android:orientation="vertical"
     android:background="@color/white"
     android:id="@+id/add_event_fragment"
@@ -39,7 +39,7 @@
             android:text="SAVE"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:background="@null"
-            android:onClick="saveEvent"
+            android:onClick="saveTimeslot"
             android:textColor="@color/white"/>
     </LinearLayout>
     <LinearLayout
@@ -69,7 +69,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="0dp"
                 android:layout_alignParentEnd="true"
-                android:onClick="deleteEvent"/>
+                android:onClick="deleteTimeslot"/>
         </RelativeLayout>
 
         <TextView
@@ -96,7 +96,7 @@
                 android:layout_weight="4"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
-                android:onClick="addEventDateChange"
+                android:onClick="showDatePicker"
                 android:textSize="@dimen/abc_text_size_medium_material" />
 
             <LinearLayout
@@ -117,7 +117,7 @@
                     android:id="@+id/add_event_starts_time"
                     android:textSize="@dimen/abc_text_size_medium_material"
                     android:clickable="true"
-                    android:onClick="addEventTimeChange"/>
+                    android:onClick="showTimePicker"/>
             </LinearLayout>
 
 
@@ -147,7 +147,7 @@
                 android:id="@+id/add_event_ends_date"
                 android:layout_weight="4"
                 android:textSize="@dimen/abc_text_size_medium_material"
-                android:onClick="addEventDateChange"/>
+                android:onClick="showDatePicker"/>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -167,7 +167,7 @@
                     android:id="@+id/add_event_ends_time"
                     android:layout_weight="1"
                     android:textSize="@dimen/abc_text_size_medium_material"
-                    android:onClick="addEventTimeChange"/>
+                    android:onClick="showTimePicker"/>
 
             </LinearLayout>
 

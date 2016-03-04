@@ -65,4 +65,5 @@
     <string name="emptyStatePMeetings">Sorry, no meetings planned for your group at the moment</string>
     <string name="emptyStateMMeetings">Sorry, no meetings managed by you at the moment</string>
     <string name="emptyStateSchedules">Sorry, no composed schedules for you at the moment</string>
+    <string name="refresh_schedules">Refresh schedules</string>
 </resources>

@@ -3,9 +3,12 @@ package com.plunner.plunner.activities.activities;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.RectF;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,12 +33,13 @@ import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.fragments.EventDetailFragment;
+import com.plunner.plunner.activities.fragments.TimeslotDetailFragment;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
+import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Timeslot;
 import com.plunner.plunner.utils.CalendarPickersViewSupport;
@@ -74,9 +78,9 @@ public class ScheduleActivity extends AppCompatActivity {
     /**
      * A fragment used to create/edit an event in the {@link #mWeekView }
      */
-    private EventDetailFragment addEventFragment;
-    private List<CustomWeekEvent> composedEvents;
-    private List<CustomWeekEvent> deletedEvents;
+    private TimeslotDetailFragment timeslotDetailFragment;
+    private List<CustomWeekEvent> composedTimeslots;
+    private List<CustomWeekEvent> deletedTimeslots;
     private Map<String, Timeslot> fromIdToTimeslot;
     private com.plunner.plunner.models.models.employee.Calendar exchangedSchedule;
     private boolean editMode;
@@ -89,10 +93,8 @@ public class ScheduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose_schedule);
         Intent intent = getIntent();
-        editMode = false;
-        if (intent.getExtras() != null) {
-            editMode = true;
-        }
+        //Checks if i'm editing a meeting or not
+        editMode = intent.getExtras() != null;
         //Tolbar setting
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarSchedule);
         setSupportActionBar(toolbar);
@@ -109,9 +111,8 @@ public class ScheduleActivity extends AppCompatActivity {
         mWeekView = (WeekView) findViewById(R.id.weekView);
 
         enabledSwitch = (Switch) findViewById(R.id.compose_schedule_enabled_switch);
-        //This activity can come back to the main activity
 
-        //Pickers init
+        //WeekView init and pickers init
         calendarPickersViewSupport.createViews(-1);
         //createCalendarPickersView(-1);
         //Event view init
@@ -124,10 +125,11 @@ public class ScheduleActivity extends AppCompatActivity {
                 onEnabledSwitchStatusChange(isChecked);
             }
         });
-        composedEvents = new ArrayList<>();
-        deletedEvents = new ArrayList<>();
+        composedTimeslots = new ArrayList<>();
+        deletedTimeslots = new ArrayList<>();
         fromIdToTimeslot = new HashMap<>();
         if (editMode) {
+            //If i'm editing a schedule i grab its information and timeslots
             exchangedSchedule = DataExchanger.getInstance().getSchedule();
             scheduleName.setText(exchangedSchedule.getName());
             setTitle(getResources().getText(R.string.edit_schedule));
@@ -153,7 +155,7 @@ public class ScheduleActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.menu_compose_schedule_send:
-                sendData();
+                saveSchedule();
                 return true;
             case R.id.menu_compose_schedule_delete:
                 deleteSchedule();
@@ -164,18 +166,23 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu (Menu menu){
-        if(!editMode){
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (!editMode) {
             menu.removeItem(R.id.menu_compose_schedule_delete);
         }
         return true;
     }
 
-
+    /**
+     * Retrieves the timeslots of the schedule the user is editing
+     */
     private void retrieveScheduleTimslots() {
-        exchangedSchedule.getTimeslots().load(new GetTimeslotsCallback());
+        exchangedSchedule.getTimeslots().load(new RetrieveTimeslotsCallback());
     }
 
+    /**
+     * deletes the schedule the planner is editing
+     */
     private void deleteSchedule() {
         AlertDialog.Builder alertDialogB = new AlertDialog.Builder(this);
         alertDialogB.setTitle("Delete Schedule");
@@ -198,7 +205,11 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * Sets some action listeners for the TimeslotsDay widget
+     *
+     * @see WeekView
+     */
     private void setWeekView() {
         mWeekView.setOnEventClickListener(new WeekView.EventClickListener() {
             @Override
@@ -206,7 +217,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        onEventClickM(event);
+                        onTimeslotClick(event);
                     }
                 });
 
@@ -215,7 +226,7 @@ public class ScheduleActivity extends AppCompatActivity {
         mWeekView.setMonthChangeListener(new MonthLoader.MonthChangeListener() {
             @Override
             public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
-                return composedEvents;
+                return composedTimeslots;
             }
 
         });
@@ -225,7 +236,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        onEmptySpaceClick(time);
+                        onEmptyAreaClick(time);
                     }
                 });
 
@@ -257,9 +268,92 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     /**
-     * Changes the current day in the {daysPicker}, updating also the {@link #mWeekView}
+     * Response to click on a timeslot in the {@link #mWeekView}
      *
-     * @param v The pressed dayBtn
+     * @param timeslot The clicked timeslot
+     */
+    private void onTimeslotClick(WeekViewEvent timeslot) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if (timeslotDetailFragment == null) {
+            timeslotDetailFragment = new TimeslotDetailFragment();
+            timeslotDetailFragment.setMode(false);
+            timeslotDetailFragment.setInitialDate(timeslot.getStartTime());
+            timeslotDetailFragment.setCurrentEventId(timeslot.getId());
+            //timeslotDetailFragment.setEditEventContent(timeslot.getStartTime(), timeslot.getEndTime());
+            actionBar.hide();
+            transaction.add(R.id.compose_schedule_root, timeslotDetailFragment)
+                    .addToBackStack(null).commit();
+        } else {
+            actionBar.hide();
+            timeslotDetailFragment.setCurrentEventId(timeslot.getId());
+            timeslotDetailFragment.setEditEventContent(timeslot.getStartTime(), timeslot.getEndTime());
+            transaction.show(timeslotDetailFragment).commit();
+
+        }
+    }
+
+    /**
+     * Response to click on a empty area in the {@link #mWeekView}
+     *
+     * @param time The date that corresponds to that area
+     */
+    private void onEmptyAreaClick(Calendar time) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        actionBar.hide();
+        if (timeslotDetailFragment == null) {
+            timeslotDetailFragment = new TimeslotDetailFragment();
+            timeslotDetailFragment.setMode(true);
+            timeslotDetailFragment.setInitialDate(time);
+            transaction.add(R.id.compose_schedule_root, timeslotDetailFragment)
+                    .addToBackStack(null).commit();
+
+        } else {
+            timeslotDetailFragment.setNewEventContent(time, true);
+            transaction.show(timeslotDetailFragment).commit();
+        }
+
+    }
+
+    /**
+     * How dates are interpreted in the context of {@link #mWeekView}
+     *
+     * @param date The date to be interpreted
+     * @return The string representing the interpreted date
+     */
+    private String interpretDateM(Calendar date) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMMM dd, yyyy", Locale.UK);
+            return sdf.format(date.getTime()).toUpperCase();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    /**
+     * How hours are interpreted in the context of {@link #mWeekView}
+     *
+     * @param hour The hour to be interpreted
+     * @return The string representing the interpreted time
+     */
+    private String interpretTimeM(int hour) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, 0);
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.UK);
+            return sdf.format(calendar.getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    /**
+     * Invoked when the user clicks on a day button of the CalendarPicker widget
+     *
+     * @param v The day button pressed
      */
     public void changeDay(View v) {
         scheduleName.clearFocus();
@@ -268,12 +362,9 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     /**
-     * Changes the current month in the monthPicker, recomputing also the days associated to it in the daysPicker
+     * Invoked when the user clicks on a month button of the CalendarPicker widget
      *
-     * @param v The pressed monthButton
-     *          //@see #daysPicker
-     *          //@see #monthsPicker
-     * @see #mWeekView
+     * @param v The day button pressed
      */
     public void changeMonth(View v) {
         scheduleName.clearFocus();
@@ -298,43 +389,67 @@ public class ScheduleActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Invoked when the user dismisses the {@link TimeslotDetailFragment}
+     *
+     * @param v The button clicked to dismiss the {@link TimeslotDetailFragment}
+     */
     public void hideFragment(View v) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if (addEventFragment != null) {
-            fragmentTransaction.hide(addEventFragment).commit();
+        if (timeslotDetailFragment != null) {
+            fragmentTransaction.hide(timeslotDetailFragment).commit();
             actionBar.show();
         }
 
     }
 
-    public void addEventDateChange(View v) {
-        addEventFragment.showDatePicker((Integer) v.getTag());
+    /**
+     * @param v The view that triggered this action
+     * @see TimeslotDetailFragment#showDatePicker(int)
+     */
+    public void showDatePicker(View v) {
+        timeslotDetailFragment.showDatePicker((Integer) v.getTag());
     }
 
-    public void addEventTimeChange(View v) {
-        addEventFragment.showTimePicker((Integer) v.getTag());
+    /**
+     * @param v The view that triggered this action
+     * @see TimeslotDetailFragment#showTimePicker(int)
+     */
+    public void showTimePicker(View v) {
+        timeslotDetailFragment.showTimePicker((Integer) v.getTag());
     }
 
-    public void saveEvent(View v) {
-        CustomWeekEvent event = addEventFragment.save();
+    /**
+     * @param v The view that triggered this action
+     * @see TimeslotDetailFragment#save()
+     */
+    public void saveTimeslot(View v) {
+        CustomWeekEvent event = timeslotDetailFragment.save();
         int position;
         if (event != null) {
             hideFragment(null);
             if (event.isNew() && !event.isEdited()) {
-                composedEvents.add(event);
+                composedTimeslots.add(event);
             } else if (event.isEdited()) {
-                position = findEventById(event.getId());
-                composedEvents.remove(position);
-                composedEvents.add(position, event);
+                position = findTimeslotById(event.getId());
+                composedTimeslots.remove(position);
+                composedTimeslots.add(position, event);
             }
             mWeekView.notifyDatasetChanged();
         }
     }
 
-    public int findEventById(long id) {
+    /**
+     * Finds a timeslot in the {@link #composedTimeslots} list by id
+     *
+     * @param id The id of the timeslot to be searched
+     * @return The position in the {@link #composedTimeslots} list of the timeslot with the given id,
+     * if the timeslot is not found -1 is returned
+     */
+    public int findTimeslotById(long id) {
         CustomWeekEvent currentEvent;
-        for (int i = 0; i < composedEvents.size(); i++) {
-            currentEvent = composedEvents.get(i);
+        for (int i = 0; i < composedTimeslots.size(); i++) {
+            currentEvent = composedTimeslots.get(i);
             if (currentEvent.getId() == id) {
                 return i;
             }
@@ -343,79 +458,23 @@ public class ScheduleActivity extends AppCompatActivity {
 
     }
 
-    public void deleteEvent(View v) {
-        long eventId = addEventFragment.getCurrentEventId();
-        int position = findEventById(eventId);
-        deletedEvents.add(composedEvents.get(position));
-        composedEvents.remove(position);
+    /**
+     * Invoked when the user deletes an event
+     *
+     * @param v The button clicked to delete the timeslot
+     */
+    public void deleteTimeslot(View v) {
+        long eventId = timeslotDetailFragment.getCurrentEventId();
+        int position = findTimeslotById(eventId);
+        deletedTimeslots.add(composedTimeslots.get(position));
+        composedTimeslots.remove(position);
         mWeekView.notifyDatasetChanged();
         hideFragment(null);
 
     }
 
-    private void onEventClickM(WeekViewEvent event) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        if (addEventFragment == null) {
-            addEventFragment = new EventDetailFragment();
-            addEventFragment.setMode(false);
-            addEventFragment.setInitialDate(event.getStartTime());
-            addEventFragment.setCurrentEventId(event.getId());
-            //addEventFragment.setEditEventContent(event.getStartTime(), event.getEndTime());
-            actionBar.hide();
-            transaction.add(R.id.compose_schedule_root, addEventFragment)
-                    .addToBackStack(null).commit();
-        } else {
-            actionBar.hide();
-            addEventFragment.setCurrentEventId(event.getId());
-            addEventFragment.setEditEventContent(event.getStartTime(), event.getEndTime());
-            transaction.show(addEventFragment).commit();
 
-        }
-    }
-
-    private void onEmptySpaceClick(Calendar time) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        actionBar.hide();
-        if (addEventFragment == null) {
-            addEventFragment = new EventDetailFragment();
-            addEventFragment.setMode(true);
-            addEventFragment.setInitialDate(time);
-            transaction.add(R.id.compose_schedule_root, addEventFragment)
-                    .addToBackStack(null).commit();
-
-        } else {
-            addEventFragment.setNewEventContent(time,true);
-            transaction.show(addEventFragment).commit();
-        }
-
-    }
-
-    private String interpretDateM(Calendar date) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMMM dd, yyyy", Locale.UK);
-            return sdf.format(date.getTime()).toUpperCase();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    private String interpretTimeM(int hour) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, 0);
-
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.UK);
-            return sdf.format(calendar.getTime());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-
-    private class GetTimeslotsCallback implements CallOnHttpError<ModelList<Timeslot>>, CallOnNext<ModelList<Timeslot>>, CallOnNoHttpError<ModelList<Timeslot>> {
+    private class RetrieveTimeslotsCallback implements CallOnHttpError<ModelList<Timeslot>>, CallOnNext<ModelList<Timeslot>>, CallOnNoHttpError<ModelList<Timeslot>> {
         @Override
         public void onHttpError(HttpException e) {
 
@@ -452,48 +511,44 @@ public class ScheduleActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        composedEvents.clear();
-        composedEvents.addAll(tmpList);
+        composedTimeslots.clear();
+        composedTimeslots.addAll(tmpList);
         mWeekView.notifyDatasetChanged();
     }
-    private boolean validate(){
+
+    private boolean validate() {
         boolean errorName, errorTimeslots = false;
-        if(scheduleName.getText().toString().equals("")){
+        if (scheduleName.getText().toString().equals("")) {
             errorName = true;
             scheduleNameError.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
             errorName = false;
             scheduleNameError.setVisibility(View.GONE);
         }
-        if(composedEvents.size() == 0){
+        if (composedTimeslots.size() == 0) {
             errorTimeslots = true;
-            makeSnackBar("Please insert at least one busy timeslot");
+            createSnackBar("Please insert at least one busy timeslot");
         }
         return !(errorName && errorTimeslots);
     }
 
-    private void makeSnackBar(String message){
-        Snackbar snackbar;
-        snackbar = Snackbar.make(findViewById(R.id.compose_schedule_root), message, Snackbar.LENGTH_LONG);
-        snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.red));
-        snackbar.show();
-    }
-    private void sendData() {
+    /**
+     * Saves the edited or created schedule
+     */
+    private void saveSchedule() {
         com.plunner.plunner.models.models.employee.Calendar schedule;
-        if(validate()){
+        if (validate()) {
             if (!editMode) {
-                progressDialog = ProgressDialog.show(this,"","Adding schedule",true);
+                progressDialog = ProgressDialog.show(this, "", "Adding schedule", true);
                 schedule = new com.plunner.plunner.models.models.employee.Calendar();
             } else {
                 schedule = exchangedSchedule;
-                progressDialog = ProgressDialog.show(this,"","Saving changes", true);
+                progressDialog = ProgressDialog.show(this, "", "Saving changes", true);
             }
             schedule.setName(scheduleName.getText().toString());
-            if(enabledSwitch.isChecked()){
+            if (enabledSwitch.isChecked()) {
                 schedule.setEnabled("1");
-            }
-            else{
+            } else {
                 schedule.setEnabled("0");
             }
 
@@ -501,6 +556,9 @@ public class ScheduleActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Callback to {@link #saveSchedule()}
+     */
     private class SaveScheduleCallback implements CallOnHttpError<com.plunner.plunner.models.models.employee.Calendar>, CallOnNext<com.plunner.plunner.models.models.employee.Calendar>, CallOnNoHttpError<com.plunner.plunner.models.models.employee.Calendar> {
         @Override
         public void onHttpError(HttpException e) {
@@ -512,7 +570,7 @@ public class ScheduleActivity extends AppCompatActivity {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    sendTimeslots(calendar.getId());
+                    saveTimeslots(calendar.getId());
                 }
             });
 
@@ -524,45 +582,53 @@ public class ScheduleActivity extends AppCompatActivity {
         }
     }
 
-    private void sendTimeslots(String id) {
+    /**
+     * Save the timeslots associated to the edited or created meeting
+     *
+     * @param id The id of the edited/created schedule
+     */
+    private void saveTimeslots(String id) {
         Timeslot timeslot;
         CustomWeekEvent currentEvent;
         List<CustomWeekEvent> newEvents = new ArrayList<>();
 
         Map<String, String> eventMap;
-        for (int i = 0; i < composedEvents.size(); i++) {
-            currentEvent = composedEvents.get(i);
+        for (int i = 0; i < composedTimeslots.size(); i++) {
+            currentEvent = composedTimeslots.get(i);
             if (currentEvent.isNew()) {
                 newEvents.add(currentEvent);
             }
         }
-        if(newEvents.size() == 0){
+        if (newEvents.size() == 0) {
             progressDialog.dismiss();
-            startActivity(new Intent(this,DashboardActivity.class));
+            startActivity(new Intent(this, DashboardActivity.class));
         }
         for (int i = 0; i < newEvents.size(); i++) {
-            eventMap = TimeslotBackEndAdapter.getInstance().adapt(composedEvents.get(i));
+            eventMap = TimeslotBackEndAdapter.getInstance().adapt(composedTimeslots.get(i));
             timeslot = new Timeslot();
             timeslot.setFatherParameters(id);
             timeslot.setTimeStart(eventMap.get("startTime"));
             timeslot.setTimeEnd(eventMap.get("endTime"));
-            timeslot.save(new SaveTimeslotCallback(i+1, composedEvents.size()));
+            timeslot.save(new SaveTimeslotCallback(i + 1, composedTimeslots.size()));
         }
 
     }
 
-    private void sendUpdatedEvents() {
+    /**
+     * Saves the edited timeslots
+     */
+    private void saveUpdatedTimeslots() {
         List<CustomWeekEvent> events = new ArrayList<>();
         CustomWeekEvent currentEvent;
         Map<String, String> eventMap;
         Timeslot timeslot;
-        for (int i = 0; i < composedEvents.size(); i++) {
-            currentEvent = composedEvents.get(i);
+        for (int i = 0; i < composedTimeslots.size(); i++) {
+            currentEvent = composedTimeslots.get(i);
             if (currentEvent.isEdited() && !currentEvent.isNew()) {
                 events.add(currentEvent);
             }
         }
-        if(events.size() == 0){
+        if (events.size() == 0) {
             progressDialog.dismiss();
         }
         for (int i = 0; i < events.size(); i++) {
@@ -571,13 +637,16 @@ public class ScheduleActivity extends AppCompatActivity {
             timeslot.setFatherParameters(DataExchanger.getInstance().getSchedule().getId());
             timeslot.setTimeStart(eventMap.get("starTime"));
             timeslot.setTimeEnd(eventMap.get("endTime"));
-            timeslot.save(new UpdateTimeslotsCallback(i+1, events.size()));
+            //Backend save request
+            timeslot.save(new SaveUpdatedTimeslotsCallback(i + 1, events.size()));
         }
-
 
 
     }
 
+    /**
+     * Callback to {@link #saveTimeslots(String)}
+     */
     private class SaveTimeslotCallback implements CallOnHttpError<Timeslot>, CallOnNext<Timeslot>, CallOnNoHttpError<Timeslot> {
         int index, tot;
 
@@ -588,7 +657,15 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public void onHttpError(HttpException e) {
+            LoginManager.getInstance().reLogin(e, ScheduleActivity.this, null);
+            String msg;
+            if (e.getCause().code() == 500) {
+                msg = "Internal Server Error, please try again later";
 
+            } else {
+                msg = "Communication Error, please try again later";
+            }
+            ScheduleActivity.this.createSnackBar(msg);
         }
 
         @Override
@@ -598,7 +675,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 public void run() {
                     if (index == tot) {
                         if (editMode) {
-                            sendUpdatedEvents();
+                            saveUpdatedTimeslots();
                         } else {
                             progressDialog.dismiss();
                             Intent intent = new Intent(ScheduleActivity.this, DashboardActivity.class);
@@ -612,21 +689,32 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public void onNoHttpError(NoHttpException e) {
-
+            checkError();
         }
     }
 
-    private class UpdateTimeslotsCallback implements CallOnHttpError<Timeslot>, CallOnNext<Timeslot>, CallOnNoHttpError<Timeslot> {
+    /**
+     * Callback to {@link #saveUpdatedTimeslots()}
+     */
+    private class SaveUpdatedTimeslotsCallback implements CallOnHttpError<Timeslot>, CallOnNext<Timeslot>, CallOnNoHttpError<Timeslot> {
         private int index, tot;
 
-        public UpdateTimeslotsCallback(int i, int size) {
+        public SaveUpdatedTimeslotsCallback(int i, int size) {
             index = i;
             tot = size;
         }
 
         @Override
         public void onHttpError(HttpException e) {
+            LoginManager.getInstance().reLogin(e, ScheduleActivity.this, null);
+            String msg;
+            if (e.getCause().code() == 500) {
+                msg = "Internal Server Error, please try again later";
 
+            } else {
+                msg = "Communication Error, please try again later";
+            }
+            ScheduleActivity.this.createSnackBar(msg);
         }
 
         @Override
@@ -644,20 +732,26 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public void onNoHttpError(NoHttpException e) {
-
+            checkError();
         }
     }
 
+    /**
+     * Saves the deletion of timeslots by the user
+     */
     private void deleteTimeslots() {
-        if(deletedEvents.size() == 0){
+        if (deletedTimeslots.size() == 0) {
             progressDialog.dismiss();
         }
-        for (int i = 0; i < deletedEvents.size(); i++) {
-            fromIdToTimeslot.get(deletedEvents.get(i)).delete(new DeleteTimeslotCallback(i+1, deletedEvents.size()));
+        for (int i = 0; i < deletedTimeslots.size(); i++) {
+            fromIdToTimeslot.get(deletedTimeslots.get(i)).delete(new DeleteTimeslotCallback(i + 1, deletedTimeslots.size()));
         }
 
     }
 
+    /**
+     * Callback to {@link #deletedTimeslots}
+     */
     private class DeleteTimeslotCallback implements CallOnHttpError<Timeslot>, CallOnNext<Timeslot>, CallOnNoHttpError<Timeslot> {
         private int index, tot;
 
@@ -668,7 +762,15 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public void onHttpError(HttpException e) {
+            LoginManager.getInstance().reLogin(e, ScheduleActivity.this, null);
+            String msg;
+            if (e.getCause().code() == 500) {
+                msg = "Internal Server Error, please try again later";
 
+            } else {
+                msg = "Communication Error, please try again later";
+            }
+            ScheduleActivity.this.createSnackBar(msg);
         }
 
         @Override
@@ -687,14 +789,25 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public void onNoHttpError(NoHttpException e) {
-
+            checkError();
         }
     }
 
-    private class DeleteScheduleCallback implements CallOnHttpError<com.plunner.plunner.models.models.employee.Calendar>, CallOnNext<com.plunner.plunner.models.models.employee.Calendar>, CallOnNoHttpError<com.plunner.plunner.models.models.employee.Calendar>  {
+    /**
+     * Callback to {@link #deleteSchedule()}
+     */
+    private class DeleteScheduleCallback implements CallOnHttpError<com.plunner.plunner.models.models.employee.Calendar>, CallOnNext<com.plunner.plunner.models.models.employee.Calendar>, CallOnNoHttpError<com.plunner.plunner.models.models.employee.Calendar> {
         @Override
         public void onHttpError(HttpException e) {
+            LoginManager.getInstance().reLogin(e, ScheduleActivity.this, null);
+            String msg;
+            if (e.getCause().code() == 500) {
+                msg = "Internal Server Error, please try again later";
 
+            } else {
+                msg = "Communication Error, please try again later";
+            }
+            ScheduleActivity.this.createSnackBar(msg);
         }
 
         @Override
@@ -711,8 +824,40 @@ public class ScheduleActivity extends AppCompatActivity {
 
         @Override
         public void onNoHttpError(NoHttpException e) {
-
+            checkError();
         }
+    }
+
+    /**
+     * Checks the kind of non http error occured(check if it is caused by the absence of network)
+     */
+    private void checkError() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        String msg;
+        if (!isConnected) {
+            msg = "No network";
+        } else {
+            msg = "Communication error, please try again later";
+        }
+        createSnackBar(msg);
+    }
+
+    /**
+     * Creates an alert snackbar with the given message(the created snackbar has a red background)
+     *
+     * @param message The message to be displayed in the created snackbar
+     */
+    private void createSnackBar(String message) {
+        Snackbar snackbar;
+        snackbar = Snackbar.make(findViewById(R.id.compose_schedule_root), message, Snackbar.LENGTH_LONG);
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+        snackbar.show();
     }
 }
 

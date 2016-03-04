@@ -34,20 +34,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Populates the view with data about the user
+     */
     private void retrieveFields() {
         nameField.setText(DataExchanger.getInstance().getUser().getName());
         emailField.setText(DataExchanger.getInstance().getUser().getEmail());
-    }
-
-    /*public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_user_settings, menu);
-        return true;
-    }*/
-    public void retrieveFields(Employee employee){
-        nameField.setText(employee.getName());
-        emailField.setText(employee.getEmail());
-
     }
 
 }

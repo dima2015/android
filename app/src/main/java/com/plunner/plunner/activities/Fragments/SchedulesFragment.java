@@ -2,10 +2,14 @@ package com.plunner.plunner.activities.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +27,7 @@ import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
+import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.Model;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Calendar;
@@ -118,7 +123,7 @@ public class SchedulesFragment extends Fragment {
     }
 
     private void onRefreshCallback() {
-        retrieveSchedules();
+        retrieveSchedules(true);
     }
 
     public void notifyContentChange() {
@@ -151,12 +156,12 @@ public class SchedulesFragment extends Fragment {
 
     public void initSequence() {
         //mode = 1;
-        retrieveSchedules();
+        retrieveSchedules(false);
     }
 
-    private void retrieveSchedules() {
+    private void retrieveSchedules(Boolean toRefresh) {
         ModelList<Calendar> calendars = (ModelList<Calendar>) DataExchanger.getInstance().getUser().getCalendars().getInstance();
-        if(calendars.getModels().size() == 0){
+        if(calendars.getModels().size() == 0 || toRefresh){
             DataExchanger.getInstance().getUser().getCalendars().load(new SchedulesCallback());
         }
         else{
@@ -165,10 +170,23 @@ public class SchedulesFragment extends Fragment {
 
     }
 
+    public void refresh() {
+        swipeRefreshLayout.setRefreshing(true);
+        onRefreshCallback();
+    }
+
     private class SchedulesCallback implements CallOnHttpError<ModelList<Calendar>>, CallOnNext<ModelList<Calendar>>, CallOnNoHttpError<ModelList<Calendar>> {
         @Override
         public void onHttpError(HttpException e) {
+            LoginManager.getInstance().reLogin(e, getActivity(), null);
+            String msg;
+            if (e.getCause().code() == 500) {
+                msg = "Internal Server Error, please try again later";
 
+            } else {
+                msg = "Communication Error, please try again later";
+            }
+            SchedulesFragment.this.createSnackBar(msg);
         }
 
         @Override
@@ -183,7 +201,7 @@ public class SchedulesFragment extends Fragment {
 
         @Override
         public void onNoHttpError(NoHttpException e) {
-
+            checkError();
         }
     }
 
@@ -217,5 +235,36 @@ public class SchedulesFragment extends Fragment {
         // Note: getValues() is a method in your ArrayAdapter subclass
         savedState.putInt("mode", 0);
 
+    }
+    /**
+     * Checks the kind of non http error occured(check if it is caused by the absence of network)
+     */
+    private void checkError() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        String msg;
+        if (!isConnected) {
+            msg = "No network";
+        } else {
+            msg = "Communication error, please try again later";
+        }
+        createSnackBar(msg);
+    }
+
+    /**
+     * Creates an alert snackbar with the given message(the created snackbar has a red background)
+     *
+     * @param message The message to be displayed in the created snackbar
+     */
+    private void createSnackBar(String message) {
+        Snackbar snackbar;
+        snackbar = Snackbar.make(getActivity().findViewById(R.id.dashboard_activity_root), message, Snackbar.LENGTH_LONG);
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
+        snackbar.show();
     }
 }
