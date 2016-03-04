@@ -1,21 +1,22 @@
 package com.plunner.plunner.activities;
 
-import android.content.Context;
-import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
-import com.plunner.plunner.activities.activities.ScheduleActivity;
+import com.plunner.plunner.R;
 import com.plunner.plunner.activities.activities.SettingsActivity;
-import com.plunner.plunner.models.login.LoginException;
-import com.plunner.plunner.models.login.LoginManager;
-import com.plunner.plunner.models.models.employee.Employee;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.allOf;
 
 /**
  * Created by giorgiopea on 04/03/16.
@@ -25,16 +26,14 @@ import org.junit.runner.RunWith;
 public class SettingsActivityTest {
 
     @Rule
-    public ActivityTestRule<SettingsActivity> activityRule =  new ActivityTestRule<SettingsActivity>(SettingsActivity.class) {
-        @Override
-        protected Intent getActivityIntent() {
-            Context targetContext = InstrumentationRegistry.getInstrumentation()
-                    .getTargetContext();
-            Intent result = new Intent(targetContext, SettingsActivity.class);
-            result.putExtra("TestingFlag", true);
-            return result;
-        }
-    };
+    public ActivityTestRule<SettingsActivity> activityRule = new ActivityTestRule<>(
+            SettingsActivity.class);
 
+    @Test
+    public void viewPresence(){
+        onView(withId(R.id.activity_user_settings_email)).check(ViewAssertions.matches(isDisplayed()));
+        onView(withId(R.id.activity_user_settings_name)).check(ViewAssertions.matches(isDisplayed()));
+        onView(allOf(withId(R.id.activity_user_settings_pwd), withText("Password"))).check(ViewAssertions.matches(isDisplayed()));
+    }
 
 }

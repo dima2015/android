@@ -66,4 +66,5 @@
     <string name="emptyStateMMeetings">Sorry, no meetings managed by you at the moment</string>
     <string name="emptyStateSchedules">Sorry, no composed schedules for you at the moment</string>
     <string name="refresh_schedules">Refresh schedules</string>
+    <string name="minutes">mins</string>
 </resources>

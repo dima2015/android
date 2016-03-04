@@ -38,7 +38,7 @@
             android:layout_marginBottom="20dp">
 
             <EditText
-                android:id="@+id/activity_add_meeting_title"
+                android:id="@+id/activity_meeting_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableRight="@drawable/pencil_icon"
@@ -47,7 +47,7 @@
                 android:textColorHint="@color/light_gray" />
 
             <TextView
-                android:id="@+id/activity_add_meeting_meeting_title_err"
+                android:id="@+id/activity_meeting_title_err"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/error_field_required"
@@ -65,7 +65,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <EditText
-            android:id="@+id/add_meeting_desc"
+            android:id="@+id/activity_meeting_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableRight="@drawable/pencil_icon"
@@ -115,7 +115,7 @@
             android:orientation="horizontal">
 
             <SeekBar
-                android:id="@+id/duration_seek"
+                android:id="@+id/activity_meeting_duration_seek"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
@@ -123,7 +123,7 @@
                 android:layout_weight="0.7" />
 
             <TextView
-                android:id="@+id/add_meeting_duration"
+                android:id="@+id/activity_meeting_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
@@ -132,11 +132,10 @@
                 android:textColor="@color/colorPrimary" />
 
             <TextView
-                android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
-                android:text="mins"
+                android:text="@string/minutes"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/colorPrimary" />
         </LinearLayout>
@@ -170,7 +169,7 @@
             android:scrollbars="none">
 
             <LinearLayout
-                android:id="@+id/activity_add_meeting_months_picker"
+                android:id="@+id/activity_meeting_months_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -187,7 +186,7 @@
             android:scrollbars="none">
 
             <LinearLayout
-                android:id="@+id/activity_add_meeting_days_picker"
+                android:id="@+id/activity_meeting_days_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -198,13 +197,11 @@
         </HorizontalScrollView>
 
         <com.alamkanak.weekview.WeekView
-            android:id="@+id/activity_add_meeting_mweekview"
+            android:id="@+id/activity_meeting_mweekview"
             android:layout_width="match_parent"
             android:layout_height="1500dp"
             android:layout_marginTop="15dp"
             app:columnGap="8dp"
-            android:nestedScrollingEnabled="true"
-
             app:dayBackgroundColor="#05000000"
             app:eventTextColor="@android:color/white"
             app:headerColumnBackground="#ffffffff"

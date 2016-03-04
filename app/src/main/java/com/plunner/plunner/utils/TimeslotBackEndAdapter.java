@@ -6,6 +6,8 @@ import java.util.Map;
 
 /**
  * Created by giorgiopea on 01/03/16.
+ *
+ * A singleton class that provides adaptation of timeslots beetwen the frontend and the backend
  */
 public class TimeslotBackEndAdapter {
 
@@ -21,6 +23,11 @@ public class TimeslotBackEndAdapter {
     private TimeslotBackEndAdapter() {
     }
 
+    /**
+     * Adapts a timeslot between the frontend and the backend
+     * @param timeslot The timeslot to be adapted
+     * @return A map that represent the adapted timeslot
+     */
     public Map<String, String> adapt(CustomWeekEvent timeslot) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Map<String, String> map = new HashMap<>();

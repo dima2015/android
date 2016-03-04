@@ -12,6 +12,8 @@ import java.util.Map;
 
 /**
  * Created by giorgiopea on 01/03/16.
+ *
+ * A singleton class that provides adaptation of timeslots beetwen the backend and the backend
  */
 public class TimeslotFrontEndAdapter {
 
@@ -26,7 +28,12 @@ public class TimeslotFrontEndAdapter {
 
     private TimeslotFrontEndAdapter() {
     }
-
+    /**
+     * Adapts a timeslot between the backend and the frontend
+     * @param startDate the start date of the backend timeslot
+     * @param endDate the end dare of the backend timeslot
+     * @return A map that represent the adapted timeslot
+     */
     public Map<String, Calendar> adapt(String startDate, String endDate) throws ParseException {
         Date parsedOne, parsedTwo;
         Map<String, Calendar> toReturn = new HashMap<>();

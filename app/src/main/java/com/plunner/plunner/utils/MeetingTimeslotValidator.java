@@ -6,21 +6,30 @@ import java.util.TimeZone;
 /**
  * Created by giorgiopea on 01/03/16.
  *
+ * A singleton class that provides validation of a meeting timeslots against the following rule:
+ * If today is not sunday then a meeting timeslots can start any day from the monday of the next week,
+ * otherwise it can start any day from the monday of the next next week
  */
-public class TimeslotValidator {
+public class MeetingTimeslotValidator {
+    //Instance
+    private static MeetingTimeslotValidator instance;
 
-    private static TimeslotValidator instance;
-
-    public static TimeslotValidator getInstance(){
+    public static MeetingTimeslotValidator getInstance(){
         if(instance == null){
-            instance = new TimeslotValidator();
+            instance = new MeetingTimeslotValidator();
         }
         return instance;
     }
 
-    private TimeslotValidator() {
+    private MeetingTimeslotValidator() {
     }
 
+    /**
+     * Validates a meeting timeslot
+     * @param calendar The start time of the meeting timeslot to validate
+     * @param todayDate An optional date for today (used for testing purposes)
+     * @return true If the meeting timeslot is valid, otherwise false
+     */
     public boolean validate(Calendar calendar, Calendar todayDate){
         Calendar today, cloned_today;
         if(todayDate == null){

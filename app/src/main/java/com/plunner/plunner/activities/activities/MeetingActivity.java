@@ -50,7 +50,7 @@ import com.plunner.plunner.utils.DataExchanger;
 import com.plunner.plunner.utils.CustomWeekEvent;
 import com.plunner.plunner.utils.TimeslotBackEndAdapter;
 import com.plunner.plunner.utils.TimeslotFrontEndAdapter;
-import com.plunner.plunner.utils.TimeslotValidator;
+import com.plunner.plunner.utils.MeetingTimeslotValidator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -107,12 +107,12 @@ public class MeetingActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         //View elements catch
-        meetingTitle = (EditText) findViewById(R.id.activity_add_meeting_title);
-        meetingDesc = (EditText) findViewById(R.id.add_meeting_desc);
-        meetingDuration = (TextView) findViewById(R.id.add_meeting_duration);
+        meetingTitle = (EditText) findViewById(R.id.activity_meeting_title);
+        meetingDesc = (EditText) findViewById(R.id.activity_meeting_desc);
+        meetingDuration = (TextView) findViewById(R.id.activity_meeting_duration);
         groupsSpinner = (Spinner) findViewById(R.id.add_meeting_spinner);
         //Seekbar setup
-        seekBar = (SeekBar) findViewById(R.id.duration_seek);
+        seekBar = (SeekBar) findViewById(R.id.activity_meeting_duration_seek);
         seekBar.setMax(300);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -135,9 +135,9 @@ public class MeetingActivity extends AppCompatActivity {
         //Timeslot day widget and calendar picker setup start
         calendarPickersViewSupport = CalendarPickersViewSupport.getInstance();
         calendarPickersViewSupport.setActivity(this);
-        calendarPickersViewSupport.setDaysPicker((LinearLayout) findViewById(R.id.activity_add_meeting_days_picker));
-        calendarPickersViewSupport.setMonthsPicker((LinearLayout) findViewById(R.id.activity_add_meeting_months_picker));
-        mWeekView = (WeekView) findViewById(R.id.activity_add_meeting_mweekview);
+        calendarPickersViewSupport.setDaysPicker((LinearLayout) findViewById(R.id.activity_meeting_days_picker));
+        calendarPickersViewSupport.setMonthsPicker((LinearLayout) findViewById(R.id.activity_meeting_months_picker));
+        mWeekView = (WeekView) findViewById(R.id.activity_meeting_mweekview);
         //Pickers init
         calendarPickersViewSupport.createViews(-1);
         //createCalendarPickersView(-1);
@@ -271,7 +271,7 @@ public class MeetingActivity extends AppCompatActivity {
     private boolean validateData() {
         boolean toReturn = true;
         //Error message for the meeting
-        TextView errorMsg = (TextView) findViewById(R.id.activity_add_meeting_meeting_title_err);
+        TextView errorMsg = (TextView) findViewById(R.id.activity_meeting_title_err);
 
         if (meetingTitle.getText().toString().equals("")) {
             errorMsg.setVisibility(View.VISIBLE);
@@ -399,7 +399,7 @@ public class MeetingActivity extends AppCompatActivity {
      * @param time The date that corresponds to that area
      */
     private void onEmptyAreaClick(Calendar time) {
-        if (TimeslotValidator.getInstance().validate(time, null)) {
+        if (MeetingTimeslotValidator.getInstance().validate(time, null)) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             actionBar.hide();
 
@@ -809,7 +809,7 @@ public class MeetingActivity extends AppCompatActivity {
         meetingTitle.setText(selectedMeeting.getTitle());
         meetingDesc.setText(selectedMeeting.getDescription());
         int duration = Integer.parseInt(selectedMeeting.getDuration());
-        meetingDuration.setText((duration / 60));
+        meetingDuration.setText(Integer.toString(duration / 60));
         seekBar.setProgress(duration / 60 - 15);
         retrieveMeetingTimeslots();
     }
