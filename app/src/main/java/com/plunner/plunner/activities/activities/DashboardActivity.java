@@ -16,7 +16,7 @@ import android.view.View;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.adapters.FragmentsTabViewAdapter;
-import com.plunner.plunner.activities.fragments.MeetingsFragment;
+import com.plunner.plunner.activities.fragments.MeetingsListFragment;
 import com.plunner.plunner.activities.fragments.SchedulesFragment;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
@@ -25,7 +25,7 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.employee.Employee;
-import com.plunner.plunner.utils.ComManager;
+import com.plunner.plunner.utils.DataExchanger;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
@@ -36,9 +36,9 @@ import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 public class DashboardActivity extends AppCompatActivity {
 
 
-    private MeetingsFragment meetingsFragment;
+    private MeetingsListFragment meetingsListFragment;
     private SchedulesFragment schedulesFragment;
-    private ComManager comManager;
+    private DataExchanger dataExchanger;
 
 
     @Override
@@ -51,6 +51,7 @@ public class DashboardActivity extends AppCompatActivity {
         Log.w("2","I'm started");
         //Fab setting
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.dashboard_activity_fab);
+        dataExchanger = DataExchanger.getInstance();
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
@@ -69,7 +70,7 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
                 try {
-                    if (!comManager.isUserPlanner()) {
+                    if (!dataExchanger.getUser().isPlanner()) {
                         navigationMenu.removeItem(R.id.dashboard_activity_fab_add_meeting);
                     }
                 } catch (NullPointerException e) {
@@ -82,8 +83,8 @@ public class DashboardActivity extends AppCompatActivity {
         //Tab layout setting
         TabLayout tabLayout = (TabLayout) findViewById(R.id.dashboard_activity_tab_layout);
         ViewPager viewPager = (ViewPager) findViewById(R.id.dashboard_activity_view_pager);
-        comManager = ComManager.getInstance();
-        comManager.login(this, new LoginManager.storeTokenCallback() {
+
+        LoginManager.getInstance().storeToken(this, new LoginManager.storeTokenCallback() {
             @Override
             public void onError(Throwable e) {
                 //TODO manage
@@ -92,14 +93,14 @@ public class DashboardActivity extends AppCompatActivity {
 
             @Override
             public void onOk(String authtoken) {
-                comManager.retrieveUser(new retrieveUserCallaback());
+                (new Employee<>()).getFactory(new retrieveUserCallaback());
             }
         });
         FragmentsTabViewAdapter fragmentsTabViewAdapter = new FragmentsTabViewAdapter(getSupportFragmentManager());
         //Binding tabs to fragments
-        meetingsFragment = new MeetingsFragment();
+        meetingsListFragment = new MeetingsListFragment();
         schedulesFragment = new SchedulesFragment();
-        fragmentsTabViewAdapter.addFragment(meetingsFragment, "Meetings");
+        fragmentsTabViewAdapter.addFragment(meetingsListFragment, "Meetings");
         fragmentsTabViewAdapter.addFragment(schedulesFragment, "Schedules");
         viewPager.setAdapter(fragmentsTabViewAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -129,29 +130,29 @@ public class DashboardActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         Log.w("1", "I'm resumed");
-        if(ComManager.getInstance().getUser() != null){
+        if(DataExchanger.getInstance().getUser() != null){
 
         }
 
     }
 
     private void switchToUserProfileActivity() {
-        startActivity(new Intent(this, UserSettingsActivity.class));
+        startActivity(new Intent(this, SettingsActivity.class));
     }
 
     private void switchToAddMeetingActivity() {
-        Intent intent = new Intent(this, AddMeeting.class);
+        Intent intent = new Intent(this, MeetingActivity.class);
         startActivity(intent);
     }
 
     private void switchToScopedAddActivity() {
-        Intent intent = new Intent(this, ComposeScheduleActivity.class);
+        Intent intent = new Intent(this, ScheduleActivity.class);
         startActivity(intent);
     }
 
 
     public void switchMeetingsType(View v) {
-        meetingsFragment.switchMeetingsType(v);
+        meetingsListFragment.switchMeetingsType(v);
     }
 
 
@@ -166,8 +167,8 @@ public class DashboardActivity extends AppCompatActivity {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    comManager.setUser(employee);
-                    meetingsFragment.initSequence();
+                    dataExchanger.setUser(employee);
+                    meetingsListFragment.initSequence();
                     schedulesFragment.initSequence();
                 }
             });

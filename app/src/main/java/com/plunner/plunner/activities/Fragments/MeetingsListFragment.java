@@ -18,7 +18,7 @@ import android.widget.ProgressBar;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.adapters.MeetingsListAdapter;
-import com.plunner.plunner.activities.activities.AddMeeting;
+import com.plunner.plunner.activities.activities.MeetingActivity;
 import com.plunner.plunner.activities.activities.MeetingDetailActivity;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
@@ -29,13 +29,13 @@ import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Group;
 import com.plunner.plunner.models.models.employee.Meeting;
 import com.plunner.plunner.models.models.employee.planner.Planner;
-import com.plunner.plunner.utils.ComManager;
+import com.plunner.plunner.utils.DataExchanger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MeetingsFragment extends Fragment {
+public class MeetingsListFragment extends Fragment {
 
     private List<Meeting> tbpMeetings;
     private List<Meeting> pMeetings;
@@ -131,10 +131,10 @@ public class MeetingsFragment extends Fragment {
                 break;
         }
 
-        ComManager.getInstance().setExchangeMeeting(selectedMeeting);
+        DataExchanger.getInstance().setMeeting(selectedMeeting);
 
         if (isMeetingManaged) {
-            intent = new Intent(getActivity(), AddMeeting.class);
+            intent = new Intent(getActivity(), MeetingActivity.class);
             intent.putExtra("dummy_extra", "");
         } else {
             intent = new Intent(getActivity(), MeetingDetailActivity.class);
@@ -197,31 +197,31 @@ public class MeetingsFragment extends Fragment {
 
 
     private void retrieveTBPMeetings() {
-        if(ComManager.getInstance().getUser().getGroups() == null){
-            ComManager.getInstance().retrieveGroups(new tbpMeetingsCallback());
+        if(DataExchanger.getInstance().getUser().getGroups() == null){
+            DataExchanger.getInstance().getUser().getGroups().load(new tbpMeetingsCallback());
         }
         else{
-            insertTBPMeetings((ModelList<Group>) ComManager.getInstance().getUser().getGroups().getInstance());
+            insertTBPMeetings((ModelList<Group>) DataExchanger.getInstance().getUser().getGroups().getInstance());
         }
 
     }
 
     private void retrievePMeetings() {
-        if( ComManager.getInstance().getUser().getMeetings() == null){
-            ComManager.getInstance().retrievePlannedMeetings(new pMeetingsCallback());
+        if( DataExchanger.getInstance().getUser().getMeetings() == null){
+            DataExchanger.getInstance().getUser().getMeetings().load(new pMeetingsCallback());
         }
         else{
-            insertPMeetings((ModelList<Meeting>) ComManager.getInstance().getUser().getMeetings().getInstance());
+            insertPMeetings((ModelList<Meeting>) DataExchanger.getInstance().getUser().getMeetings().getInstance());
         }
 
     }
 
     private void retrieveMMeetings() {
-        if(((Planner) ComManager.getInstance().getUser()).getGroupsManaged() == null){
-            ComManager.getInstance().retrieveManagedGroups(new mMeetingsCallback());
+        if(((Planner) DataExchanger.getInstance().getUser()).getGroupsManaged() == null){
+            ((Planner) DataExchanger.getInstance().getUser()).getGroupsManaged().load(new mMeetingsCallback());
         }
         else{
-            elaborateManagedGroups(((Planner) ComManager.getInstance().getUser()).getGroupsManaged().getInstance());
+            elaborateManagedGroups(((Planner) DataExchanger.getInstance().getUser()).getGroupsManaged().getInstance());
         }
 
     }
@@ -244,7 +244,8 @@ public class MeetingsFragment extends Fragment {
         //mode = 1;
         retrieveTBPMeetings();
         retrievePMeetings();
-        if (ComManager.getInstance().isUserPlanner()) {
+
+        if (DataExchanger.getInstance().getUser().isPlanner()) {
             scrollView.getChildAt(2).setVisibility(View.VISIBLE);
             retrieveMMeetings();
         }

@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.models.models.employee.Meeting;
-import com.plunner.plunner.utils.ComManager;
+import com.plunner.plunner.utils.DataExchanger;
 
 public class MeetingDetailActivity extends AppCompatActivity {
 
@@ -44,7 +44,7 @@ public class MeetingDetailActivity extends AppCompatActivity {
 
 
     private void fillData() {
-        Meeting meeting = ComManager.getInstance().getExchangeMeeting();
+        Meeting meeting = DataExchanger.getInstance().getMeeting();
         meetingTitle.setText(meeting.getTitle());
         meetingDesc.setText(meeting.getDescription());
         int duration = Integer.parseInt(meeting.getDuration())/60;

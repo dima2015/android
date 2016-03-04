@@ -16,7 +16,7 @@ import android.widget.ProgressBar;
 
 import com.plunner.plunner.R;
 import com.plunner.plunner.activities.adapters.SchedulesListAdapter;
-import com.plunner.plunner.activities.activities.ComposeScheduleActivity;
+import com.plunner.plunner.activities.activities.ScheduleActivity;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
@@ -24,7 +24,7 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Calendar;
-import com.plunner.plunner.utils.ComManager;
+import com.plunner.plunner.utils.DataExchanger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,8 +104,8 @@ public class SchedulesFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ComManager.getInstance().setExchangeSchedule(composedSchedules.get(position));
-                Intent intent = new Intent(getActivity(), ComposeScheduleActivity.class);
+                DataExchanger.getInstance().setSchedule(composedSchedules.get(position));
+                Intent intent = new Intent(getActivity(), ScheduleActivity.class);
                 intent.putExtra("mode", "edit");
                 startActivity(intent);
             }
@@ -141,7 +141,13 @@ public class SchedulesFragment extends Fragment {
     }
 
     private void retrieveSchedules() {
-        ComManager.getInstance().retrieveSchedules(new SchedulesCallback());
+        if(DataExchanger.getInstance().getUser().getCalendars() == null){
+            DataExchanger.getInstance().getUser().getCalendars().load(new SchedulesCallback());
+        }
+        else{
+            insertSchedules((ModelList<Calendar>) DataExchanger.getInstance().getUser().getCalendars().getInstance());
+        }
+
     }
 
     private class SchedulesCallback implements CallOnHttpError<ModelList<Calendar>>, CallOnNext<ModelList<Calendar>>, CallOnNoHttpError<ModelList<Calendar>> {

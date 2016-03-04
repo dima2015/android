@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.activities.ComposeScheduleActivity"
+            android:name=".activities.activities.ScheduleActivity"
             android:label="@string/title_activity_compose_schedule"
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/CustomTheme" />
@@ -66,11 +66,11 @@
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.activities.AddMeeting"
+            android:name=".activities.activities.MeetingActivity"
             android:label="Add meeting"
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/CustomTheme" />
-        <activity android:name=".activities.activities.UserSettingsActivity"
+        <activity android:name=".activities.activities.SettingsActivity"
             android:label="Your settings"
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/AppTheme.NoActionBar" />

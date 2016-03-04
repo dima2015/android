@@ -43,7 +43,7 @@ import com.plunner.plunner.models.models.employee.planner.Meeting;
 import com.plunner.plunner.models.models.employee.planner.MeetingTimeslot;
 import com.plunner.plunner.models.models.employee.planner.Planner;
 import com.plunner.plunner.utils.CalendarPickersViewSupport;
-import com.plunner.plunner.utils.ComManager;
+import com.plunner.plunner.utils.DataExchanger;
 import com.plunner.plunner.utils.CustomWeekEvent;
 import com.plunner.plunner.utils.TimeslotBackEndAdapter;
 import com.plunner.plunner.utils.TimeslotFrontEndAdapter;
@@ -58,7 +58,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class AddMeeting extends AppCompatActivity {
+public class MeetingActivity extends AppCompatActivity {
     /**
      * Holds a reference to the WeekView of the activity, that is to say a calendar view that lets users
      * see events for a given day
@@ -140,7 +140,7 @@ public class AddMeeting extends AppCompatActivity {
         deletedEvents = new ArrayList<>();
         idTimeslots = new HashMap<>();
         if (editMode) {
-            selectedMeeting = (Meeting) ComManager.getInstance().getExchangeMeeting();
+            selectedMeeting = (Meeting) DataExchanger.getInstance().getMeeting();
             retrieveMeetingInformation();
         }
         retrieveGroups();
@@ -185,7 +185,7 @@ public class AddMeeting extends AppCompatActivity {
         alertDialogB.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                progressDialog = ProgressDialog.show(AddMeeting.this, "", "Deleting meeting", true);
+                progressDialog = ProgressDialog.show(MeetingActivity.this, "", "Deleting meeting", true);
                 selectedMeeting.delete(new DeleteMeetingCallback());
             }
         });
@@ -201,7 +201,7 @@ public class AddMeeting extends AppCompatActivity {
     }
 
     private void retrieveGroups() {
-        Planner planner = (Planner) ComManager.getInstance().getUser();
+        Planner planner = (Planner) DataExchanger.getInstance().getUser();
         if(planner.getGroupsManaged() == null){
             planner.getGroupsManaged().load(new ManagedGroupsCallback());
         }
@@ -496,7 +496,7 @@ public class AddMeeting extends AppCompatActivity {
 
         @Override
         public void onHttpError(HttpException e) {
-            AddMeeting.this.createSnackBar(e.getErrorBody());
+            MeetingActivity.this.createSnackBar(e.getErrorBody());
             Log.w("1", e.getErrorBody());
         }
 
@@ -510,7 +510,7 @@ public class AddMeeting extends AppCompatActivity {
                             sendUpdatedTimeslots();
                         } else {
                             progressDialog.dismiss();
-                            Intent intent = new Intent(AddMeeting.this, DashboardActivity.class);
+                            Intent intent = new Intent(MeetingActivity.this, DashboardActivity.class);
                             startActivity(intent);
                         }
 
@@ -583,7 +583,7 @@ public class AddMeeting extends AppCompatActivity {
         }
         if (updatedTimeslots.size() == 0) {
             progressDialog.dismiss();
-            startActivity(new Intent(AddMeeting.this, DashboardActivity.class));
+            startActivity(new Intent(MeetingActivity.this, DashboardActivity.class));
         }
         for (int i = 0; i < updatedTimeslots.size(); i++) {
             currentEvent = updatedTimeslots.get(i);
@@ -633,7 +633,7 @@ public class AddMeeting extends AppCompatActivity {
             }
             stringedGroups.add(currentGroups.get(i).getName());
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(AddMeeting.this, android.R.layout.simple_spinner_dropdown_item, stringedGroups);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MeetingActivity.this, android.R.layout.simple_spinner_dropdown_item, stringedGroups);
         groupsSpinner.setAdapter(adapter);
         groupsSpinner.setSelection(position);
         groupsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -703,7 +703,7 @@ public class AddMeeting extends AppCompatActivity {
                 @Override
                 public void run() {
                     progressDialog.dismiss();
-                    Intent intent = new Intent(AddMeeting.this, DashboardActivity.class);
+                    Intent intent = new Intent(MeetingActivity.this, DashboardActivity.class);
                     startActivity(intent);
                 }
             });
@@ -737,7 +737,7 @@ public class AddMeeting extends AppCompatActivity {
                 public void run() {
                     if (index == total) {
                         progressDialog.dismiss();
-                        startActivity(new Intent(AddMeeting.this, DashboardActivity.class));
+                        startActivity(new Intent(MeetingActivity.this, DashboardActivity.class));
                     }
                 }
             });

@@ -3,13 +3,12 @@ package com.plunner.plunner.activities.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.widget.TextView;
 
 import com.plunner.plunner.R;
-import com.plunner.plunner.utils.ComManager;
+import com.plunner.plunner.utils.DataExchanger;
 
-public class UserSettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     private TextView nameField;
     private TextView emailField;
@@ -30,8 +29,8 @@ public class UserSettingsActivity extends AppCompatActivity {
     }
 
     private void retrieveFields() {
-        nameField.setText(ComManager.getInstance().getUser().getName());
-        emailField.setText(ComManager.getInstance().getUser().getEmail());
+        nameField.setText(DataExchanger.getInstance().getUser().getName());
+        emailField.setText(DataExchanger.getInstance().getUser().getEmail());
     }
 
     /*public boolean onCreateOptionsMenu(Menu menu) {

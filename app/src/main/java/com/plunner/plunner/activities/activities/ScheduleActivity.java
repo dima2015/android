@@ -39,7 +39,7 @@ import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Timeslot;
 import com.plunner.plunner.utils.CalendarPickersViewSupport;
-import com.plunner.plunner.utils.ComManager;
+import com.plunner.plunner.utils.DataExchanger;
 import com.plunner.plunner.utils.CustomWeekEvent;
 import com.plunner.plunner.utils.TimeslotBackEndAdapter;
 import com.plunner.plunner.utils.TimeslotFrontEndAdapter;
@@ -56,7 +56,7 @@ import java.util.Map;
 /**
  * An activity that lets users compose a schedule by inserting a name for the schedule and some busy time slots
  */
-public class ComposeScheduleActivity extends AppCompatActivity {
+public class ScheduleActivity extends AppCompatActivity {
 
     /**
      * Holds a reference to the WeekView of the activity, that is to say a calendar view that lets users
@@ -128,7 +128,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         deletedEvents = new ArrayList<>();
         fromIdToTimeslot = new HashMap<>();
         if (editMode) {
-            exchangedSchedule = ComManager.getInstance().getExchangeSchedule();
+            exchangedSchedule = DataExchanger.getInstance().getSchedule();
             scheduleName.setText(exchangedSchedule.getName());
             setTitle(getResources().getText(R.string.edit_schedule));
             if (exchangedSchedule.getEnabled().equals("0")) {
@@ -189,7 +189,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         alertDialogB.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                progressDialog = ProgressDialog.show(ComposeScheduleActivity.this, "", "Deleting schedule", true);
+                progressDialog = ProgressDialog.show(ScheduleActivity.this, "", "Deleting schedule", true);
                 exchangedSchedule.delete(new DeleteScheduleCallback());
             }
         });
@@ -291,10 +291,10 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         scheduleName.clearFocus();
         if (isChecked) {
             scheduleStatus.setText(getResources().getText(R.string.enabled));
-            scheduleStatus.setTextColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.colorPrimary));
+            scheduleStatus.setTextColor(ContextCompat.getColor(ScheduleActivity.this, R.color.colorPrimary));
         } else {
             scheduleStatus.setText(getResources().getText(R.string.disabled));
-            scheduleStatus.setTextColor(ContextCompat.getColor(ComposeScheduleActivity.this, R.color.light_gray));
+            scheduleStatus.setTextColor(ContextCompat.getColor(ScheduleActivity.this, R.color.light_gray));
         }
     }
 
@@ -568,7 +568,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
         for (int i = 0; i < events.size(); i++) {
             eventMap = TimeslotBackEndAdapter.getInstance().adapt(events.get(i));
             timeslot = new Timeslot();
-            timeslot.setFatherParameters(ComManager.getInstance().getExchangeSchedule().getId());
+            timeslot.setFatherParameters(DataExchanger.getInstance().getSchedule().getId());
             timeslot.setTimeStart(eventMap.get("starTime"));
             timeslot.setTimeEnd(eventMap.get("endTime"));
             timeslot.save(new UpdateTimeslotsCallback(i+1, events.size()));
@@ -601,7 +601,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
                             sendUpdatedEvents();
                         } else {
                             progressDialog.dismiss();
-                            Intent intent = new Intent(ComposeScheduleActivity.this, DashboardActivity.class);
+                            Intent intent = new Intent(ScheduleActivity.this, DashboardActivity.class);
                             startActivity(intent);
                         }
                     }
@@ -678,7 +678,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
                 public void run() {
                     if (index == tot) {
                         progressDialog.dismiss();
-                        startActivity(new Intent(ComposeScheduleActivity.this, DashboardActivity.class));
+                        startActivity(new Intent(ScheduleActivity.this, DashboardActivity.class));
                     }
                 }
             });
@@ -703,7 +703,7 @@ public class ComposeScheduleActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     progressDialog.dismiss();
-                    startActivity(new Intent(ComposeScheduleActivity.this, DashboardActivity.class));
+                    startActivity(new Intent(ScheduleActivity.this, DashboardActivity.class));
                 }
             });
 
