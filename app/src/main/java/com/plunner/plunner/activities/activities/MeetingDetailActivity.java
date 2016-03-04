@@ -42,7 +42,9 @@ public class MeetingDetailActivity extends AppCompatActivity {
         return true;
     }
 
-
+    /**
+     * Fill the view associated with this activity with data related to a meeting
+     */
     private void fillData() {
         Meeting meeting = DataExchanger.getInstance().getMeeting();
         meetingTitle.setText(meeting.getTitle());

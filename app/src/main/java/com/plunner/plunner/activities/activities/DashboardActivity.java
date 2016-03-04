@@ -1,5 +1,6 @@
 package com.plunner.plunner.activities.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,7 +10,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,13 +31,25 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 /**
- * CODE REVISED, NEED DOCUMENT
+ * Entry point activity of the application, gives access to the creation and visualitation of meetings/schedules,
+ * it also lets the users see their settings(email, name, pwd)
+ *
+ * @author Giorgio Pea
+ *
  */
 public class DashboardActivity extends AppCompatActivity {
 
-
+    /**
+     * @see MeetingsListFragment
+     */
     private MeetingsListFragment meetingsListFragment;
+    /**
+     * @see SchedulesFragment
+     */
     private SchedulesFragment schedulesFragment;
+    /**
+     * @see DataExchanger
+     */
     private DataExchanger dataExchanger;
 
 
@@ -56,10 +68,10 @@ public class DashboardActivity extends AppCompatActivity {
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.dashboard_activity_fab_add_meeting:
-                        switchToAddMeetingActivity();
+                        switchToMeetingActivity();
                         return true;
                     case R.id.dashboard_activity_fab_add_schedule:
-                        switchToScopedAddActivity();
+                        switchToScheduleActivity();
                         return true;
                     default:
                         return super.onMenuItemSelected(menuItem);
@@ -69,6 +81,7 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
                 try {
+                    //I can plan a meeting iff i'm a planner
                     if (!dataExchanger.getUser().isPlanner()) {
                         navigationMenu.removeItem(R.id.dashboard_activity_fab_add_meeting);
                     }
@@ -83,18 +96,23 @@ public class DashboardActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.dashboard_activity_tab_layout);
         ViewPager viewPager = (ViewPager) findViewById(R.id.dashboard_activity_view_pager);
 
+        //Login, if the user is not authenticated the Login activity is started
+        /**
+         * @see LoginManager#storeToken(Activity)
+         */
         LoginManager.getInstance().storeToken(this, new LoginManager.storeTokenCallback() {
             @Override
             public void onError(Throwable e) {
                 //TODO manage
-                //TODO how do we proceed if the aauthenticator knwos the password but it is not able to verify it becaseu we have a connection lack?
+
             }
 
             @Override
             public void onOk(String authtoken) {
-                (new Employee<>()).getFactory(new retrieveUserCallaback());
+                (new Employee<>()).getFactory(new retrieveUserCallback());
             }
         });
+        //TabViewAdapter
         FragmentsTabViewAdapter fragmentsTabViewAdapter = new FragmentsTabViewAdapter(getSupportFragmentManager());
         //Binding tabs to fragments
         meetingsListFragment = new MeetingsListFragment();
@@ -107,7 +125,6 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_dashboard_activity, menu);
         return true;
     }
@@ -116,49 +133,61 @@ public class DashboardActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.menu_dashboard_activity_user) {
-            switchToUserProfileActivity();
+            switchToSettingsActivity();
             return true;
         }
-
+        else if(id == R.id.menu_dashboard_activityrefresh_meetings){
+            meetingsListFragment.refresh();
+            return true;
+        }
+        else if(id == R.id.menu_dashboard_activity_refresh_schedules){
+            schedulesFragment.refresh();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        Log.w("1", "I'm resumed");
-        if(DataExchanger.getInstance().getUser() != null){
-
-        }
-
-    }
-
-    private void switchToUserProfileActivity() {
+    /**
+     * Starts SettingsActivity
+     *
+     * @see SettingsActivity
+     */
+    private void switchToSettingsActivity() {
         startActivity(new Intent(this, SettingsActivity.class));
     }
+    /**
+     * Starts MeetingActivity
+     *
+     * @see MeetingActivity
+     */
+    private void switchToMeetingActivity() {
 
-    private void switchToAddMeetingActivity() {
-        Intent intent = new Intent(this, MeetingActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, MeetingActivity.class));
+    }
+    /**
+     * Starts ScheduleActivity
+     *
+     * @see ScheduleActivity
+     */
+    private void switchToScheduleActivity() {
+        startActivity(new Intent(this, ScheduleActivity.class));
     }
 
-    private void switchToScopedAddActivity() {
-        Intent intent = new Intent(this, ScheduleActivity.class);
-        startActivity(intent);
-    }
-
-
+    /**
+     * @see MeetingsListFragment#switchMeetingsType(View)
+     */
     public void switchMeetingsType(View v) {
         meetingsListFragment.switchMeetingsType(v);
     }
 
-
-    private class retrieveUserCallaback implements CallOnHttpError<Employee>, CallOnNext<Employee>, CallOnNoHttpError<Employee> {
+    /**
+     * A callback class that manages the response to the request of retrieving user information
+     */
+    private class retrieveUserCallback implements CallOnHttpError<Employee>, CallOnNext<Employee>, CallOnNoHttpError<Employee> {
         @Override
         public void onHttpError(HttpException e) {
-
+            LoginManager.getInstance().reLogin(e, DashboardActivity.this, null);
         }
 
         @Override
@@ -166,8 +195,11 @@ public class DashboardActivity extends AppCompatActivity {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+                    //Set the user information as globally av
                     dataExchanger.setUser(employee);
+                    //Populates the meeting list with meetings
                     meetingsListFragment.initSequence();
+                    //Populates the schedules list with schedules
                     schedulesFragment.initSequence();
                 }
             });
@@ -179,5 +211,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         }
     }
+
 
 }

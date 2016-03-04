@@ -2,10 +2,14 @@ package com.plunner.plunner.activities.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,15 +22,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.adapters.MeetingsListAdapter;
+import com.plunner.plunner.activities.activities.DashboardActivity;
 import com.plunner.plunner.activities.activities.MeetingActivity;
 import com.plunner.plunner.activities.activities.MeetingDetailActivity;
+import com.plunner.plunner.activities.adapters.MeetingsListAdapter;
 import com.plunner.plunner.models.adapters.HttpException;
 import com.plunner.plunner.models.adapters.NoHttpException;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnHttpError;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNext;
 import com.plunner.plunner.models.callbacks.interfaces.CallOnNoHttpError;
-import com.plunner.plunner.models.models.Model;
+import com.plunner.plunner.models.login.LoginManager;
 import com.plunner.plunner.models.models.ModelList;
 import com.plunner.plunner.models.models.employee.Group;
 import com.plunner.plunner.models.models.employee.Meeting;
@@ -78,6 +83,7 @@ public class MeetingsListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        //List view that contains the meetings
         ListView listView = (ListView) getActivity().findViewById(R.id.fragment_meetings_meetings_list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -91,9 +97,11 @@ public class MeetingsListFragment extends Fragment {
 
             }
         });
+        //Empty state messages set
         emptyStateTBP = (TextView) getActivity().findViewById(R.id.empty_state_tbp_meetings);
         emptyStateP = (TextView) getActivity().findViewById(R.id.empty_state_p_meetings);
         emptyStateM = (TextView) getActivity().findViewById(R.id.empty_state_m_meetings);
+        //
         scrollView = (LinearLayout) getActivity().findViewById(R.id.fragment_meetings_top_menu);
         loadingSpinner = (ProgressBar) getActivity().findViewById(R.id.fragment_meetings_loading_spinner);
         scrollView.getChildAt(mode - 1).setBackgroundResource(R.drawable.categorybutton_c);
@@ -101,6 +109,7 @@ public class MeetingsListFragment extends Fragment {
             loadingSpinner.setVisibility(View.VISIBLE);
         }
         adapter = new MeetingsListAdapter(getActivity(), content);
+        //SwipeRefreshLayout setting
         swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.fragment_meetings_refresh_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.colorPrimary, R.color.colorPrimaryDark);
         swipeRefreshLayout.setOnRefreshListener(
@@ -114,8 +123,11 @@ public class MeetingsListFragment extends Fragment {
         listView.setAdapter(adapter);
     }
 
+    /**
+     * Invoked when a user clicks on an item in the list of meetings
+     * @param position The position of the clicked item
+     */
     private void meetingClickedCallback(int position) {
-
         boolean isMeetingManaged;
         Meeting selectedMeeting;
         Intent intent;
@@ -138,9 +150,10 @@ public class MeetingsListFragment extends Fragment {
                 isMeetingManaged = false;
                 break;
         }
-
+        //sets meeting object to exchange
         DataExchanger.getInstance().setMeeting(selectedMeeting);
 
+        //Checks which activity invoke
         if (isMeetingManaged) {
             intent = new Intent(getActivity(), MeetingActivity.class);
             intent.putExtra("dummy_extra", "");
@@ -150,30 +163,9 @@ public class MeetingsListFragment extends Fragment {
         startActivity(intent);
     }
 
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        /*if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        //mListener = null;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-    }
-
+    /**
+     * Updates the content of the list of meetings in relation with {@link #mode}
+     */
     public void notifyContentChange() {
         content.clear();
         switch (mode) {
@@ -191,6 +183,10 @@ public class MeetingsListFragment extends Fragment {
         adapter.notifyDataSetChanged();
 
     }
+
+    /**
+     * Checks if there's the necessity to show an empty state msg
+     */
     private void checkEmptyState(){
         emptyStateTBP.setVisibility(View.GONE);
         emptyStateP.setVisibility(View.GONE);
@@ -211,10 +207,16 @@ public class MeetingsListFragment extends Fragment {
         }
 
     }
+
+    /**
+     * Switches the type of meetings displatyed(to be planned, planned, managed)
+     * @param v The button that triggered this switch
+     */
     public void switchMeetingsType(View v) {
         int tag = Integer.parseInt((String) v.getTag());
         ViewGroup viewGroup = (ViewGroup) v.getParent();
         if (tag != mode) {
+            //Buttons background change
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 viewGroup.getChildAt(i).setBackgroundResource(R.drawable.categorybutton);
             }
@@ -224,10 +226,13 @@ public class MeetingsListFragment extends Fragment {
         }
     }
 
-
-    private void retrieveTBPMeetings() {
+    /**
+     * Retrieves the to be planned meetings associated with the user
+     * @param toRefresh A flag that indicates if there's the necessity to force a new load of these meetings
+     */
+    private void retrieveTBPMeetings(Boolean toRefresh) {
         ModelList<Group> groups = (ModelList<Group>) DataExchanger.getInstance().getUser().getGroups().getInstance();
-        if(groups.getModels().size() == 0){
+        if(groups.getModels().size() == 0 || toRefresh){
             DataExchanger.getInstance().getUser().getGroups().load(new tbpMeetingsCallback());
         }
         else{
@@ -235,10 +240,13 @@ public class MeetingsListFragment extends Fragment {
         }
 
     }
-
-    private void retrievePMeetings() {
+    /**
+     * Retrieves the planned meetings associated with the user
+     * @param toRefresh A flag that indicates if there's the necessity to force a new load of these meetings
+     */
+    private void retrievePMeetings(Boolean toRefresh) {
         ModelList<Meeting> meetings = (ModelList<Meeting>) DataExchanger.getInstance().getUser().getMeetings().getInstance();
-        if( meetings.getModels().size() == 0){
+        if( meetings.getModels().size() == 0 || toRefresh){
             DataExchanger.getInstance().getUser().getMeetings().load(new pMeetingsCallback());
         }
         else{
@@ -246,10 +254,13 @@ public class MeetingsListFragment extends Fragment {
         }
 
     }
-
-    private void retrieveMMeetings() {
+    /**
+     * Retrieves the managed meetings associated with the user
+     * @param toRefresh A flag that indicates if there's the necessity to force a new load of these meetings
+     */
+    private void retrieveMMeetings(Boolean toRefresh) {
         ModelList<com.plunner.plunner.models.models.employee.planner.Group> groups = ((Planner) DataExchanger.getInstance().getUser()).getGroupsManaged().getInstance();
-        if( groups.getModels().size() == 0){
+        if( groups.getModels().size() == 0 || toRefresh){
             ((Planner) DataExchanger.getInstance().getUser()).getGroupsManaged().load(new mMeetingsCallback());
         }
         else{
@@ -258,31 +269,48 @@ public class MeetingsListFragment extends Fragment {
 
     }
 
+    /**
+     * Public method to refresh the list of meetings
+     */
+    public void refresh(){
+        swipeRefreshLayout.setRefreshing(true);
+        onRefreshCallback();
+    }
+
+    /**
+     * Callback to swipe down refresh
+     */
     private void onRefreshCallback() {
         switch (mode) {
             case 1:
-                retrieveTBPMeetings();
+                retrieveTBPMeetings(true);
                 break;
             case 2:
-                retrievePMeetings();
+                retrievePMeetings(true);
                 break;
             case 3:
-                retrieveMMeetings();
+                retrieveMMeetings(true);
                 break;
         }
     }
 
+    /**
+     * Initial set of operations for this fragment
+     */
     public void initSequence() {
         //mode = 1;
-        retrieveTBPMeetings();
-        retrievePMeetings();
+        retrieveTBPMeetings(false);
+        retrievePMeetings(false);
 
         if (DataExchanger.getInstance().getUser().isPlanner()) {
             scrollView.getChildAt(2).setVisibility(View.VISIBLE);
-            retrieveMMeetings();
+            retrieveMMeetings(false);
         }
     }
 
+    /**
+     * Callback to {@link #retrieveTBPMeetings(Boolean)}
+     */
     private class tbpMeetingsCallback implements CallOnHttpError<ModelList<Group>>, CallOnNext<ModelList<Group>>, CallOnNoHttpError<ModelList<Group>> {
 
         @Override
@@ -330,12 +358,22 @@ public class MeetingsListFragment extends Fragment {
         }
         loadingSpinner.setVisibility(View.GONE);
     }
-
+    /**
+     * Callback to {@link #retrievePMeetings(Boolean)}
+     */
     private class pMeetingsCallback implements CallOnHttpError<ModelList<Meeting>>, CallOnNext<ModelList<Meeting>>, CallOnNoHttpError<ModelList<Meeting>> {
 
         @Override
         public void onHttpError(HttpException e) {
+            LoginManager.getInstance().reLogin(e, getActivity(), null);
+            String msg;
+            if (e.getCause().code() == 500) {
+                msg = "Internal Server Error, please try again later";
 
+            } else {
+                msg = "Communication Error, please try again later";
+            }
+            MeetingsListFragment.this.createSnackBar(msg);
         }
 
         @Override
@@ -353,7 +391,7 @@ public class MeetingsListFragment extends Fragment {
 
         @Override
         public void onNoHttpError(NoHttpException e) {
-
+            checkError();
         }
     }
 
@@ -380,11 +418,22 @@ public class MeetingsListFragment extends Fragment {
 
         }
     }
+    /**
+     * Callback to {@link #retrieveMMeetings(Boolean)}
+     */
     private class mMeetingsCallback implements CallOnHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Group>>, CallOnNext<ModelList<com.plunner.plunner.models.models.employee.planner.Group>>, CallOnNoHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Group>> {
 
         @Override
         public void onHttpError(HttpException e) {
+            LoginManager.getInstance().reLogin(e, getActivity(), null);
+            String msg;
+            if (e.getCause().code() == 500) {
+                msg = "Internal Server Error, please try again later";
 
+            } else {
+                msg = "Communication Error, please try again later";
+            }
+            MeetingsListFragment.this.createSnackBar(msg);
         }
 
         @Override
@@ -401,10 +450,11 @@ public class MeetingsListFragment extends Fragment {
 
         @Override
         public void onNoHttpError(NoHttpException e) {
-
+            checkError();
         }
 
     }
+
     private void insertManagedMeetings(ModelList<com.plunner.plunner.models.models.employee.planner.Meeting> meetingsList){
         mMeetings = meetingsList.getModels();
         if (mode == 3) {
@@ -414,10 +464,21 @@ public class MeetingsListFragment extends Fragment {
             swipeRefreshLayout.setRefreshing(false);
         }
     }
+    /**
+     * Callback to {@link #elaborateManagedGroups(ModelList)}
+     */
     private class MeetingsManagedCallabck implements CallOnHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNext<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>>, CallOnNoHttpError<ModelList<com.plunner.plunner.models.models.employee.planner.Meeting>> {
         @Override
         public void onHttpError(HttpException e) {
+            LoginManager.getInstance().reLogin(e, getActivity(), null);
+            String msg;
+            if (e.getCause().code() == 500) {
+                msg = "Internal Server Error, please try again later";
 
+            } else {
+                msg = "Communication Error, please try again later";
+            }
+            MeetingsListFragment.this.createSnackBar(msg);
         }
 
         @Override
@@ -434,7 +495,7 @@ public class MeetingsListFragment extends Fragment {
 
         @Override
         public void onNoHttpError(NoHttpException e) {
-
+            checkError();
         }
     }
 
@@ -448,9 +509,35 @@ public class MeetingsListFragment extends Fragment {
 
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        Log.w("12","Fragment resumed");
+    /**
+     * Checks the kind of non http error occured(check if it is caused by the absence of network)
+     */
+    private void checkError() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        String msg;
+        if (!isConnected) {
+            msg = "No network";
+        } else {
+            msg = "Communication error, please try again later";
+        }
+        createSnackBar(msg);
+    }
+
+    /**
+     * Creates an alert snackbar with the given message(the created snackbar has a red background)
+     *
+     * @param message The message to be displayed in the created snackbar
+     */
+    private void createSnackBar(String message) {
+        Snackbar snackbar;
+        snackbar = Snackbar.make(getActivity().findViewById(R.id.dashboard_activity_root), message, Snackbar.LENGTH_LONG);
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
+        snackbar.show();
     }
 }
