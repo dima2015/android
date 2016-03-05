@@ -55,11 +55,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.activities.MeetingActivity"
-            android:label="Add meeting"
+            android:label="@string/add_meeting_activity_title"
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/CustomTheme" />
         <activity android:name=".activities.activities.SettingsActivity"
-            android:label="Your settings"
+            android:label="@string/settings_activity_title"
             android:parentActivityName=".activities.activities.DashboardActivity"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>

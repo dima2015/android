@@ -215,6 +215,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
+            findViewById(R.id.sign_in_title).setVisibility(View.GONE);
             showProgress(true);
             //mAuthTask = new UserLoginTask(company, email, password, getIntent().getStringExtra(ARG_ACCOUNT_TYPE));
             mAuthTask = loginManager.new UserLoginTask(this);

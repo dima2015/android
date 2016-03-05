@@ -68,4 +68,6 @@
     <string name="refresh_schedules">Refresh schedules</string>
     <string name="minutes">mins</string>
     <string name="edit_meeting">Edit meeting</string>
+    <string name="settings_activity_title">Your settings</string>
+    <string name="add_meeting_activity_title">Add meeting</string>
 </resources>

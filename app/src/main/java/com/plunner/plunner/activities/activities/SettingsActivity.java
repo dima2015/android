@@ -26,11 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         nameField = (TextView) findViewById(R.id.activity_user_settings_name);
         emailField = (TextView) findViewById(R.id.activity_user_settings_email);
-
-        Intent intent = getIntent();
-        if(!intent.getExtras().getBoolean("Testing")){
-            retrieveFields();
-        }
+        retrieveFields();
 
     }
 
