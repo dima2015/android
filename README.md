@@ -21,6 +21,7 @@ Android restful client for employees users of [https://github.com/dsd-meetme/bac
  * [reactivex](http://reactivex.io/)
  * [retrofit](http://square.github.io/retrofit/)
  * [Authenticator examples](http://blog.udinic.com/2013/04/24/write-your-own-android-authenticator/)
+ 
  See the documentation (linked on the top) for the entire list
 
 # Notes
