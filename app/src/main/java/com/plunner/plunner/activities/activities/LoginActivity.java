@@ -349,6 +349,9 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
                 case "company":
                     setError(mCompanyView, error);
                     break;
+                case "company_id.email":
+                    setError(mEmailView, error);
+                    break;
                 case "error":
                     //TODO implement
                     break;
