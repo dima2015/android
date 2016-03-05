@@ -150,6 +150,7 @@ public class MeetingActivity extends AppCompatActivity {
         idTimeslots = new HashMap<>();
         //If i'm editing a meeting i want to grab that meeting information
         if (editMode) {
+            setTitle(getResources().getText(R.string.edit_meeting));
             selectedMeeting = (Meeting) DataExchanger.getInstance().getMeeting();
             retrieveMeetingInformation();
         }
