@@ -18,8 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by giorgiopea on 24/02/16.
+ * A class that provides method to manipulate and build a calendar like widget used to
+ * facilitate the visualisation of time slots
  *
+ * @author Giorgio Pea
  */
 public class CalendarPickersViewSupport {
 

@@ -9,9 +9,10 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Created by giorgiopea on 01/03/16.
  *
- * A singleton class that provides adaptation of timeslots between the backend and the backend
+ * A singleton class that provides adaptation of timeslots between the backend and the frontend
+ *
+ * @author Giorgio Pea
  */
 public class TimeslotFrontEndAdapter {
 
@@ -24,8 +25,7 @@ public class TimeslotFrontEndAdapter {
         return instance;
     }
 
-    private TimeslotFrontEndAdapter() {
-    }
+    private TimeslotFrontEndAdapter() {}
     /**
      * Adapts a timeslot between the backend and the frontend
      * @param startDate the start date of the backend timeslot

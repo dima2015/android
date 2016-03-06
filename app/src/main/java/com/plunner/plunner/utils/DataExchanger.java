@@ -5,9 +5,10 @@ import com.plunner.plunner.models.models.employee.Employee;
 import com.plunner.plunner.models.models.employee.Meeting;
 
 /**
- * Created by giorgiopea on 26/02/16.
  *
  * A singleton class that represents a global data exchanger
+ *
+ * @author Giorgio Pea
  */
 public class DataExchanger {
 

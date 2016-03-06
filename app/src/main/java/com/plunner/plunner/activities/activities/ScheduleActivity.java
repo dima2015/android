@@ -58,7 +58,9 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * An activity that lets users compose a schedule by inserting a name for the schedule and some busy time slots
+ * An activity that provides the logic and the view for create and edit a schedule
+ *
+ * @author Giorgio Pea
  */
 public class ScheduleActivity extends AppCompatActivity {
 

@@ -5,9 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by giorgiopea on 01/03/16.
  *
  * A singleton class that provides adaptation of timeslots between the frontend and the backend
+ *
+ * @author Giorgio Pea
  */
 public class TimeslotBackEndAdapter {
 

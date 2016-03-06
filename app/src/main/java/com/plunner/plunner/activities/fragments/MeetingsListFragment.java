@@ -42,6 +42,9 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * A fragments that provides logic and view for see a list of the meetings planned, to be planned and managed
+ */
 public class MeetingsListFragment extends Fragment {
 
     private List<Meeting> tbpMeetings;

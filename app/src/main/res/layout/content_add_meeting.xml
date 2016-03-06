@@ -161,6 +161,10 @@
             android:text="@string/p_timeslots"
             android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <HorizontalScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

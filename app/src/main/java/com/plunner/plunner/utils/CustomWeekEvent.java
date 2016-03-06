@@ -5,7 +5,9 @@ import com.alamkanak.weekview.WeekViewEvent;
 import java.util.Calendar;
 
 /**
- * Created by giorgiopea on 23/02/16.
+ * Extension of {@link WeekViewEvent}
+ * @see WeekViewEvent
+ * @author Giorgio Pea
  */
 public class CustomWeekEvent extends WeekViewEvent {
 
@@ -24,14 +26,6 @@ public class CustomWeekEvent extends WeekViewEvent {
 
     public boolean isEdited() {
         return isEdited;
-    }
-
-    public void setIsNew(boolean isNew) {
-        this.isNew = isNew;
-    }
-
-    public void setIsEdited(boolean isEdited) {
-        this.isEdited = isEdited;
     }
 
 }

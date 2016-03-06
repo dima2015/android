@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Created by giorgiopea on 02/02/16.
+ * A class that provides utility methods for the calendar picker widget of the application
  */
 public class CalendarPickers {
 

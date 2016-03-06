@@ -28,6 +28,11 @@ import java.util.Map;
 import java.util.TimeZone;
 
 
+/**
+ * A fragment that provides logic and view for creating and editing time slots
+ *
+ * @author Giorgio Pea
+ */
 public class TimeslotDetailFragment extends Fragment {
 
     private TextView startDate;

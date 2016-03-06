@@ -37,7 +37,7 @@ import java.util.List;
 
 
 /**
- * REVISED
+ * A fragment that provides the logic and the view for see the list of the composed schedules
  */
 public class SchedulesListFragment extends Fragment {
 

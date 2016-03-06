@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by giorgiopea on 05/01/16.
+ *
+ *
+ * @author Giorgio Pea
  */
 public class FragmentsTabViewAdapter extends FragmentPagerAdapter {
     /**

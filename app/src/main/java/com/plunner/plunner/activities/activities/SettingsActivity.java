@@ -1,15 +1,18 @@
 package com.plunner.plunner.activities.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.plunner.plunner.R;
-import com.plunner.plunner.models.models.employee.Employee;
 import com.plunner.plunner.utils.DataExchanger;
 
+/**
+ * An activity that provides the logic and the view for see the user settings
+ *
+ * @author Giorgio Pea
+ */
 public class SettingsActivity extends AppCompatActivity {
 
     private TextView nameField;

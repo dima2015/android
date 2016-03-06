@@ -61,6 +61,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * An activity that provides the logic and the view for edit or create a meeting
+ *
+ * @author Giorgio Pea
+ */
 public class MeetingActivity extends AppCompatActivity {
     /**
      * Holds a reference to the WeekView of the activity, that is to say a calendar view that lets users
@@ -643,6 +648,7 @@ public class MeetingActivity extends AppCompatActivity {
             checkError();
         }
     }
+
     /**
      * Callback class for the response to {@link #retrieveGroups()}
      */
@@ -676,6 +682,7 @@ public class MeetingActivity extends AppCompatActivity {
             checkError();
         }
     }
+
     /**
      * Callback class for the response to {@link #saveMeeting()}
      */
@@ -728,7 +735,7 @@ public class MeetingActivity extends AppCompatActivity {
         for (int i = 0; i < updatedTimeslots.size(); i++) {
             currentEvent = updatedTimeslots.get(i);
             //Save request to backend
-            idTimeslots.get(Integer.toString((int) currentEvent.getId())).save(new saveUpdatedTimeslotsCallback(i+1, updatedTimeslots.size()));
+            idTimeslots.get(Integer.toString((int) currentEvent.getId())).save(new saveUpdatedTimeslotsCallback(i + 1, updatedTimeslots.size()));
         }
 
     }
@@ -743,12 +750,13 @@ public class MeetingActivity extends AppCompatActivity {
         }
         for (int i = 0; i < deletedTimeslots.size(); i++) {
             //Delete request to backend
-            idTimeslots.get(Integer.toString((int) deletedTimeslots.get(i).getId())).delete(new saveDeletedTimeslots(i+1, deletedTimeslots.size()));
+            idTimeslots.get(Integer.toString((int) deletedTimeslots.get(i).getId())).delete(new saveDeletedTimeslots(i + 1, deletedTimeslots.size()));
         }
     }
 
     /**
      * Inserts the timeslots in the {@link #mWeekView}
+     *
      * @param meetingModelList The list of {@link MeetingTimeslot} retrieved that must be inserted
      */
     private void insertTimeslots(ModelList<MeetingTimeslot> meetingModelList) {
@@ -770,6 +778,7 @@ public class MeetingActivity extends AppCompatActivity {
 
     /**
      * Inserts the groups managed by the user in the {@link #groupsSpinner}
+     *
      * @param groups The list of {@link Group} retrieved that must be inserted
      */
     private void insertGroups(ModelList<Group> groups) {
@@ -826,6 +835,7 @@ public class MeetingActivity extends AppCompatActivity {
         }
 
     }
+
     /**
      * Callback class for the response to {@link #retrieveMeetingTimeslots()} ()}
      */
@@ -894,6 +904,7 @@ public class MeetingActivity extends AppCompatActivity {
             checkError();
         }
     }
+
     /**
      * Callback class for the response to {@link #saveDeletedTimeslots()} ()}
      */
@@ -938,6 +949,7 @@ public class MeetingActivity extends AppCompatActivity {
             checkError();
         }
     }
+
     /**
      * Callback class for the response to {@link #saveUpdatedTimeslots()} ()}
      */
@@ -993,10 +1005,9 @@ public class MeetingActivity extends AppCompatActivity {
                 activeNetwork.isConnectedOrConnecting();
 
         String msg;
-        if(!isConnected){
+        if (!isConnected) {
             msg = "No network";
-        }
-        else{
+        } else {
             msg = "Communication error, please try again later";
         }
         createSnackBar(msg);

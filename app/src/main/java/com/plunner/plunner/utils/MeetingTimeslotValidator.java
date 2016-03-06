@@ -4,11 +4,12 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- * Created by giorgiopea on 01/03/16.
  *
  * A singleton class that provides validation of a meeting timeslots against the following rule:
  * If today is not sunday then a meeting timeslots can start any day from the monday of the next week,
  * otherwise it can start any day from the monday of the next next week
+ *
+ * @author Giorgio Pea
  */
 public class MeetingTimeslotValidator {
     //Instance
