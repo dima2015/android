@@ -529,7 +529,7 @@ public class ScheduleActivity extends AppCompatActivity {
             errorTimeslots = true;
             createSnackBar("Please insert at least one busy timeslot");
         }
-        return !(errorName && errorTimeslots);
+        return !(errorName || errorTimeslots);
     }
 
     /**

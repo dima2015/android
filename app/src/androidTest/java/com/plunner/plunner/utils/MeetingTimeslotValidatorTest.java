@@ -14,9 +14,10 @@ public class MeetingTimeslotValidatorTest extends TestCase{
         Calendar testDate = (Calendar) today.clone();
         testDate.set(Calendar.DAY_OF_WEEK, 6);
         assertEquals(false, MeetingTimeslotValidator.getInstance().validate(testDate, null));
+        today.set(Calendar.DAY_OF_WEEK, 4);
         testDate.add(Calendar.WEEK_OF_YEAR, 1);
         testDate.set(Calendar.DAY_OF_WEEK, 6);
-        assertEquals(true, MeetingTimeslotValidator.getInstance().validate(testDate, null));
+        assertEquals(true, MeetingTimeslotValidator.getInstance().validate(testDate, today));
         today.set(Calendar.DAY_OF_WEEK, 1);
         assertEquals(false, MeetingTimeslotValidator.getInstance().validate(testDate, today));
         testDate = (Calendar) today.clone();
