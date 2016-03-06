@@ -222,20 +222,12 @@ public class TimeslotDetailFragment extends Fragment {
         Snackbar snackbar;
         Calendar evStartDate = textViewCalendarMap.get(startDate);
         Calendar evEndDate = textViewCalendarMap.get(endDate);
-        int startDay = evStartDate.get(Calendar.DAY_OF_MONTH);
-        int endDay = evEndDate.get(Calendar.DAY_OF_MONTH);
-        int startHour = evStartDate.get(Calendar.HOUR_OF_DAY);
-        int startMinutes = evStartDate.get(Calendar.MINUTE);
-        int endHour = evEndDate.get(Calendar.HOUR_OF_DAY);
-        int endMinutes = evEndDate.get(Calendar.MINUTE);
 
-        if (startDay == endDay) {
-            if (endHour < startHour || startHour == endHour && startMinutes > endMinutes) {
+        if (!evStartDate.before(evEndDate)) {
                 snackbar = Snackbar.make(getActivity().findViewById(R.id.add_event_fragment), "You must insert a valid end time", Snackbar.LENGTH_LONG);
                 snackbar.getView().setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
                 snackbar.show();
                 return null;
-            }
         }
 
         return new CustomWeekEvent(currentEventId, "", evStartDate, evEndDate, isNewEvent, isEditedEvent);
