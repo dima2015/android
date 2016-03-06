@@ -278,12 +278,16 @@ public class TimeslotDetailFragment extends Fragment {
     }
 
     private void onTimeSetM(int hour, int minute, boolean forEventStart) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
+        Calendar calendar;
         if (forEventStart) {
+            calendar = textViewCalendarMap.get(startDate);
+            calendar.set(Calendar.HOUR_OF_DAY, hour);
+            calendar.set(Calendar.MINUTE, minute);
             eventStarts(calendar, 1);
         } else {
+            calendar = textViewCalendarMap.get(endDate);
+            calendar.set(Calendar.HOUR_OF_DAY, hour);
+            calendar.set(Calendar.MINUTE, minute);
             eventEnds(calendar, 1);
         }
 

@@ -93,10 +93,8 @@
             android:id="@+id/activity_meeting_detail_meeting_starts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Large Text"
             android:textColor="@color/colorPrimary"
             android:textAllCaps="true"
-            android:visibility="gone"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
     </LinearLayout>
 

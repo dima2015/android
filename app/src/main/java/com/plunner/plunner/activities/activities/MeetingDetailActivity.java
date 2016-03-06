@@ -11,6 +11,10 @@ import com.plunner.plunner.R;
 import com.plunner.plunner.models.models.employee.Meeting;
 import com.plunner.plunner.utils.DataExchanger;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class MeetingDetailActivity extends AppCompatActivity {
 
     private TextView meetingTitle;
@@ -18,6 +22,7 @@ public class MeetingDetailActivity extends AppCompatActivity {
     private TextView meetingGroup;
     private TextView meetingDuration;
     private TextView meetingStarts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -35,6 +40,7 @@ public class MeetingDetailActivity extends AppCompatActivity {
         meetingStarts = (TextView) findViewById(R.id.activity_meeting_detail_meeting_starts);
         fillData();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -46,14 +52,15 @@ public class MeetingDetailActivity extends AppCompatActivity {
      * Fill the view associated with this activity with data related to a meeting
      */
     private void fillData() {
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMMM dd, yyyy", Locale.UK);
         Meeting meeting = DataExchanger.getInstance().getMeeting();
         meetingTitle.setText(meeting.getTitle());
         meetingDesc.setText(meeting.getDescription());
-        int duration = Integer.parseInt(meeting.getDuration())/60;
-        meetingDuration.setText(Integer.toString(duration)+" mins");
+        int duration = Integer.parseInt(meeting.getDuration()) / 60;
+        meetingDuration.setText(Integer.toString(duration) + " mins");
         meetingGroup.setText(meeting.getGroupName());
-        if(meeting.getStartTime() != null ){
-            meetingStarts.setText(meeting.getStartTime());
+        if (meeting.getStartTime() != null) {
+            meetingStarts.setText("Starts at: " + meeting.getStartTime());
         }
     }
 }

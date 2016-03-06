@@ -11,7 +11,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.plunner.plunner.R;
-import com.plunner.plunner.activities.activities.DashboardActivity;
 import com.plunner.plunner.activities.activities.MeetingActivity;
 import com.plunner.plunner.activities.activities.MeetingDetailActivity;
 import com.plunner.plunner.activities.adapters.MeetingsListAdapter;
@@ -39,7 +37,9 @@ import com.plunner.plunner.models.models.employee.planner.Planner;
 import com.plunner.plunner.utils.DataExchanger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MeetingsListFragment extends Fragment {
@@ -57,6 +57,7 @@ public class MeetingsListFragment extends Fragment {
     private TextView emptyStateTBP;
     private TextView emptyStateP;
     private TextView emptyStateM;
+    private Map<String, String> groupIdToName;
 
 
     @Override
@@ -108,6 +109,7 @@ public class MeetingsListFragment extends Fragment {
         if (showLoadBar) {
             loadingSpinner.setVisibility(View.VISIBLE);
         }
+        groupIdToName = new HashMap<>();
         adapter = new MeetingsListAdapter(getActivity(), content);
         //SwipeRefreshLayout setting
         swipeRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.fragment_meetings_refresh_layout);
@@ -342,6 +344,7 @@ public class MeetingsListFragment extends Fragment {
         List<Meeting> currentMeetings;
         for (int i = 0; i < groupList.size(); i++) {
             currentGroup = groupList.get(i);
+            groupIdToName.put(currentGroup.getId(),currentGroup.getName());
             currentMeetings = currentGroup.getMeetings();
             for (int j = 0; j < currentMeetings.size(); j++) {
                 currentMeeting = currentMeetings.get(j);
@@ -397,6 +400,9 @@ public class MeetingsListFragment extends Fragment {
 
     private void insertPMeetings(ModelList<Meeting> meetingModelList) {
         pMeetings = meetingModelList.getModels();
+        for(int i=0; i<pMeetings.size(); i++){
+            pMeetings.get(i).setGroupName(groupIdToName.get(pMeetings.get(i).getGroupId()));
+        }
         if (mode == 2) {
             notifyContentChange();
         }

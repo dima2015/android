@@ -433,6 +433,7 @@ public class ScheduleActivity extends AppCompatActivity {
             } else if (event.isEdited()) {
                 position = findTimeslotById(event.getId());
                 composedTimeslots.remove(position);
+                mWeekView.notifyDatasetChanged();
                 composedTimeslots.add(position, event);
             }
             mWeekView.notifyDatasetChanged();
@@ -603,12 +604,12 @@ public class ScheduleActivity extends AppCompatActivity {
             saveUpdatedTimeslots();
         }
         for (int i = 0; i < newEvents.size(); i++) {
-            eventMap = TimeslotBackEndAdapter.getInstance().adapt(composedTimeslots.get(i));
+            eventMap = TimeslotBackEndAdapter.getInstance().adapt(newEvents.get(i));
             timeslot = new Timeslot();
             timeslot.setFatherParameters(id);
             timeslot.setTimeStart(eventMap.get("startTime"));
             timeslot.setTimeEnd(eventMap.get("endTime"));
-            timeslot.save(new SaveTimeslotCallback(i + 1, composedTimeslots.size()));
+            timeslot.save(new SaveTimeslotCallback(i + 1, newEvents.size()));
         }
 
     }
@@ -741,6 +742,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private void saveDeletedTimeslots() {
         if (deletedTimeslots.size() == 0) {
             progressDialog.dismiss();
+            startActivity(new Intent(ScheduleActivity.this, DashboardActivity.class));
         }
         for (int i = 0; i < deletedTimeslots.size(); i++) {
             fromIdToTimeslot.get(Integer.toString((int) deletedTimeslots.get(i).getId())).delete(new DeleteTimeslotCallback(i + 1, deletedTimeslots.size()));
