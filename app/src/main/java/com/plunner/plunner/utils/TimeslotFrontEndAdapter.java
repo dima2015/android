@@ -1,7 +1,5 @@
 package com.plunner.plunner.utils;
 
-import com.plunner.plunner.models.models.employee.Timeslot;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -13,7 +11,7 @@ import java.util.Map;
 /**
  * Created by giorgiopea on 01/03/16.
  *
- * A singleton class that provides adaptation of timeslots beetwen the backend and the backend
+ * A singleton class that provides adaptation of timeslots between the backend and the backend
  */
 public class TimeslotFrontEndAdapter {
 
